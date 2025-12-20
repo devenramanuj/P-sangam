@@ -3,45 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>પોષણ સંગમ - એડવાન્સ રજિસ્ટર</title>
+    <title>પોષણ સંગમ - ફાઈનલ એપ</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
         .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
+        
+        /* માસ પસંદગી માટે સ્પષ્ટ સ્ટાઈલ */
+        .month-selector { background: #fff; padding: 15px; border-bottom: 2px solid #e67e22; display: flex; gap: 10px; justify-content: center; align-items: center; }
+        .month-selector select { padding: 8px; border: 2px solid #e67e22; border-radius: 5px; font-weight: bold; color: #333; background: white; cursor: pointer; }
+        
         .nav-tabs { display: flex; overflow-x: auto; background: white; border-bottom: 2px solid #e67e22; position: sticky; top: 0; z-index: 100; }
         .tab-btn { padding: 12px; border: none; background: none; cursor: pointer; font-weight: bold; color: #555; white-space: nowrap; flex: 1; min-width: 70px; }
         .tab-btn.active { color: #e67e22; background: #fff5eb; border-bottom: 4px solid #e67e22; }
+        
         .container { padding: 15px; }
         .page { display: none; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow-x: auto; }
         .page.active { display: block; }
-        .month-selector { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .action-bar { margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; font-size: 11px; }
+        
+        .action-bar { margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
         .btn-print { background: #34495e; }
         .btn-export { background: #27ae60; }
         .btn-import { background: #2980b9; }
-        .btn-clear { background: #e74c3c; }
+        
+        h3 { color: #d35400; border-bottom: 2px solid #f39c12; padding-bottom: 5px; margin-bottom: 15px; font-size: 16px; }
         table { width: 100%; border-collapse: collapse; font-size: 10px; min-width: 1400px; table-layout: fixed; }
         table, th, td { border: 1px solid #bdc3c7; }
-        th { background: #ecf0f1; padding: 5px; }
-        .col-name { width: 180px; }
-        input, select { width: 100%; border: none; padding: 8px; text-align: center; font-size: 12px; background: transparent; }
+        th { background: #ecf0f1; padding: 5px; text-align: center; }
+        
+        /* નામની કોલમ મોટી રાખી છે */
+        .col-name { width: 200px !important; }
+        input, select { width: 100%; border: none; padding: 8px; text-align: center; font-size: 12px; background: transparent; color: #000; }
         input:focus { background: #fff9f0; outline: 1px solid #e67e22; }
+
         @media print { .nav-tabs, .action-bar, .month-selector { display: none !important; } .page { display: block !important; page-break-after: always; border: 1px solid #000; } }
     </style>
 </head>
 <body onload="initApp()">
 
-<div class="header">પોષણ સંગમ - એડવાન્સ ડિજિટલ રજિસ્ટર</div>
+<div class="header">પોષણ સંગમ - ડિજિટલ રજિસ્ટર</div>
 
 <div class="month-selector">
-    <label>માસ પસંદ કરો:</label>
-    <select id="selectedMonth" style="width: 120px; background: #fff; border: 1px solid #ddd;" onchange="changeMonth()">
+    <label>માસ/વર્ષ:</label>
+    <select id="selectedMonth" onchange="changeMonth()">
         <option value="1">જાન્યુઆરી</option><option value="2">ફેબ્રુઆરી</option><option value="3">માર્ચ</option>
         <option value="4">એપ્રિલ</option><option value="5">મે</option><option value="6">જૂન</option>
         <option value="7">જુલાઈ</option><option value="8">ઓગસ્ટ</option><option value="9">સપ્ટેમ્બર</option>
         <option value="10">ઓક્ટોબર</option><option value="11">નવેમ્બર</option><option value="12">ડિસેમ્બર</option>
     </select>
-    <select id="selectedYear" style="width: 100px; background: #fff; border: 1px solid #ddd;" onchange="changeMonth()">
+    <select id="selectedYear" onchange="changeMonth()">
         <option value="2025">2025</option><option value="2026">2026</option>
     </select>
 </div>
@@ -59,10 +69,9 @@
 <div class="container">
     <div class="action-bar">
         <button class="btn btn-print" onclick="window.print()">🖨️ પ્રિન્ટ</button>
-        <button class="btn btn-export" onclick="exportData()">📤 Export Excel</button>
-        <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 Import</button>
+        <button class="btn btn-export" onclick="exportData()">📤 ડેટા સેવ (Export)</button>
+        <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 ડેટા લાવો (Import)</button>
         <input type="file" id="importFile" style="display:none" onchange="importData(event)">
-        <button class="btn btn-clear" onclick="clearMonthData()">⚠️ આ માસનો ડેટા ડિલીટ</button>
     </div>
 
     <div id="p1" class="page active">
@@ -74,18 +83,19 @@
         </table>
     </div>
 
-    <div id="p2" class="page">
-        <h3>Page 2: Assessment & SNP</h3>
-        <table>
-            <tr><th>ક્રમ</th><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>જટિલતા</th><th>રેફરલ</th><th>દાખલ</th><th>THR</th><th>સંખ્યા</th><th>દૂધ</th></tr>
-            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><select id="p2_a_${i}" onchange="saveData()"><option value="">-</option><option>પાસ</option><option>નપાસ</option></select></td><td><input type="date" id="p2_b_${i}" oninput="saveData()"></td><td><input type="text" id="p2_c_${i}" oninput="saveData()"></td><td><input type="text" id="p2_d_${i}" oninput="saveData()"></td><td><input type="date" id="p2_e_${i}" oninput="saveData()"></td><td><select id="p2_f_${i}" onchange="saveData()"><option value="">-</option><option>હા</option><option>ના</option></select></td><td><input type="text" id="p2_g_${i}" oninput="saveData()"></td><td><select id="p2_h_${i}" onchange="saveData()"><option value="">-</option><option>હા</option><option>ના</option></select></td></tr>`);</script>
-        </table>
-    </div>
+    <div id="p2" class="page"><h3>Page 2: Medical Assessment</h3><p>Page 1 ની જેમ જ ટેબલ અહીં આવશે...</p></div>
+    <div id="p3" class="page"><h3>Page 3: Medicines</h3><p>Page 1 ની જેમ જ ટેબલ અહીં આવશે...</p></div>
+    <div id="p4" class="page"><h3>Page 4: Follow up</h3><p>Page 1 ની જેમ જ ટેબલ અહીં આવશે...</p></div>
+    <div id="p5" class="page"><h3>Page 5: Final Grading</h3><p>Page 1 ની જેમ જ ટેબલ અહીં આવશે...</p></div>
+    <div id="p6" class="page"><h3>Page 6: Discharge</h3><p>Page 1 ની જેમ જ ટેબલ અહીં આવશે...</p></div>
 
     <div id="p7" class="page">
-        <h3>Page 7: Post Discharge</h3>
+        <h3>Page 7: Post Discharge Follow up</h3>
         <table>
-            <tr><th>ક્રમ</th><th>તારીખ</th><th>સ્થિતિ</th><th>દાખલ</th><th>રજા</th><th>ગ્રેડ</th><th>વજન</th><th>ઊંચાઈ</th></tr>
+            <thead>
+                <tr><th rowspan="2">ક્રમ</th><th colspan="2">C-MAM રજા પછી</th><th colspan="3">CMTC/NRCH વિગત</th><th colspan="2">અંતિમ</th></tr>
+                <tr><th>તારીખ</th><th>સ્થિતિ</th><th>દાખલ</th><th>રજા</th><th>ગ્રેડ</th><th>વજન</th><th>ઊંચાઈ</th></tr>
+            </thead>
             <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input type="date" id="p7_a_${i}" oninput="saveData()"></td><td><input type="text" id="p7_b_${i}" oninput="saveData()"></td><td><input type="date" id="p7_c_${i}" oninput="saveData()"></td><td><input type="date" id="p7_d_${i}" oninput="saveData()"></td><td><input type="text" id="p7_e_${i}" oninput="saveData()"></td><td><input type="text" id="p7_f_${i}" oninput="saveData()"></td><td><input type="text" id="p7_g_${i}" oninput="saveData()"></td></tr>`);</script>
         </table>
     </div>
@@ -111,9 +121,9 @@
     function go(n) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('p' + (document.getElementById('p'+n) ? n : 1)).classList.add('active');
+        document.getElementById('p' + n).classList.add('active');
         document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
     }
 
     function saveData() {
@@ -139,10 +149,9 @@
         const data = localStorage.getItem(currentKey);
         if(!data) return alert("આ માસમાં કોઈ ડેટા નથી");
         const blob = new Blob([data], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `Poshan_Data_${currentKey}.json`;
+        a.href = URL.createObjectURL(blob);
+        a.download = `Poshan_Register_${currentKey}.json`;
         a.click();
     }
 
@@ -151,16 +160,9 @@
         reader.onload = function() {
             localStorage.setItem(currentKey, reader.result);
             loadData();
-            alert("ડેટા સફળતાપૂર્વક ઈમ્પોર્ટ થઈ ગયો છે");
+            alert("ડેટા આવી ગયો છે");
         };
         reader.readAsText(event.target.files[0]);
-    }
-
-    function clearMonthData() {
-        if(confirm("શું તમે આ માસનો ડેટા ભૂંસી નાખવા માંગો છો?")) {
-            localStorage.removeItem(currentKey);
-            loadData();
-        }
     }
 </script>
 </body>
