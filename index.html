@@ -3,46 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>પોષણ સંગમ - સંપૂર્ણ ગણતરી રજિસ્ટર</title>
+    <title>પોષણ સંગમ - રજિસ્ટર</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
-        .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
-        .month-year-container { background: #ffffff; padding: 10px; text-align: center; border-bottom: 3px solid #e67e22; }
-        .styled-select { padding: 8px; font-size: 15px; font-weight: bold; color: #000; border: 2px solid #d35400; border-radius: 8px; margin: 5px; width: 125px; }
-        .nav-tabs { display: flex; overflow-x: auto; background: white; border-bottom: 2px solid #e67e22; position: sticky; top: 0; z-index: 100; }
-        .tab-btn { padding: 12px; border: none; background: none; cursor: pointer; font-weight: bold; color: #555; white-space: nowrap; flex: 1; min-width: 65px; }
+        .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; }
+        .nav-tabs { display: flex; overflow-x: auto; background: #fff; border-bottom: 2px solid #e67e22; position: sticky; top: 0; z-index: 1000; }
+        .tab-btn { padding: 12px 15px; border: none; background: none; cursor: pointer; font-weight: bold; color: #555; white-space: nowrap; flex: 1; }
         .tab-btn.active { color: #e67e22; background: #fff5eb; border-bottom: 4px solid #e67e22; }
-        .container { padding: 15px; }
+        .container { padding: 10px; }
         .page { display: none; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow-x: auto; margin-bottom: 20px; }
         .page.active { display: block; }
-        .action-bar { margin-bottom: 15px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
-        .btn-export { background: #2980b9; } .btn-import { background: #8e44ad; } .btn-print { background: #34495e; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1200px; table-layout: fixed; }
-        table, th, td { border: 1px solid #bdc3c7; text-align: center; }
-        th { background: #ecf0f1; padding: 8px; }
-        input { width: 92%; border: none; padding: 8px; text-align: center; font-size: 13px; color: #000; background: transparent; }
-        .auto-calc { color: #d35400; font-weight: bold; }
-        @media print { .nav-tabs, .action-bar, .month-year-container, .header { display: none !important; } .page { display: block !important; box-shadow: none; border: 1px solid #000; page-break-after: always; } }
+        .action-bar { margin: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 12px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 13px; }
+        .btn-blue { background: #2980b9; } .btn-purple { background: #8e44ad; } .btn-dark { background: #34495e; }
+        table { width: 100%; border-collapse: collapse; font-size: 10px; min-width: 1300px; table-layout: fixed; }
+        table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
+        th { background: #ecf0f1; font-weight: bold; vertical-align: top; }
+        input { width: 95%; border: none; padding: 5px; text-align: center; font-size: 12px; background: transparent; outline: none; }
+        .sub-text { font-size: 9px; font-weight: normal; display: block; margin-top: 3px; line-height: 1.2; }
+        
+        /* પ્રિન્ટ માટે ખાસ સેટિંગ */
+        @media print {
+            @page { size: landscape; margin: 10mm; }
+            .nav-tabs, .action-bar, .header { display: none !important; }
+            .page { display: block !important; border: 1px solid #000; margin-bottom: 20px; page-break-after: always; box-shadow: none; }
+            table { min-width: 100% !important; page-break-inside: avoid; }
+            input { background: none !important; border: none !important; }
+        }
     </style>
 </head>
 <body onload="initApp()">
 
-<div class="header">પોષણ સંગમ - ઓટો ગણતરી રજિસ્ટર</div>
+<div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર</div>
 
-<div class="month-year-container">
-    <select id="selectedMonth" class="styled-select" onchange="changeMonth()">
-        <option value="1">જાન્યુઆરી</option><option value="2">ફેબ્રુઆરી</option><option value="3">માર્ચ</option>
-        <option value="4">એપ્રિલ</option><option value="5">મે</option><option value="6">જૂન</option>
-        <option value="7">જુલાઈ</option><option value="8">ઓગસ્ટ</option><option value="9">સપ્ટેમ્બર</option>
-        <option value="10">ઓક્ટોબર</option><option value="11">નવેમ્બર</option><option value="12">ડિસેમ્બર</option>
-    </select>
-    <select id="selectedYear" class="styled-select" onchange="changeMonth()">
-        <option value="2025">2025</option><option value="2026">2026</option>
-    </select>
+<div class="action-bar">
+    <button class="btn btn-blue" onclick="exportData()">📤 Backup Export</button>
+    <button class="btn btn-purple" onclick="document.getElementById('importFile').click()">📥 Data Import</button>
+    <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+    <button class="btn btn-dark" onclick="prepareAndPrint()">🖨️ Print / Save PDF</button>
 </div>
 
-<div class="nav-tabs">
+<div class="nav-tabs" id="tabBar">
     <button class="tab-btn active" onclick="go(1)">P-1</button>
     <button class="tab-btn" onclick="go(2)">P-2</button>
     <button class="tab-btn" onclick="go(3)">P-3</button>
@@ -52,71 +53,90 @@
     <button class="tab-btn" onclick="go(7)">P-7</button>
 </div>
 
-<div class="container">
-    <div class="action-bar">
-        <button class="btn btn-export" onclick="exportData()">📤 બેકઅપ Export</button>
-        <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 Import</button>
-        <input type="file" id="importFile" style="display:none" onchange="importData(event)">
-        <button class="btn btn-print" onclick="window.print()">🖨️ Print / PDF</button>
-    </div>
-
-    <div id="p1" class="page active">
-        <h3>Page 1: Screening Data</h3>
+<div class="container" id="printableArea">
+    <div id="page1" class="page active">
+        <h3 style="text-align:center;">પૃષ્ઠ ૧: Screening data (૬ મહિના થી ૫ વર્ષ)</h3>
         <table>
-            <tr><th>ક્રમ</th><th style="width:200px;">બાળકનું નામ</th><th>જન્મ તારીખ</th><th>વજન (kg)</th><th>ઊંચાઈ (cm)</th><th>સ્તર</th></tr>
-            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p1_n_${i}" oninput="saveData()"></td><td><input type="date" id="p1_d_${i}" oninput="saveData()"></td><td><input type="number" step="0.1" id="p1_w_${i}" oninput="updateCalculations(${i}); saveData()"></td><td><input type="number" step="0.1" id="p1_h_${i}" oninput="updateCalculations(${i}); saveData()"></td><td><input id="p1_s_${i}" oninput="saveData()"></td></tr>`);</script>
+            <tr><th>ક્રમ</th><th>બાળકનું નામ પોષણ ટ્રેકર મુજબ</th><th>માતાનું નામ</th><th>ઉંમર (મહિનામાં)</th><th>જાતિ</th><th>સ્ક્રિનિંગ કર્યા તારીખ</th><th>વજન (કિ.ગ્રા.)</th><th>લંબાઈ/ઊંચાઈ (સે.મી.)</th><th>બંને પગે સોજા (હા/ના)</th><th>પોષણ સ્તર</th></tr>
+            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p1_n_${i}" oninput="saveData()"></td><td><input id="p1_m_${i}" oninput="saveData()"></td><td><input id="p1_a_${i}" oninput="saveData()"></td><td><input id="p1_g_${i}" oninput="saveData()"></td><td><input type="date" id="p1_d_${i}" oninput="saveData()"></td><td><input id="p1_w_${i}" oninput="saveData()"></td><td><input id="p1_h_${i}" oninput="saveData()"></td><td><input id="p1_b_${i}" oninput="saveData()"></td><td><input id="p1_s_${i}" oninput="saveData()"></td></tr>`);</script>
         </table>
     </div>
 
-    <div id="p4" class="page">
-        <h3>Page 4: Follow Up (Auto Growth)</h3>
+    <div id="page6" class="page">
+        <h3 style="text-align:center;">પૃષ્ઠ ૬: ડિસ્ચાર્જના પ્રકાર અને પરિભાષા</h3>
         <table>
-            <tr><th>ક્રમ</th><th>શરૂઆતનું વજન</th><th>૧ અઠ. વજન (+100g)</th><th>૨ અઠ. વજન (+200g)</th><th>૩ અઠ. વજન (+300g)</th><th>૪ અઠ. વજન (+400g)</th></tr>
-            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p4_iw_${i}" readonly class="auto-calc"></td><td><input id="p4_w1_${i}" oninput="saveData()"></td><td><input id="p4_w2_${i}" oninput="saveData()"></td><td><input id="p4_w3_${i}" oninput="saveData()"></td><td><input id="p4_w4_${i}" oninput="saveData()"></td></tr>`);</script>
+            <tr>
+                <th>રિકવર (સાજા થવું)<span class="sub-text">૧. W/H > -2SD | ૨. જટિલતા ન હોય | ૩. સોજા ન હોય</span></th>
+                <th>નોન-રિકવર<span class="sub-text">૧૨ અઠવાડિયામાં માપદંડ સુધી ન પહોંચ્યું હોય</span></th>
+                <th>તબીબી જટિલતા<span class="sub-text">ભૂખ ન લાગવી, તાવ, ન્યુમોનિયા, ઝાડા, વજન ઘટવું</span></th>
+                <th>C-MAM કાર્યક્રમ ફેરબદલ</th>
+                <th>ગેરહાજર / કાર્યક્રમ છોડેલ</th>
+                <th>મૃત્યુ</th>
+                <th>વજન તપાસેલ છે? હા/ના</th>
+            </tr>
+            <script>for(let i=1; i<=15; i++) document.write(`<tr><td><input id="p6_a_${i}" oninput="saveData()"></td><td><input id="p6_b_${i}" oninput="saveData()"></td><td><input id="p6_c_${i}" oninput="saveData()"></td><td><input id="p6_d_${i}" oninput="saveData()"></td><td><input id="p6_e_${i}" oninput="saveData()"></td><td><input id="p6_f_${i}" oninput="saveData()"></td><td><input id="p6_g_${i}" oninput="saveData()"></td></tr>`);</script>
         </table>
     </div>
 
-    <div id="p2" class="page"><h3>Page 2: Medical</h3><table id="t2"></table></div>
-    <div id="p3" class="page"><h3>Page 3: Medicines</h3><table id="t3"></table></div>
-    <div id="p5" class="page"><h3>Page 5: Grading</h3><table id="t5"></table></div>
-    <div id="p6" class="page"><h3>Page 6: Discharge</h3><table id="t6"></table></div>
-    <div id="p7" class="page"><h3>Page 7: Post Follow up</h3><table id="t7"></table></div>
+    <div id="page2" class="page"><h3>પૃષ્ઠ ૨: Medical Assessment</h3><table id="t2"></table></div>
+    <div id="page3" class="page"><h3>પૃષ્ઠ ૩: Medicines during Prog</h3><table id="t3"></table></div>
+    <div id="page4" class="page"><h3>પૃષ્ઠ ૪: Follow up during Program</h3><table id="t4"></table></div>
+    <div id="page5" class="page"><h3>પૃષ્ઠ ૫: અંતિમ ગ્રેડિંગ</h3><table id="t5"></table></div>
+    <div id="page7" class="page"><h3>પૃષ્ઠ ૭: ડિસ્ચાર્જ પછીનો ફોલોઅપ</h3><table id="t7"></table></div>
 </div>
 
 <script>
-    let currentKey = "";
-    function initApp() { 
-        const d = new Date(); 
-        document.getElementById('selectedMonth').value = d.getMonth() + 1; 
-        document.getElementById('selectedYear').value = d.getFullYear(); 
-        [2,3,5,6,7].forEach(p => {
-            let html = "<tr><th>ક્રમ</th><th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th></tr>";
-            for(let i=1; i<=15; i++) html += `<tr><td>${i}</td><td><input id="p${p}_a_${i}" oninput="saveData()"></td><td><input id="p${p}_b_${i}" oninput="saveData()"></td><td><input id="p${p}_c_${i}" oninput="saveData()"></td></tr>`;
-            document.getElementById('t'+p).innerHTML = html;
+    function go(n) {
+        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('page' + n).style.display = 'block';
+        document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function prepareAndPrint() {
+        alert("તૈયારી થઈ રહી છે... પ્રિન્ટિંગ વિન્ડો ખુલે ત્યાં સુધી રાહ જુઓ");
+        window.print();
+    }
+
+    function saveData() {
+        const d = {};
+        document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; });
+        localStorage.setItem('poshan_v10_data', JSON.stringify(d));
+    }
+
+    function initApp() {
+        // પેજ ૨ થી ૭ ના ટેબલ જનરેટ કરવા
+        [2,3,4,5,7].forEach(p => {
+            let html = "<tr><th>ક્રમ</th><th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th></tr>";
+            for(let i=1; i<=15; i++) html += `<tr><td>${i}</td><td><input id="p${p}_a_${i}" oninput="saveData()"></td><td><input id="p${p}_b_${i}" oninput="saveData()"></td><td><input id="p${p}_c_${i}" oninput="saveData()"></td><td><input id="p${p}_d_${i}" oninput="saveData()"></td></tr>`;
+            if(document.getElementById('t'+p)) document.getElementById('t'+p).innerHTML = html;
         });
-        changeMonth(); 
+        const s = localStorage.getItem('poshan_v10_data');
+        if(s){
+            const d = JSON.parse(s);
+            for(const k in d) if(document.getElementById(k)) document.getElementById(k).value = d[k];
+        }
     }
 
-    function updateCalculations(row) {
-        const w = parseFloat(document.getElementById(`p1_w_${row}`).value) || 0;
-        const h = parseFloat(document.getElementById(`p1_h_${row}`).value) || 0;
-        
-        // પેજ ૪ માટે શરૂઆતનું વજન સેટ કરો
-        document.getElementById(`p4_iw_${row}`).value = w;
-        
-        // દર અઠવાડિયે ૧૦૦ ગ્રામ લેખે ૪ અઠવાડીયામાં ૪૦૦ ગ્રામ વધારો (તમે જાતે એડિટ કરી શકશો)
-        document.getElementById(`p4_w1_${row}`).value = (w + 0.1).toFixed(2);
-        document.getElementById(`p4_w2_${row}`).value = (w + 0.2).toFixed(2);
-        document.getElementById(`p4_w3_${row}`).value = (w + 0.3).toFixed(2);
-        document.getElementById(`p4_w4_${row}`).value = (w + 0.4).toFixed(2);
+    function exportData() {
+        const d = localStorage.getItem('poshan_v10_data');
+        const blob = new Blob([d], {type: "application/json"});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "Poshan_Backup.json";
+        a.click();
     }
 
-    function changeMonth() { currentKey = `poshan_${document.getElementById('selectedMonth').value}_${document.getElementById('selectedYear').value}`; loadData(); }
-    function go(n) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('p' + n).classList.add('active'); document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active', i+1===n)); window.scrollTo(0,0); }
-    function saveData() { const d = {}; document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; }); localStorage.setItem(currentKey, JSON.stringify(d)); }
-    function loadData() { document.querySelectorAll('input').forEach(i => i.value = ""); const s = localStorage.getItem(currentKey); if(s){ const d = JSON.parse(s); for(const k in d) if(document.getElementById(k)) document.getElementById(k).value = d[k]; } }
-    function exportData() { const d = localStorage.getItem(currentKey); if(!d) return alert("ડેટા નથી"); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([d], {type:"application/json"})); a.download = `Backup_${currentKey}.json`; a.click(); }
-    function importData(e) { const r = new FileReader(); r.onload = function(ev) { localStorage.setItem(currentKey, ev.target.result); loadData(); alert("સફળ!"); }; r.readAsText(e.target.files[0]); }
+    function importData(e) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            localStorage.setItem('poshan_v10_data', ev.target.result);
+            initApp();
+            alert("ડેટા સફળતાપૂર્વક લોડ થયો છે!");
+        };
+        reader.readAsText(e.target.files[0]);
+    }
 </script>
 </body>
 </html>
