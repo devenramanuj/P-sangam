@@ -34,6 +34,7 @@
         </select>
     </div>
     <button class="btn" style="background: #d35400;" onclick="window.print()">🖨️ પ્રિન્ટ</button>
+    <button class="btn" style="background: #3498db;" onclick="clearAllData()">🗑️ બધુ સાફ કરો</button>
 </div>
 
 <div class="nav-tabs no-print">
@@ -65,7 +66,10 @@
 
     function addNewChild() {
         const name = document.getElementById('newChildName').value.trim();
-        if(!name) return;
+        if(!name) {
+            alert("કૃપા કરીને બાળકનું નામ લખો");
+            return;
+        }
         let children = JSON.parse(localStorage.getItem('children_list_v2') || "[]");
         if(!children.includes(name)) {
             children.push(name);
@@ -74,7 +78,12 @@
         document.getElementById('newChildName').value = "";
         updateChildDropdown();
         document.getElementById('childSelector').value = name;
-        loadChildData();
+        // નવા બાળક માટે ખાલી ડેટા લોડ કરો
+        document.querySelectorAll('input, select').forEach(el => { 
+            if(el.id) el.value = ""; 
+        });
+        localStorage.setItem('last_selected_child', name);
+        alert("નવું બાળક ઉમેરાયું: " + name);
     }
 
     function updateChildDropdown() {
@@ -93,20 +102,23 @@
     function renderTables() {
         let html = "";
         const rowCount = 10;
+        
         // P-1
         html += `<div id="page1" class="page active"><h3 style="text-align:center;">P-1: Screening</h3><table><colgroup><col style="width:90px;"><col style="width:180px;"><col><col><col><col style="width:60px;"><col style="width:60px;"><col style="width:80px;"></colgroup><tr><th>માસ</th><th>નામ</th><th>માતા</th><th>જન્મ તારીખ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
         for(let r=1; r<=rowCount; r++) {
-            html += `<tr><td><select id="p1_r${r}_m" onchange="autoCopy(${r}); saveData();"><option value="">--</option>${months.map(m=>`<option value="${m}">${m}</option>`).join('')}</select></td><td><input id="p1_r${r}_name" oninput="saveData()"></td><td><input id="p1_r${r}_mom" oninput="saveData()"></td><td><input id="p1_r${r}_dob" placeholder="DD/MM/YYYY" oninput="saveData()"></td><td><input id="p1_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveData()"></td><td><input id="p1_r${r}_w" oninput="saveData()"></td><td><input id="p1_r${r}_h" oninput="saveData()"></td><td><select id="p1_r${r}_lv" onchange="saveData()"><option value="">--</option><option value="SAM">SAM</option><option value="MAM">MAM</option></select></td></tr>`;
+            html += `<tr><td><select id="p1_r${r}_m" onchange="autoCopy(${r}); saveCurrentPageData();"><option value="">--</option>${months.map(m=>`<option value="${m}">${m}</option>`).join('')}</select></td><td><input id="p1_r${r}_name" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_mom" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_dob" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_w" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_h" oninput="saveCurrentPageData()"></td><td><select id="p1_r${r}_lv" onchange="saveCurrentPageData()"><option value="">--</option><option value="SAM">SAM</option><option value="MAM">MAM</option></select></td></tr>`;
         }
         html += `</table><div class="credit">${creditLine}</div></div>`;
 
+        // P-2 થી P-7
         for(let p=2; p<=7; p++) {
             html += `<div id="page${p}" class="page"><h3 style="text-align:center;">P-${p}</h3><table><tr><th style="width:150px;">નામ</th><th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th><th>તારીખ</th></tr>`;
             for(let r=1; r<=rowCount; r++) {
-                html += `<tr><td><input id="p${p}_r${r}_name" oninput="saveData()"></td><td><input id="p${p}_r${r}_c1" oninput="saveData()"></td><td><input id="p${p}_r${r}_c2" oninput="saveData()"></td><td><input id="p${p}_r${r}_c3" oninput="saveData()"></td><td><input id="p${p}_r${r}_c4" oninput="saveData()"></td><td><input id="p${p}_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveData()"></td></tr>`;
+                html += `<tr><td><input id="p${p}_r${r}_name" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_c1" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_c2" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_c3" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_c4" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td></tr>`;
             }
             html += `</table><div class="credit">${creditLine}</div></div>`;
         }
+        
         document.getElementById('printableContent').innerHTML = html;
     }
 
@@ -114,29 +126,85 @@
         if(r > 1) {
             ["name", "mom", "dob"].forEach(f => {
                 const prevVal = document.getElementById(`p1_r${r-1}_${f}`).value;
-                if(prevVal && !document.getElementById(`p1_r${r}_${f}`).value) document.getElementById(`p1_r${r}_${f}`).value = prevVal;
+                if(prevVal && !document.getElementById(`p1_r${r}_${f}`).value) {
+                    document.getElementById(`p1_r${r}_${f}`).value = prevVal;
+                }
             });
         }
     }
 
-    function saveData() {
+    function saveCurrentPageData() {
         const child = document.getElementById('childSelector').value;
-        if(!child) return;
+        if(!child) {
+            alert("કૃપા કરીને પહેલા બાળક પસંદ કરો");
+            return;
+        }
+        
         localStorage.setItem('last_selected_child', child);
+        
+        // ચાલુ પેજનો ડેટા સેવ કરો
+        const currentPage = document.querySelector('.page.active');
+        const pageId = currentPage.id.replace('page', '');
         const data = {};
-        document.querySelectorAll('input, select').forEach(el => { if(el.id) data[el.id] = el.value; });
-        localStorage.setItem('poshan_v2_data_' + child, JSON.stringify(data));
+        
+        // ચાલુ પેજના બધા inputs એકત્રિત કરો
+        currentPage.querySelectorAll('input, select').forEach(el => {
+            if(el.id && el.value.trim() !== '') {
+                data[el.id] = el.value;
+            }
+        });
+        
+        // બાળકના ડેટામાં આ પેજનો ડેટા સંગ્રહિત કરો
+        let childData = JSON.parse(localStorage.getItem('poshan_child_' + child) || "{}");
+        childData['page' + pageId] = data;
+        
+        localStorage.setItem('poshan_child_' + child, JSON.stringify(childData));
+        
+        // ડીબગિંગ માટે (હટાવી શકાય)
+        console.log("ડેટા સેવ થયો:", child, "પેજ:", pageId);
     }
 
     function loadChildData() {
         const child = document.getElementById('childSelector').value;
         if(!child) return;
+        
         localStorage.setItem('last_selected_child', child);
-        document.querySelectorAll('input, select').forEach(el => el.value = "");
-        const saved = localStorage.getItem('poshan_v2_data_' + child);
-        if(saved) {
-            const data = JSON.parse(saved);
-            for(let k in data) { if(document.getElementById(k)) document.getElementById(k).value = data[k]; }
+        
+        // પહેલા બધા inputs રીસેટ કરો
+        document.querySelectorAll('input, select').forEach(el => { 
+            if(el.id) el.value = ""; 
+        });
+        
+        // બાળકનો સંગ્રહિત ડેટા મેળવો
+        const savedData = JSON.parse(localStorage.getItem('poshan_child_' + child) || "{}");
+        
+        if(Object.keys(savedData).length === 0) {
+            console.log("આ બાળક માટે કોઈ ડેટા નથી:", child);
+            return;
+        }
+        
+        // દરેક પેજનો ડેટા લોડ કરો
+        for(let pageNum = 1; pageNum <= 7; pageNum++) {
+            const pageData = savedData['page' + pageNum] || {};
+            for(let key in pageData) {
+                const element = document.getElementById(key);
+                if(element) {
+                    element.value = pageData[key];
+                }
+            }
+        }
+        
+        console.log("ડેટા લોડ થયો:", child);
+    }
+
+    function clearAllData() {
+        if(confirm("શું તમે ખરેખર બધો ડેટા સાફ કરવા માંગો છો? આ ક્રિયા પાછી લઈ શકાશે નહીં!")) {
+            localStorage.clear();
+            document.querySelectorAll('input, select').forEach(el => { 
+                if(el.id) el.value = ""; 
+            });
+            updateChildDropdown();
+            alert("બધો ડેટા સાફ થયો!");
         }
     }
 </script>
