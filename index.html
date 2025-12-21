@@ -3,153 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C-MAM 7-Page Full Register</title>
+    <title>C-MAM સ્મૂધ એન્ટ્રી રજીસ્ટર</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Gujarati:wght@400;700&display=swap');
-        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f1f5f9; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; background: white; }
-        th, td { border: 1.5px solid black; padding: 4px; text-align: center; font-size: 12px; }
-        th { background-color: #e2e8f0; font-weight: bold; }
-        [contenteditable]:focus { background-color: #fff9c4; outline: none; }
+        
+        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f8fafc; }
+
+        /* મોબાઈલ સ્ક્રોલ માટે ખાસ કન્ટેનર */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* સ્મૂધ સ્ક્રોલ માટે */
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        table { border-collapse: separate; border-spacing: 0; min-width: 1200px; } /* ટેબલની પહોળાઈ વધારી */
+        
+        th, td { border: 1px solid #000; padding: 10px; text-align: center; white-space: nowrap; }
+
+        /* નામની કોલમ ફિક્સ રાખવા માટેનું લોજિક */
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            background-color: #f1f5f9 !important;
+            z-index: 10;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .sticky-col-2 {
+            position: sticky;
+            left: 50px; /* ક્રમ પછીનું અંતર */
+            background-color: #f1f5f9 !important;
+            z-index: 10;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        th { background-color: #1e293b !important; color: white; position: sticky; top: 0; z-index: 20; }
+        
+        [contenteditable]:focus { background-color: #fffde7; outline: 2px solid #3b82f6; }
+
         @media print {
             .no-print { display: none !important; }
-            .page-break { display: block; page-break-after: always; padding: 10mm; }
-            body { background: white; }
-            @page { size: A4 landscape; margin: 0; }
+            .sticky-col, .sticky-col-2 { position: static; box-shadow: none; }
+            .table-wrapper { overflow: visible; }
+            table { min-width: 100%; width: 100%; table-layout: fixed; }
+            th, td { font-size: 10px; padding: 4px; white-space: normal; }
+            @page { size: A4 landscape; margin: 5mm; }
         }
     </style>
 </head>
-<body>
+<body class="p-2 md:p-4">
 
-<div class="no-print bg-indigo-900 text-white p-4 sticky top-0 flex justify-between items-center shadow-lg z-50">
-    <h1 class="font-bold">C-MAM સંપૂર્ણ રજીસ્ટર (૧૭ રો - આડા પેજમાં)</h1>
-    <button onclick="window.print()" class="bg-green-600 px-6 py-2 rounded font-bold">PDF પ્રિન્ટ</button>
-</div>
+    <div class="no-print bg-indigo-900 p-4 text-white flex justify-between items-center rounded-t-lg shadow-lg">
+        <div>
+            <h1 class="font-bold text-lg">C-MAM રજીસ્ટર (૭ પાના)</h1>
+            <p class="text-[10px] text-indigo-200">નામની કોલમ ફિક્સ છે, સાઈડમાં સ્ક્રોલ કરીને એન્ટ્રી કરો</p>
+        </div>
+        <button onclick="window.print()" class="bg-green-600 px-4 py-1 rounded font-bold shadow">પ્રિન્ટ</button>
+    </div>
 
-<div class="container mx-auto">
-
-    <div class="page-break bg-white p-4 mb-10 shadow">
-        <h2 class="text-center font-bold text-xl mb-2">પાનું ૧: સ્ક્રિનિંગ ડેટા (Screening Data)</h2>
+    <div class="table-wrapper">
+        <h2 class="p-3 bg-gray-100 font-bold border-b">પાનું ૧: સ્ક્રિનિંગ ડેટા</h2>
         <table>
             <thead>
                 <tr>
-                    <th class="w-10">ક્રમ</th><th class="w-24">મહિનો</th><th class="w-48">બાળકનું નામ</th><th class="w-48">માતાનું નામ</th><th>ઉંમર</th><th>વજન</th><th>ઊંચાઈ</th><th>સોજા?</th>
+                    <th class="sticky-col w-12">ક્રમ</th>
+                    <th class="sticky-col-2 w-48">બાળકનું નામ</th>
+                    <th class="w-48">માતાનું નામ</th>
+                    <th class="w-24">મહિનો</th>
+                    <th class="w-20">ઉંમર</th>
+                    <th class="w-20">વજન</th>
+                    <th class="w-20">ઊંચાઈ</th>
+                    <th class="w-20">સોજા?</th>
                 </tr>
             </thead>
-            <tbody id="p1-body"></tbody>
+            <tbody id="p1-body">
+                </tbody>
         </table>
     </div>
 
-    <div class="page-break bg-white p-4 mb-10 shadow">
-        <h2 class="text-center font-bold text-xl mb-2">પાનું ૨: તબીબી મૂલ્યાંકન (Medical Assessment)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th class="w-10">ક્રમ</th><th class="w-48">બાળકનું નામ</th><th class="w-48">માતાનું નામ</th><th>ભૂખ પરીક્ષણ</th><th>તબીબી જટિલતાઓ</th><th>રેફરલ</th>
-                </tr>
-            </thead>
-            <tbody id="p2-body"></tbody>
-        </table>
-    </div>
-
-    <div class="page-break bg-white p-4 mb-10 shadow">
-        <h2 class="text-center font-bold text-xl mb-2">પાનું ૩: SNP અને દૂધ સંજીવની યોજના</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th class="w-10">ક્રમ</th><th class="w-48">બાળકનું નામ</th><th class="w-48">માતાનું નામ</th><th>દાખલ તારીખ</th><th>પોષણ સ્તર</th><th>THR પેકેટ</th><th>દૂધ લાભ?</th>
-                </tr>
-            </thead>
-            <tbody id="p3-body"></tbody>
-        </table>
-    </div>
-
-    <div class="page-break bg-white p-4 mb-10 shadow">
-        <h2 class="text-center font-bold text-xl mb-2">પાનું ૪: અઠવાડિક ફોલો-અપ વજન (Weekly Follow-up)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th class="w-10">ક્રમ</th><th class="w-48">બાળકનું નામ</th><th>W1</th><th>W2</th><th>W3</th><th>W4</th><th>W5</th><th>W6</th><th>W7</th><th>W8</th>
-                </tr>
-            </thead>
-            <tbody id="p4-body"></tbody>
-        </table>
-    </div>
-
-    <div class="page-break bg-white p-4 mb-10 shadow">
-        <h2 class="text-center font-bold text-xl mb-2">પાનું ૫: દવાઓની વિગત (Medicines)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th class="w-10">ક્રમ</th><th class="w-48">બાળકનું નામ</th><th class="w-48">માતાનું નામ</th><th>IFA</th><th>Vit-A</th><th>Albendazole</th><th>Multivitamin</th>
-                </tr>
-            </thead>
-            <tbody id="p5-body"></tbody>
-        </table>
-    </div>
-
-    <div class="page-break bg-white p-4 mb-10 shadow">
-        <h2 class="text-center font-bold text-xl mb-2">પાનું ૬: ડિસ્ચાર્જ અને પરિણામ (Discharge)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th class="w-10">ક્રમ</th><th class="w-48">બાળકનું નામ</th><th class="w-48">માતાનું નામ</th><th>તારીખ</th><th>અંતિમ વજન</th><th>પરિણામ (રિકવર/અન્ય)</th>
-                </tr>
-            </thead>
-            <tbody id="p6-body"></tbody>
-        </table>
-    </div>
-
-    <div class="page-break bg-white p-4 mb-10 shadow">
-        <h2 class="text-center font-bold text-xl mb-2">પાનું ૭: ડિસ્ચાર્જ પછીનું ફોલો-અપ (૩ માસ)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th class="w-10">ક્રમ</th><th class="w-48">બાળકનું નામ</th><th class="w-48">માતાનું નામ</th><th>માસ-૧</th><th>માસ-૨</th><th>માસ-૩</th><th>સ્થિતિ</th>
-                </tr>
-            </thead>
-            <tbody id="p7-body"></tbody>
-        </table>
-    </div>
-
-</div>
-
-<script>
-    const totalRows = 17;
-    const pIds = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'];
-
-    function init() {
-        pIds.forEach(id => {
-            const body = document.getElementById(`${id}-body`);
+    <script>
+        const totalRows = 17;
+        
+        function init() {
+            const p1 = document.getElementById('p1-body');
             for(let i=1; i<=totalRows; i++) {
-                let row = `<tr><td>${i}</td>`;
-                if(id === 'p1') row += `<td><input type="text" class="w-full text-center border-none"></td>`;
-                row += `<td contenteditable="true" class="text-left font-bold px-2"></td>`; // બાળક
-                if(id !== 'p4') row += `<td contenteditable="true" class="text-left px-2"></td>`; // માતા
-                
-                // બાકીના ખાના સેક્શન મુજબ
-                let extra = (id === 'p4') ? 8 : (id === 'p3' ? 4 : (id === 'p5' ? 4 : (id === 'p1' ? 4 : 3)));
-                for(let j=0; j<extra; j++) row += `<td contenteditable="true"></td>`;
-                
-                row += `</tr>`;
-                body.innerHTML += row;
+                p1.innerHTML += `
+                    <tr>
+                        <td class="sticky-col font-bold bg-gray-50">${i}</td>
+                        <td contenteditable="true" class="sticky-col-2 text-left font-bold px-3"></td>
+                        <td contenteditable="true" class="text-left px-3"></td>
+                        <td><input type="text" placeholder="MM/YY" class="w-full text-center"></td>
+                        <td contenteditable="true"></td>
+                        <td contenteditable="true"></td>
+                        <td contenteditable="true"></td>
+                        <td contenteditable="true"></td>
+                    </tr>
+                `;
             }
+            restoreData();
+        }
+
+        // ડેટા સેવ/લોડ લોજિક
+        document.addEventListener('input', () => {
+            const inputs = Array.from(document.querySelectorAll('[contenteditable], input')).map(el => el.innerText || el.value);
+            localStorage.setItem('cmam_v4_data', JSON.stringify(inputs));
         });
-        restore();
-    }
 
-    document.addEventListener('input', () => {
-        const data = Array.from(document.querySelectorAll('[contenteditable]')).map(el => el.innerText);
-        localStorage.setItem('cmam_full_final', JSON.stringify(data));
-    });
+        function restoreData() {
+            const saved = JSON.parse(localStorage.getItem('cmam_v4_data'));
+            if(saved) {
+                const elements = document.querySelectorAll('[contenteditable], input');
+                elements.forEach((el, i) => {
+                    if(el.tagName === 'INPUT') el.value = saved[i] || '';
+                    else el.innerText = saved[i] || '';
+                });
+            }
+        }
 
-    function restore() {
-        const data = JSON.parse(localStorage.getItem('cmam_full_final'));
-        if(data) document.querySelectorAll('[contenteditable]').forEach((el, i) => el.innerText = data[i] || '');
-    }
-
-    init();
-</script>
+        init();
+    </script>
 </body>
 </html>
