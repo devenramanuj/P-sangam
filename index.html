@@ -2,7 +2,7 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <title>પોષણ સંગમ - ફિક્સ મેમરી રજિસ્ટર</title>
+    <title>પોષણ સંગમ - પરમેનન્ટ મેમરી રજિસ્ટર</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
         .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
@@ -16,16 +16,10 @@
         table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; table-layout: fixed; }
         table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
         th { background: #ecf0f1; font-weight: bold; }
-        input, select { width: 95%; border: none; padding: 5px; text-align: center; outline: none; font-family: inherit; background: transparent; }
-        .col-name-big { width: 220px; }
+        input, select { width: 95%; border: none; padding: 5px; text-align: center; outline: none; background: transparent; }
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
         .credit { text-align: center; font-weight: bold; margin-top: 20px; border-top: 1px solid #000; padding-top: 10px; font-size: 12px; }
-        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; font-size: 13px; }
-        
-        @media print {
-            .no-print { display: none !important; }
-            .page { display: block !important; page-break-after: always !important; }
-            @page { size: landscape; margin: 5mm; }
-        }
+        @media print { .no-print { display: none !important; } .page { display: block !important; page-break-after: always !important; } }
     </style>
 </head>
 <body onload="initApp()">
@@ -33,14 +27,13 @@
 <div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર 2025</div>
 
 <div class="config-bar no-print">
-    <input type="text" id="newChildName" placeholder="નવું નામ લખો" style="width:180px; border:1px solid #e67e22; padding:8px; border-radius:5px;">
+    <input type="text" id="newChildName" placeholder="બાળકનું નામ લખો" style="width:180px; border:1px solid #e67e22; padding:8px; border-radius:5px;">
     <button class="btn" style="background: #27ae60;" onclick="addNewChild()">➕ ઉમેરો</button>
     <div style="border-left: 1px solid #ccc; padding-left: 10px;">
-        <select id="childSelector" onchange="loadChildData()" style="padding: 8px; border-radius: 5px; border: 1px solid #d35400; width: 150px; background: white;">
+        <select id="childSelector" onchange="loadChildData()" style="padding: 8px; border-radius: 5px; border: 1px solid #d35400; width: 150px;">
         </select>
     </div>
     <button class="btn" style="background: #d35400;" onclick="window.print()">🖨️ પ્રિન્ટ</button>
-    <button class="btn" style="background: #c0392b;" onclick="deleteCurrentChild()">🗑️ ડિલીટ</button>
 </div>
 
 <div class="nav-tabs no-print">
@@ -62,16 +55,22 @@
     function initApp() {
         renderTables();
         updateChildDropdown();
-        loadChildData();
+        // છેલ્લે પસંદ કરેલું બાળક ઓટોમેટિક લોડ થશે
+        const lastChild = localStorage.getItem('last_selected_child');
+        if (lastChild) {
+            document.getElementById('childSelector').value = lastChild;
+            loadChildData();
+        }
     }
 
     function addNewChild() {
         const name = document.getElementById('newChildName').value.trim();
         if(!name) return;
-        let children = JSON.parse(localStorage.getItem('children_list') || "[]");
-        if(children.includes(name)) return alert("આ નામ છે જ");
-        children.push(name);
-        localStorage.setItem('children_list', JSON.stringify(children));
+        let children = JSON.parse(localStorage.getItem('children_list_v2') || "[]");
+        if(!children.includes(name)) {
+            children.push(name);
+            localStorage.setItem('children_list_v2', JSON.stringify(children));
+        }
         document.getElementById('newChildName').value = "";
         updateChildDropdown();
         document.getElementById('childSelector').value = name;
@@ -80,7 +79,7 @@
 
     function updateChildDropdown() {
         const select = document.getElementById('childSelector');
-        let children = JSON.parse(localStorage.getItem('children_list') || "[]");
+        let children = JSON.parse(localStorage.getItem('children_list_v2') || "[]");
         select.innerHTML = children.map(n => `<option value="${n}">${n}</option>`).join('');
     }
 
@@ -95,14 +94,14 @@
         let html = "";
         const rowCount = 10;
         // P-1
-        html += `<div id="page1" class="page active"><h3 style="text-align:center;">P-1: Screening</h3><table><colgroup><col style="width:90px;"><col class="col-name-big"><col><col><col><col style="width:60px;"><col style="width:60px;"><col style="width:80px;"></colgroup><tr><th>માસ</th><th>નામ</th><th>માતા</th><th>જન્મ તારીખ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
+        html += `<div id="page1" class="page active"><h3 style="text-align:center;">P-1: Screening</h3><table><colgroup><col style="width:90px;"><col style="width:180px;"><col><col><col><col style="width:60px;"><col style="width:60px;"><col style="width:80px;"></colgroup><tr><th>માસ</th><th>નામ</th><th>માતા</th><th>જન્મ તારીખ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
         for(let r=1; r<=rowCount; r++) {
             html += `<tr><td><select id="p1_r${r}_m" onchange="autoCopy(${r}); saveData();"><option value="">--</option>${months.map(m=>`<option value="${m}">${m}</option>`).join('')}</select></td><td><input id="p1_r${r}_name" oninput="saveData()"></td><td><input id="p1_r${r}_mom" oninput="saveData()"></td><td><input id="p1_r${r}_dob" placeholder="DD/MM/YYYY" oninput="saveData()"></td><td><input id="p1_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveData()"></td><td><input id="p1_r${r}_w" oninput="saveData()"></td><td><input id="p1_r${r}_h" oninput="saveData()"></td><td><select id="p1_r${r}_lv" onchange="saveData()"><option value="">--</option><option value="SAM">SAM</option><option value="MAM">MAM</option></select></td></tr>`;
         }
         html += `</table><div class="credit">${creditLine}</div></div>`;
 
         for(let p=2; p<=7; p++) {
-            html += `<div id="page${p}" class="page"><h3 style="text-align:center;">P-${p}</h3><table><tr><th>નામ</th><th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th><th>તારીખ</th></tr>`;
+            html += `<div id="page${p}" class="page"><h3 style="text-align:center;">P-${p}</h3><table><tr><th style="width:150px;">નામ</th><th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th><th>તારીખ</th></tr>`;
             for(let r=1; r<=rowCount; r++) {
                 html += `<tr><td><input id="p${p}_r${r}_name" oninput="saveData()"></td><td><input id="p${p}_r${r}_c1" oninput="saveData()"></td><td><input id="p${p}_r${r}_c2" oninput="saveData()"></td><td><input id="p${p}_r${r}_c3" oninput="saveData()"></td><td><input id="p${p}_r${r}_c4" oninput="saveData()"></td><td><input id="p${p}_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveData()"></td></tr>`;
             }
@@ -113,50 +112,32 @@
 
     function autoCopy(r) {
         if(r > 1) {
-            const fields = ["name", "mom", "dob"];
-            fields.forEach(f => {
-                const val = document.getElementById(`p1_r${r-1}_${f}`).value;
-                if(val && !document.getElementById(`p1_r${r}_${f}`).value) {
-                    document.getElementById(`p1_r${r}_${f}`).value = val;
-                }
+            ["name", "mom", "dob"].forEach(f => {
+                const prevVal = document.getElementById(`p1_r${r-1}_${f}`).value;
+                if(prevVal && !document.getElementById(`p1_r${r}_${f}`).value) document.getElementById(`p1_r${r}_${f}`).value = prevVal;
             });
-            const name = document.getElementById(`p1_r${r}_name`).value;
-            for(let p=2; p<=7; p++) {
-                if(name && !document.getElementById(`p${p}_r${r}_name`).value) {
-                    document.getElementById(`p${p}_r${r}_name`).value = name;
-                }
-            }
         }
     }
 
     function saveData() {
         const child = document.getElementById('childSelector').value;
         if(!child) return;
+        localStorage.setItem('last_selected_child', child);
         const data = {};
         document.querySelectorAll('input, select').forEach(el => { if(el.id) data[el.id] = el.value; });
-        localStorage.setItem('poshan_final_db_' + child, JSON.stringify(data));
+        localStorage.setItem('poshan_v2_data_' + child, JSON.stringify(data));
     }
 
     function loadChildData() {
         const child = document.getElementById('childSelector').value;
-        document.querySelectorAll('input, select').forEach(el => el.value = "");
         if(!child) return;
-        const saved = localStorage.getItem('poshan_final_db_' + child);
+        localStorage.setItem('last_selected_child', child);
+        document.querySelectorAll('input, select').forEach(el => el.value = "");
+        const saved = localStorage.getItem('poshan_v2_data_' + child);
         if(saved) {
             const data = JSON.parse(saved);
             for(let k in data) { if(document.getElementById(k)) document.getElementById(k).value = data[k]; }
         }
-    }
-
-    function deleteCurrentChild() {
-        const name = document.getElementById('childSelector').value;
-        if(!name || !confirm("ડેટા ભૂંસી નાખવો છે?")) return;
-        localStorage.removeItem('poshan_final_db_' + name);
-        let list = JSON.parse(localStorage.getItem('children_list') || "[]");
-        list = list.filter(c => c !== name);
-        localStorage.setItem('children_list', JSON.stringify(list));
-        updateChildDropdown();
-        loadChildData();
     }
 </script>
 </body>
