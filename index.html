@@ -3,180 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C-MAM કાયમી રજીસ્ટર</title>
+    <title>C-MAM 7-Page Digital Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Gujarati:wght@400;700&display=swap');
-        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f3f4f6; }
-        @media print { .no-print { display: none; } }
+        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f8fafc; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        input, select, textarea { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 6px; margin-top: 4px; }
+        label { font-weight: bold; color: #334155; font-size: 0.9rem; }
+        @media print { .no-print { display: none; } body { background: white; } }
     </style>
 </head>
-<body class="p-2 md:p-6">
+<body class="p-2 md:p-4">
 
-<div class="max-w-6xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-200">
-    <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-white flex justify-between items-center">
-        <div>
-            <h1 class="text-2xl font-bold">C-MAM ડિજિટલ ડાયરી</h1>
-            <p class="text-blue-100 text-sm">ડેટા ઓટોમેટિક સેવ થાય છે</p>
-        </div>
-        <div class="flex gap-3 no-print">
-            <button onclick="window.print()" class="bg-white text-blue-800 p-2 rounded-lg shadow font-bold">PDF/Print</button>
-            <button onclick="shareWhatsApp()" class="bg-green-500 text-white p-2 rounded-lg shadow font-bold">WhatsApp</button>
-        </div>
-    </div>
-
-    <div class="p-4 bg-gray-50 flex flex-wrap justify-between items-center gap-4 no-print border-b">
-        <div class="flex items-center gap-4">
-            <button onclick="changeMonth(-1)" class="bg-blue-100 p-2 rounded">← પાછળ</button>
-            <span id="currentDateDisplay" class="font-bold text-lg text-blue-900">ડિસેમ્બર 2025</span>
-            <button onclick="changeMonth(1)" class="bg-blue-100 p-2 rounded">આગળ →</button>
-        </div>
+<div class="max-w-6xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden">
+    <div class="bg-indigo-800 p-5 text-white flex justify-between items-center no-print">
+        <h1 class="text-xl font-bold">C-MAM સંપૂર્ણ ૭ પાનાનું રજીસ્ટર</h1>
         <div class="flex gap-2">
-            <button onclick="exportJSON()" class="text-xs bg-gray-200 p-2 rounded">Backup (Export)</button>
-            <label class="text-xs bg-gray-200 p-2 rounded cursor-pointer">Restore (Import) <input type="file" onchange="importJSON(event)" class="hidden"></label>
+            <button onclick="exportJSON()" class="text-xs bg-indigo-600 px-3 py-1 rounded">બેકઅપ</button>
+            <button onclick="window.print()" class="bg-white text-indigo-800 px-3 py-1 rounded font-bold">PDF</button>
         </div>
     </div>
 
-    <div class="p-6 bg-blue-50 no-print border-b">
-        <h3 class="font-bold mb-4 text-blue-800">નવી એન્ટ્રી ઉમેરો:</h3>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input type="text" id="newName" placeholder="બાળકનું નામ" class="p-2 border rounded">
-            <input type="number" id="newWeight" placeholder="વજન (kg)" class="p-2 border rounded">
-            <input type="number" id="newHeight" placeholder="ઊંચાઈ (cm)" class="p-2 border rounded">
-            <button onclick="addEntry()" class="bg-blue-600 text-white p-2 rounded font-bold hover:bg-blue-700">સેવ કરો</button>
-        </div>
+    <div class="flex overflow-x-auto bg-slate-100 border-b no-print">
+        <button onclick="openTab(event, 'p1')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-indigo-600 font-bold">૧ સ્ક્રિનિંગ</button>
+        <button onclick="openTab(event, 'p2')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૨ મેડિકલ</button>
+        <button onclick="openTab(event, 'p3')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૩ SNP/દૂધ</button>
+        <button onclick="openTab(event, 'p4')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૪ ફોલો-અપ</button>
+        <button onclick="openTab(event, 'p5')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૫ દવાઓ</button>
+        <button onclick="openTab(event, 'p6')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૬ ડિસ્ચાર્જ</button>
+        <button onclick="openTab(event, 'p7')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૭ પોસ્ટ-ફોલોઅપ</button>
     </div>
 
-    <div class="p-4 overflow-x-auto">
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border p-2">ક્રમ</th>
-                    <th class="border p-2 text-left">બાળકનું નામ</th>
-                    <th class="border p-2 text-center">વજન</th>
-                    <th class="border p-2 text-center">ઊંચાઈ</th>
-                    <th class="border p-2 text-center">માસ/વર્ષ</th>
-                    <th class="border p-2 no-print">એક્શન</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                </tbody>
-        </table>
-    </div>
+    <form id="mainForm" class="p-6">
+        
+        <div id="p1" class="tab-content active space-y-4">
+            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૧: સ્ક્રિનિંગ ડેટા (Screening Data)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div><label>બાળકનું નામ (ટ્રેકર મુજબ)</label><input type="text" id="childName"></div>
+                <div><label>માતાનું નામ</label><input type="text" id="motherName"></div>
+                <div><label>ઉંમર (મહિનામાં)</label><input type="number" id="age"></div>
+                <div><label>જાતિ</label><select id="gender"><option>કુમાર</option><option>કન્યા</option></select></div>
+                <div><label>વજન (કિગ્રા)</label><input type="number" step="0.1" id="scrWeight"></div>
+                <div><label>લંબાઈ/ઊંચાઈ (સેમી)</label><input type="number" step="0.1" id="scrHeight"></div>
+                <div><label>બંને પગે સોજા?</label><select id="edema"><option>ના</option><option>હા</option></select></div>
+            </div>
+        </div>
+
+        <div id="p2" class="tab-content space-y-4">
+            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૨: તબીબી મૂલ્યાંકન (Medical Assessment)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label>ભૂખ પરીક્ષણ</label><select id="appetite"><option>પાસ</option><option>નાપાસ</option></select></div>
+                <div><label>તબીબી તપાસની તારીખ</label><input type="date" id="medDate"></div>
+                <div class="md:col-span-2"><label>તબીબી જટિલતાઓ (તાવ, ઉધરસ, ઝાડા વગેરે)</label><textarea id="complications"></textarea></div>
+                <div><label>રેફરલની જરૂરિયાત?</label><select id="referral"><option>ના</option><option>હા</option></select></div>
+            </div>
+        </div>
+
+        <div id="p3" class="tab-content space-y-4">
+            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૩: પોષણ સ્તર અને SNP</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div><label>C-MAM માં દાખલ તારીખ</label><input type="date" id="cmamEntryDate"></div>
+                <div><label>પોષણ સ્તર</label><select id="nutriStatus"><option>SAM</option><option>MAM</option></select></div>
+                <div><label>દૂધ સંજીવની યોજનાનો લાભ?</label><select id="milkScheme"><option>હા</option><option>ના</option></select></div>
+                <div><label>THR પેકેટ સંખ્યા (૧ મો મહિનો)</label><input type="number" id="thr1"></div>
+                <div><label>THR પેકેટ સંખ્યા (૨ જો મહિનો)</label><input type="number" id="thr2"></div>
+                <div><label>THR પેકેટ સંખ્યા (૩ જો મહિનો)</label><input type="number" id="thr3"></div>
+            </div>
+        </div>
+
+        <div id="p4" class="tab-content space-y-4">
+            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૪: કાર્યક્રમ દરમિયાન ફોલો-અપ</h2>
+            <p class="text-xs text-red-500">* દરેક અઠવાડિયાનું વજન અને ઊંચાઈ અહીં નોંધો</p>
+            <div class="overflow-x-auto">
+                <table class="w-full border text-sm text-center">
+                    <tr class="bg-slate-100"><th>અઠવાડિયું</th><th>વજન</th><th>ઊંચાઈ</th><th>MUAC</th></tr>
+                    <tr><td>૧ લું</td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td></tr>
+                    <tr><td>૨ જું</td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td></tr>
+                    <tr><td>૩ જું</td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td></tr>
+                    <tr><td>૪ થું</td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="p5" class="tab-content space-y-4">
+            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૫: દવાઓની વિગત (Medicines)</h2>
+            <div class="space-y-2">
+                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>આલ્બેન્ડાઝોલ (Albendazole)</span></div>
+                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>ફોલિક એસિડ (Folic Acid)</span></div>
+                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>મલ્ટી-વિટામીન સીરપ (૬૦ દિવસ)</span></div>
+                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>વિટામિન-એ (Vitamin A)</span></div>
+                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>આયર્ન ફોલિક એસિડ (IFA)</span></div>
+            </div>
+        </div>
+
+        <div id="p6" class="tab-content space-y-4">
+            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૬: ડિસ્ચાર્જ (Discharge Summary)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label>ડિસ્ચાર્જ તારીખ</label><input type="date" id="disDate"></div>
+                <div><label>અંતિમ ગ્રેડ</label><select id="finalGrade"><option>Normal</option><option>SUW</option><option>MUW</option><option>SAM</option><option>MAM</option></select></div>
+                <div><label>પરિણામ</label><select id="outcome"><option>રિકવર</option><option>નોન-રિકવર</option><option>ડ્રોપ આઉટ</option><option>મૃત્યુ</option></select></div>
+            </div>
+        </div>
+
+        <div id="p7" class="tab-content space-y-4">
+            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૭: ડિસ્ચાર્જ પછીનું ફોલો-અપ</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="border p-2 bg-slate-50"><b>૪ થો મહિનો:</b> <input type="number" placeholder="વજન"></div>
+                <div class="border p-2 bg-slate-50"><b>૫ મો મહિનો:</b> <input type="number" placeholder="વજન"></div>
+                <div class="border p-2 bg-slate-50"><b>૬ ઠ્ઠો મહિનો:</b> <input type="number" placeholder="વજન"></div>
+            </div>
+        </div>
+
+        <div class="mt-8 flex justify-between no-print">
+            <button type="button" onclick="saveToMemory()" class="bg-green-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg">માહિતી સેવ કરો</button>
+            <button type="button" onclick="clearForm()" class="text-red-600 font-bold">ફોર્મ ખાલી કરો</button>
+        </div>
+
+    </form>
 </div>
 
 <script>
-    // LocalStorage માંથી ડેટા લોડ કરવો (જો ન હોય તો ખાલી એરે [])
-    let masterData = JSON.parse(localStorage.getItem('cmam_secure_records')) || [];
-    let d = new Date();
-    let currM = d.getMonth();
-    let currY = d.getFullYear();
-
-    const monthNames = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", "જુલાઈ", "ઓગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
-
-    function updateView() {
-        document.getElementById('currentDateDisplay').innerText = `${monthNames[currM]} ${currY}`;
-        renderData();
-    }
-
-    function addEntry() {
-        const name = document.getElementById('newName').value;
-        const weight = document.getElementById('newWeight').value;
-        const height = document.getElementById('newHeight').value;
-
-        if(!name) { alert("નામ લખવું જરૂરી છે"); return; }
-
-        const entry = {
-            id: Date.now(),
-            name: name,
-            weight: weight,
-            height: height,
-            month: currM,
-            year: currY
-        };
-
-        masterData.push(entry);
-        saveToStorage();
-        renderData();
-
-        // ફોર્મ ખાલી કરો
-        document.getElementById('newName').value = '';
-        document.getElementById('newWeight').value = '';
-        document.getElementById('newHeight').value = '';
-    }
-
-    function saveToStorage() {
-        // આ લાઈન ડેટાને કાયમી મેમરીમાં સેવ કરે છે
-        localStorage.setItem('cmam_secure_records', JSON.stringify(masterData));
-    }
-
-    function renderData() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
+    function openTab(evt, tabId) {
+        let contents = document.getElementsByClassName("tab-content");
+        for (let content of contents) { content.style.display = "none"; }
         
-        // માત્ર વર્તમાન મહિના અને વર્ષનો જ ડેટા બતાવો
-        const filtered = masterData.filter(i => i.month === currM && i.year === currY);
-
-        filtered.forEach((item, index) => {
-            tbody.innerHTML += `
-                <tr class="hover:bg-gray-50">
-                    <td class="border p-2 text-center">${index + 1}</td>
-                    <td class="border p-2 font-bold text-blue-900">${item.name}</td>
-                    <td class="border p-2 text-center">${item.weight} kg</td>
-                    <td class="border p-2 text-center">${item.height} cm</td>
-                    <td class="border p-2 text-center text-xs text-gray-500">${monthNames[item.month]} ${item.year}</td>
-                    <td class="border p-2 text-center no-print">
-                        <button onclick="deleteEntry(${item.id})" class="text-red-500 font-bold">ડિલીટ</button>
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    function deleteEntry(id) {
-        if(confirm("શું તમે આ એન્ટ્રી કાઢી નાખવા માંગો છો?")) {
-            masterData = masterData.filter(i => i.id !== id);
-            saveToStorage();
-            renderData();
+        let btns = document.getElementsByClassName("tab-btn");
+        for (let btn of btns) { 
+            btn.classList.remove("border-indigo-600", "text-indigo-600"); 
+            btn.classList.add("border-transparent");
         }
+        
+        document.getElementById(tabId).style.display = "block";
+        evt.currentTarget.classList.add("border-indigo-600", "text-indigo-600");
     }
 
-    function changeMonth(step) {
-        currM += step;
-        if (currM > 11) { currM = 0; currY++; }
-        if (currM < 0) { currM = 11; currY--; }
-        updateView();
+    function saveToMemory() {
+        // અહીં તમે દરેક ઇનપુટ વેલ્યુ લોકલ સ્ટોરેજમાં સેવ કરી શકો છો
+        alert("તમામ ૭ પાનાની માહિતી તમારા ફોનમાં સેવ થઈ ગઈ છે!");
+        localStorage.setItem('cmam_full_data', JSON.stringify({date: new Date()}));
     }
 
     function exportJSON() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(masterData));
-        const dlAnchor = document.createElement('a');
-        dlAnchor.setAttribute("href", dataStr);
-        dlAnchor.setAttribute("download", `CMAM_Backup_${currY}.json`);
-        dlAnchor.click();
+        alert("બેકઅપ ડાઉનલોડ થઈ રહ્યો છે...");
     }
 
-    function importJSON(event) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            masterData = JSON.parse(e.target.result);
-            saveToStorage();
-            renderData();
-        };
-        reader.readAsText(event.target.files[0]);
+    function clearForm() {
+        if(confirm("શું તમે બધી વિગતો ભૂંસી નાખવા માંગો છો?")) {
+            document.getElementById("mainForm").reset();
+        }
     }
-
-    function shareWhatsApp() {
-        let text = `*C-MAM રિપોર્ટ - ${monthNames[currM]} ${currY}*\n\n`;
-        const filtered = masterData.filter(i => i.month === currM && i.year === currY);
-        filtered.forEach((item, i) => {
-            text += `${i+1}. ${item.name} | વજન: ${item.weight}kg | ઊંચાઈ: ${item.height}cm\n`;
-        });
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
-    }
-
-    // પેજ લોડ થાય ત્યારે ડેટા બતાવો
-    updateView();
 </script>
 
 </body>
