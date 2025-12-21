@@ -2,121 +2,182 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <title>પોષણ સંગમ - ફાઇનલ ડેટા સેફ રજીસ્ટર</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-MAM કાયમી રજીસ્ટર</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
-        .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
-        .config-bar { background: #fff; padding: 15px; border-bottom: 2px solid #e67e22; display: flex; justify-content: center; gap: 10px; padding-bottom: 5px; }
-        .nav-tabs { display: flex; background: #fff; border-bottom: 2px solid #e67e22; overflow-x: auto; }
-        .tab-btn { padding: 12px 20px; border: none; background: none; cursor: pointer; font-weight: bold; white-space: nowrap; }
-        .tab-btn.active { color: #e67e22; border-bottom: 4px solid #e67e22; background: #fff5eb; }
-        .page { display: none; background: white; padding: 20px; margin: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .page.active { display: block; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
-        table, th, td { border: 1px solid #000; text-align: center; padding: 5px; }
-        th { background: #ecf0f1; }
-        input, select { width: 96%; border: none; padding: 5px; text-align: center; background: transparent; }
-        .credit { text-align: center; font-weight: bold; margin-top: 20px; border-top: 1px solid #000; padding-top: 10px; font-size: 12px; }
-        @media print { .no-print { display: none !important; } .page { display: block !important; page-break-after: always !important; } }
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Gujarati:wght@400;700&display=swap');
+        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f3f4f6; }
+        @media print { .no-print { display: none; } }
     </style>
 </head>
-<body onload="initApp()">
+<body class="p-2 md:p-6">
 
-<div class="header no-print">પોષણ સંગમ - આંગણવાડી રજીસ્ટર 2025</div>
+<div class="max-w-6xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-200">
+    <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-white flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold">C-MAM ડિજિટલ ડાયરી</h1>
+            <p class="text-blue-100 text-sm">ડેટા ઓટોમેટિક સેવ થાય છે</p>
+        </div>
+        <div class="flex gap-3 no-print">
+            <button onclick="window.print()" class="bg-white text-blue-800 p-2 rounded-lg shadow font-bold">PDF/Print</button>
+            <button onclick="shareWhatsApp()" class="bg-green-500 text-white p-2 rounded-lg shadow font-bold">WhatsApp</button>
+        </div>
+    </div>
 
-<div class="config-bar no-print">
-    <input type="text" id="newChildName" placeholder="બાળકનું નામ" style="border:1px solid #ccc; padding:5px; border-radius:4px;">
-    <button onclick="addNewChild()" style="background:#27ae60; color:white; border:none; padding:7px 15px; border-radius:4px; cursor:pointer;">➕ ઉમેરો</button>
-    <select id="childSelector" onchange="loadChildData()" style="padding:5px; width:150px; border:1px solid #d35400;"></select>
-    <button onclick="window.print()" style="background:#d35400; color:white; border:none; padding:7px 15px; border-radius:4px; cursor:pointer;">🖨️ પ્રિન્ટ</button>
+    <div class="p-4 bg-gray-50 flex flex-wrap justify-between items-center gap-4 no-print border-b">
+        <div class="flex items-center gap-4">
+            <button onclick="changeMonth(-1)" class="bg-blue-100 p-2 rounded">← પાછળ</button>
+            <span id="currentDateDisplay" class="font-bold text-lg text-blue-900">ડિસેમ્બર 2025</span>
+            <button onclick="changeMonth(1)" class="bg-blue-100 p-2 rounded">આગળ →</button>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="exportJSON()" class="text-xs bg-gray-200 p-2 rounded">Backup (Export)</button>
+            <label class="text-xs bg-gray-200 p-2 rounded cursor-pointer">Restore (Import) <input type="file" onchange="importJSON(event)" class="hidden"></label>
+        </div>
+    </div>
+
+    <div class="p-6 bg-blue-50 no-print border-b">
+        <h3 class="font-bold mb-4 text-blue-800">નવી એન્ટ્રી ઉમેરો:</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <input type="text" id="newName" placeholder="બાળકનું નામ" class="p-2 border rounded">
+            <input type="number" id="newWeight" placeholder="વજન (kg)" class="p-2 border rounded">
+            <input type="number" id="newHeight" placeholder="ઊંચાઈ (cm)" class="p-2 border rounded">
+            <button onclick="addEntry()" class="bg-blue-600 text-white p-2 rounded font-bold hover:bg-blue-700">સેવ કરો</button>
+        </div>
+    </div>
+
+    <div class="p-4 overflow-x-auto">
+        <table class="w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border p-2">ક્રમ</th>
+                    <th class="border p-2 text-left">બાળકનું નામ</th>
+                    <th class="border p-2 text-center">વજન</th>
+                    <th class="border p-2 text-center">ઊંચાઈ</th>
+                    <th class="border p-2 text-center">માસ/વર્ષ</th>
+                    <th class="border p-2 no-print">એક્શન</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
 </div>
-
-<div class="nav-tabs no-print">
-    <button class="tab-btn active" onclick="showPage(1)">P-1</button>
-    <button class="tab-btn" onclick="showPage(2)">P-2</button>
-    <button class="tab-btn" onclick="showPage(3)">P-3</button>
-    <button class="tab-btn" onclick="showPage(4)">P-4</button>
-    <button class="tab-btn" onclick="showPage(5)">P-5</button>
-    <button class="tab-btn" onclick="showPage(6)">P-6</button>
-    <button class="tab-btn" onclick="showPage(7)">P-7</button>
-</div>
-
-<div id="content"></div>
 
 <script>
-    let children = JSON.parse(localStorage.getItem('poshan_list_v3') || "[]");
-    const creditText = "Developed by- Devendra ramanuj, 9276505035";
+    // LocalStorage માંથી ડેટા લોડ કરવો (જો ન હોય તો ખાલી એરે [])
+    let masterData = JSON.parse(localStorage.getItem('cmam_secure_records')) || [];
+    let d = new Date();
+    let currM = d.getMonth();
+    let currY = d.getFullYear();
 
-    function initApp() {
-        renderTables();
-        updateList();
-        const last = localStorage.getItem('poshan_last_child');
-        if (last) {
-            document.getElementById('childSelector').value = last;
-            loadChildData();
-        }
+    const monthNames = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", "જુલાઈ", "ઓગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
+
+    function updateView() {
+        document.getElementById('currentDateDisplay').innerText = `${monthNames[currM]} ${currY}`;
+        renderData();
     }
 
-    function renderTables() {
-        let html = "";
-        const m = ["","જાન્યુઆરી","ફેબ્રુઆરી","માર્ચ","એપ્રિલ","મે","જૂન","જુલાઈ","ઓગસ્ટ","સપ્ટેમ્બર","ઓક્ટોબર","નવેમ્બર","ડિસેમ્બર"];
+    function addEntry() {
+        const name = document.getElementById('newName').value;
+        const weight = document.getElementById('newWeight').value;
+        const height = document.getElementById('newHeight').value;
+
+        if(!name) { alert("નામ લખવું જરૂરી છે"); return; }
+
+        const entry = {
+            id: Date.now(),
+            name: name,
+            weight: weight,
+            height: height,
+            month: currM,
+            year: currY
+        };
+
+        masterData.push(entry);
+        saveToStorage();
+        renderData();
+
+        // ફોર્મ ખાલી કરો
+        document.getElementById('newName').value = '';
+        document.getElementById('newWeight').value = '';
+        document.getElementById('newHeight').value = '';
+    }
+
+    function saveToStorage() {
+        // આ લાઈન ડેટાને કાયમી મેમરીમાં સેવ કરે છે
+        localStorage.setItem('cmam_secure_records', JSON.stringify(masterData));
+    }
+
+    function renderData() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
         
-        // P-1
-        html += `<div id="page1" class="page active"><h3 align="center">P-1: Screening</h3><table><tr><th>માસ</th><th>નામ</th><th>માતા</th><th>જન્મ તારીખ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
-        for(let r=1; r<=10; r++) {
-            html += `<tr><td><select id="p1_r${r}_m" onchange="saveData()"><option value=""></option>${m.map(x=>`<option value="${x}">${x}</option>`).join('')}</select></td><td><input id="p1_r${r}_name" oninput="saveData()"></td><td><input id="p1_r${r}_mom" oninput="saveData()"></td><td><input id="p1_r${r}_dob" oninput="saveData()"></td><td><input id="p1_r${r}_dt" oninput="saveData()"></td><td><input id="p1_r${r}_w" oninput="saveData()"></td><td><input id="p1_r${r}_h" oninput="saveData()"></td><td><select id="p1_r${r}_lv" onchange="saveData()"><option value=""></option><option value="SAM">SAM</option><option value="MAM">MAM</option></select></td></tr>`;
+        // માત્ર વર્તમાન મહિના અને વર્ષનો જ ડેટા બતાવો
+        const filtered = masterData.filter(i => i.month === currM && i.year === currY);
+
+        filtered.forEach((item, index) => {
+            tbody.innerHTML += `
+                <tr class="hover:bg-gray-50">
+                    <td class="border p-2 text-center">${index + 1}</td>
+                    <td class="border p-2 font-bold text-blue-900">${item.name}</td>
+                    <td class="border p-2 text-center">${item.weight} kg</td>
+                    <td class="border p-2 text-center">${item.height} cm</td>
+                    <td class="border p-2 text-center text-xs text-gray-500">${monthNames[item.month]} ${item.year}</td>
+                    <td class="border p-2 text-center no-print">
+                        <button onclick="deleteEntry(${item.id})" class="text-red-500 font-bold">ડિલીટ</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function deleteEntry(id) {
+        if(confirm("શું તમે આ એન્ટ્રી કાઢી નાખવા માંગો છો?")) {
+            masterData = masterData.filter(i => i.id !== id);
+            saveToStorage();
+            renderData();
         }
-        html += `</table><div class="credit">${creditText}</div></div>`;
-
-        // P2 to P7
-        for(let p=2; p<=7; p++) {
-            html += `<div id="page${p}" class="page"><h3 align="center">P-${p}</h3><table><tr><th>નામ</th><th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th><th>તારીખ</th></tr>`;
-            for(let r=1; r<=10; r++) {
-                html += `<tr><td><input id="p${p}_r${r}_name" oninput="saveData()"></td><td><input id="p${p}_r${r}_c1" oninput="saveData()"></td><td><input id="p${p}_r${r}_c2" oninput="saveData()"></td><td><input id="p${p}_r${r}_c3" oninput="saveData()"></td><td><input id="p${p}_r${r}_c4" oninput="saveData()"></td><td><input id="p${p}_r${r}_dt" oninput="saveData()"></td></tr>`;
-            }
-            html += `</table><div class="credit">${creditText}</div></div>`;
-        }
-        document.getElementById('content').innerHTML = html;
     }
 
-    function addNewChild() {
-        const n = document.getElementById('newChildName').value.trim();
-        if(!n || children.includes(n)) return;
-        children.push(n);
-        localStorage.setItem('poshan_list_v3', JSON.stringify(children));
-        updateList();
-        document.getElementById('childSelector').value = n;
-        loadChildData();
+    function changeMonth(step) {
+        currM += step;
+        if (currM > 11) { currM = 0; currY++; }
+        if (currM < 0) { currM = 11; currY--; }
+        updateView();
     }
 
-    function updateList() {
-        document.getElementById('childSelector').innerHTML = children.map(x => `<option value="${x}">${x}</option>`).join('');
+    function exportJSON() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(masterData));
+        const dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute("href", dataStr);
+        dlAnchor.setAttribute("download", `CMAM_Backup_${currY}.json`);
+        dlAnchor.click();
     }
 
-    function showPage(n) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('page' + n).classList.add('active');
-        document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+    function importJSON(event) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            masterData = JSON.parse(e.target.result);
+            saveToStorage();
+            renderData();
+        };
+        reader.readAsText(event.target.files[0]);
     }
 
-    function saveData() {
-        const c = document.getElementById('childSelector').value;
-        if(!c) return;
-        localStorage.setItem('poshan_last_child', c);
-        const data = {};
-        document.querySelectorAll('input, select').forEach(el => { if(el.id) data[el.id] = el.value; });
-        localStorage.setItem('poshan_v3_data_' + c, JSON.stringify(data));
+    function shareWhatsApp() {
+        let text = `*C-MAM રિપોર્ટ - ${monthNames[currM]} ${currY}*\n\n`;
+        const filtered = masterData.filter(i => i.month === currM && i.year === currY);
+        filtered.forEach((item, i) => {
+            text += `${i+1}. ${item.name} | વજન: ${item.weight}kg | ઊંચાઈ: ${item.height}cm\n`;
+        });
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
     }
 
-    function loadChildData() {
-        const c = document.getElementById('childSelector').value;
-        if(!c) return;
-        localStorage.setItem('poshan_last_child', c);
-        document.querySelectorAll('input, select').forEach(el => el.value = "");
-        const saved = JSON.parse(localStorage.getItem('poshan_v3_data_' + c) || "{}");
-        for(let k in saved) { if(document.getElementById(k)) document.getElementById(k).value = saved[k]; }
-    }
+    // પેજ લોડ થાય ત્યારે ડેટા બતાવો
+    updateView();
 </script>
+
 </body>
 </html>
