@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>પોષણ સંગમ - Select & Share</title>
+    <title>પોષણ સંગમ - સંપૂર્ણ રજિસ્ટર</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
         .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
-        .month-year-container { background: #ffffff; padding: 10px; text-align: center; border-bottom: 3px solid #e67e22; }
+        .month-year-container { background: #ffffff; padding: 10px; text-align: center; border-bottom: 2px solid #e67e22; }
         .styled-select { padding: 8px; font-size: 15px; font-weight: bold; color: #000; border: 2px solid #d35400; border-radius: 8px; margin: 5px; width: 125px; }
         .nav-tabs { display: flex; overflow-x: auto; background: white; border-bottom: 2px solid #e67e22; position: sticky; top: 0; z-index: 100; }
         .tab-btn { padding: 12px; border: none; background: none; cursor: pointer; font-weight: bold; color: #555; white-space: nowrap; flex: 1; min-width: 65px; }
@@ -18,14 +18,13 @@
         .page { display: none; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow-x: auto; margin-bottom: 20px; }
         .page.active { display: block; }
         .action-bar { margin-bottom: 15px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; display: flex; align-items: center; gap: 5px; }
-        .btn-direct { background: #25D366; } .btn-export { background: #2980b9; } .btn-import { background: #8e44ad; }
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
+        .btn-wa { background: #25D366; } .btn-export { background: #2980b9; } .btn-print { background: #34495e; }
         
-        /* Modal for page selection */
+        /* Modal Style */
         .modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; margin: 15% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 300px; text-align: center; }
-        .modal-content label { display: block; padding: 10px; border-bottom: 1px solid #eee; text-align: left; font-weight: bold; }
-        .modal-content input { margin-right: 15px; transform: scale(1.3); }
+        .modal-content { background: white; margin: 10% auto; padding: 20px; border-radius: 10px; width: 85%; max-width: 350px; text-align: center; }
+        .modal-content label { display: block; padding: 8px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
         
         table { width: 100%; border-collapse: collapse; font-size: 10px; min-width: 1200px; table-layout: fixed; }
         table, th, td { border: 1px solid #bdc3c7; text-align: center; }
@@ -36,7 +35,7 @@
 </head>
 <body onload="initApp()">
 
-<div class="header">પોષણ સંગમ - સ્માર્ટ રજિસ્ટર</div>
+<div class="header">પોષણ સંગમ - સંપૂર્ણ ડિજિટલ રજિસ્ટર</div>
 
 <div class="month-year-container">
     <select id="selectedMonth" class="styled-select" onchange="changeMonth()">
@@ -51,7 +50,13 @@
 </div>
 
 <div class="nav-tabs">
-    <script>for(let i=1; i<=7; i++) document.write(`<button class="tab-btn ${i==1?'active':''}" onclick="go(${i})">P-${i}</button>`);</script>
+    <button class="tab-btn active" onclick="go(1)">P-1</button>
+    <button class="tab-btn" onclick="go(2)">P-2</button>
+    <button class="tab-btn" onclick="go(3)">P-3</button>
+    <button class="tab-btn" onclick="go(4)">P-4</button>
+    <button class="tab-btn" onclick="go(5)">P-5</button>
+    <button class="tab-btn" onclick="go(6)">P-6</button>
+    <button class="tab-btn" onclick="go(7)">P-7</button>
 </div>
 
 <div id="pageSelector" class="modal">
@@ -61,31 +66,75 @@
             <script>for(let i=1; i<=7; i++) document.write(`<label><input type="checkbox" value="${i}" checked> પેજ-${i}</label>`);</script>
         </div>
         <br>
-        <button class="btn btn-direct" onclick="generateSelectedPDF()" style="width: 100%; justify-content: center;">Share Selected PDF</button>
-        <br>
-        <button class="btn" style="background:#888; width: 100%; justify-content: center;" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-wa" onclick="generateSelectedPDF()" style="width:100%">Share Selected PDF</button>
+        <button class="btn" style="background:#888; width:100%; margin-top:5px;" onclick="closeModal()">Cancel</button>
     </div>
 </div>
 
 <div class="container">
     <div class="action-bar">
-        <button class="btn btn-direct" onclick="openModal()">📲 WhatsApp PDF Share</button>
+        <button class="btn btn-wa" onclick="openModal()">📲 WhatsApp PDF Share</button>
         <button class="btn btn-export" onclick="exportData()">📤 Export</button>
-        <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 Import</button>
+        <button class="btn btn-export" style="background:#8e44ad" onclick="document.getElementById('importFile').click()">📥 Import</button>
         <input type="file" id="importFile" style="display:none" onchange="importData(event)">
-        <button class="btn" style="background:#34495e" onclick="window.print()">🖨️ Print All</button>
+        <button class="btn btn-print" onclick="window.print()">🖨️ Print All</button>
     </div>
 
     <div id="p1" class="page active">
-        <h3>Page 1: Screening</h3>
-        <table><tr><th>ક્રમ</th><th style="width:200px;">બાળકનું નામ</th><th>સ્તર</th></tr><script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p1_n_${i}" oninput="saveData()"></td><td><input id="p1_s_${i}" oninput="saveData()"></td></tr>`);</script></table>
+        <h3>Page 1: Screening Data</h3>
+        <table>
+            <tr><th>ક્રમ</th><th style="width:200px;">બાળકનું નામ</th><th>માતાનું નામ</th><th>જન્મ તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>
+            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p1_n_${i}" oninput="saveData()"></td><td><input id="p1_m_${i}" oninput="saveData()"></td><td><input type="date" id="p1_d_${i}" oninput="saveData()"></td><td><input id="p1_w_${i}" oninput="saveData()"></td><td><input id="p1_h_${i}" oninput="saveData()"></td><td><input id="p1_s_${i}" oninput="saveData()"></td></tr>`);</script>
+        </table>
     </div>
-    <div id="p2" class="page"><h3>Page 2: Medical</h3><table><tr><th>ક્રમ</th><th>વિગત</th></tr><script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p2_a_${i}" oninput="saveData()"></td></tr>`);</script></table></div>
-    <div id="p3" class="page"><h3>Page 3: Medicines</h3><table id="t3"></table></div>
-    <div id="p4" class="page"><h3>Page 4: Follow up</h3><table id="t4"></table></div>
-    <div id="p5" class="page"><h3>Page 5: Grading</h3><table id="t5"></table></div>
-    <div id="p6" class="page"><h3>Page 6: Discharge</h3><table id="t6"></table></div>
-    <div id="p7" class="page"><h3>Page 7: Post Follow up</h3><table id="t7"></table></div>
+
+    <div id="p2" class="page">
+        <h3>Page 2: Medical Assessment & SNP</h3>
+        <table>
+            <tr><th>ક્રમ</th><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>જટિલતા</th><th>રેફરલ</th><th>THR વિગત</th></tr>
+            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p2_a_${i}" oninput="saveData()"></td><td><input type="date" id="p2_b_${i}" oninput="saveData()"></td><td><input id="p2_c_${i}" oninput="saveData()"></td><td><input id="p2_d_${i}" oninput="saveData()"></td><td><input id="p2_e_${i}" oninput="saveData()"></td></tr>`);</script>
+        </table>
+    </div>
+
+    <div id="p3" class="page">
+        <h3>Page 3: Medicines during Program</h3>
+        <table>
+            <tr><th>ક્રમ</th><th>આયર્ન સિરપ</th><th>વિટામિન A</th><th>ડીવોર્મિંગ</th><th>અન્ય</th></tr>
+            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p3_a_${i}" oninput="saveData()"></td><td><input id="p3_b_${i}" oninput="saveData()"></td><td><input id="p3_c_${i}" oninput="saveData()"></td><td><input id="p3_d_${i}" oninput="saveData()"></td></tr>`);</script>
+        </table>
+    </div>
+
+    <div id="p4" class="page">
+        <h3>Page 4: Follow up & Discharge</h3>
+        <table>
+            <tr><th>ક્રમ</th><th>૧ અઠ. વજન</th><th>૨ અઠ. વજન</th><th>૩ અઠ. વજન</th><th>૪ અઠ. વજન</th></tr>
+            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p4_a_${i}" oninput="saveData()"></td><td><input id="p4_b_${i}" oninput="saveData()"></td><td><input id="p4_c_${i}" oninput="saveData()"></td><td><input id="p4_d_${i}" oninput="saveData()"></td></tr>`);</script>
+        </table>
+    </div>
+
+    <div id="p5" class="page">
+        <h3>Page 5: Follow up & Final Grading</h3>
+        <table>
+            <tr><th>ક્રમ</th><th>શરૂઆતનો ગ્રેડ</th><th>અંતિમ ગ્રેડ</th><th>સુધારો (%)</th></tr>
+            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p5_a_${i}" oninput="saveData()"></td><td><input id="p5_b_${i}" oninput="saveData()"></td><td><input id="p5_c_${i}" oninput="saveData()"></td></tr>`);</script>
+        </table>
+    </div>
+
+    <div id="p6" class="page">
+        <h3>Page 6: Discharge Details</h3>
+        <table>
+            <tr><th>ક્રમ</th><th>રજા તારીખ</th><th>સ્થિતિ</th><th>વજન</th><th>ઊંચાઈ</th></tr>
+            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input type="date" id="p6_a_${i}" oninput="saveData()"></td><td><input id="p6_b_${i}" oninput="saveData()"></td><td><input id="p6_c_${i}" oninput="saveData()"></td><td><input id="p6_d_${i}" oninput="saveData()"></td></tr>`);</script>
+        </table>
+    </div>
+
+    <div id="p7" class="page">
+        <h3>Page 7: Post Discharge Follow up</h3>
+        <table>
+            <tr><th>ક્રમ</th><th>૧ માસ ફોલોઅપ</th><th>૨ માસ ફોલોઅપ</th><th>અંતિમ સ્થિતિ</th></tr>
+            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p7_a_${i}" oninput="saveData()"></td><td><input id="p7_b_${i}" oninput="saveData()"></td><td><input id="p7_c_${i}" oninput="saveData()"></td></tr>`);</script>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -95,40 +144,42 @@
     function go(n) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('p' + n).classList.add('active'); document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active', i+1===n)); window.scrollTo(0,0); }
     function saveData() { const d = {}; document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; }); localStorage.setItem(currentKey, JSON.stringify(d)); }
     function loadData() { document.querySelectorAll('input').forEach(i => i.value = ""); const s = localStorage.getItem(currentKey); if(s){ const d = JSON.parse(s); for(const k in d) if(document.getElementById(k)) document.getElementById(k).value = d[k]; } }
-
+    
     function openModal() { document.getElementById('pageSelector').style.display = 'block'; }
     function closeModal() { document.getElementById('pageSelector').style.display = 'none'; }
 
     async function generateSelectedPDF() {
+        const selected = Array.from(document.querySelectorAll('#checkList input:checked')).map(cb => parseInt(cb.value));
+        if(selected.length === 0) return alert("પેજ પસંદ કરો");
         closeModal();
+        alert("PDF તૈયાર થઈ રહી છે... થોડી રાહ જુઓ");
+
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
-        const selectedPages = Array.from(document.querySelectorAll('#checkList input:checked')).map(cb => parseInt(cb.value));
-        
-        if(selectedPages.length === 0) return alert("કૃપા કરીને ઓછામાં ઓછું એક પેજ પસંદ કરો");
-        alert("પસંદ કરેલા પેજની PDF બની રહી છે...");
 
-        for (let i = 0; i < selectedPages.length; i++) {
-            const pageId = 'p' + selectedPages[i];
-            const el = document.getElementById(pageId);
+        for (let i = 0; i < selected.length; i++) {
+            const el = document.getElementById('p' + selected[i]);
             const originalDisplay = el.style.display;
-            
             el.style.display = 'block'; 
-            const canvas = await html2canvas(el, { scale: 2 });
+            
+            const canvas = await html2canvas(el, { scale: 1.5, useCORS: true });
+            const imgData = canvas.toDataURL('image/png');
             if (i > 0) doc.addPage();
-            doc.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
-            el.style.display = originalDisplay; 
+            doc.addImage(imgData, 'PNG', 10, 10, 190, 0);
+            
+            el.style.display = originalDisplay;
         }
 
-        const pdfBlob = doc.output('blob');
-        const file = new File([pdfBlob], "Poshan_Report.pdf", { type: "application/pdf" });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file], title: 'પોષણ સંગમ', text: 'પસંદગી મુજબનો રિપોર્ટ' });
-        } else {
-            doc.save("Poshan_Report.pdf");
-            alert("ડાઉનલોડ થયું છે હવે WhatsApp પર મોકલી દો");
-        }
+        try {
+            const pdfBlob = doc.output('blob');
+            const file = new File([pdfBlob], "Poshan_Report.pdf", { type: "application/pdf" });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({ files: [file], title: 'પોષણ સંગમ', text: 'રીપોર્ટ' });
+            } else {
+                doc.save("Poshan_Report.pdf");
+                alert("PDF ડાઉનલોડ થઈ છે");
+            }
+        } catch (e) { alert("Error: " + e); }
     }
 
     function exportData() {
