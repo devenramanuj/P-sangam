@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>પોષણ સંગમ - ફાઈનલ સુધારેલ રજિસ્ટર</title>
+    <title>પોષણ સંગમ - ૭ પેજ પ્રિન્ટ ફિક્સ</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
         .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; }
@@ -15,50 +15,80 @@
         .page.active { display: block; }
         .action-bar { margin: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
         .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 14px; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1200px; table-layout: fixed; }
-        table, th, td { border: 1px solid #000; text-align: center; padding: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1100px; table-layout: fixed; }
+        table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
         th { background: #ecf0f1; font-weight: bold; }
-        input { width: 95%; border: none; padding: 5px; text-align: center; font-size: 13px; background: transparent; outline: none; }
+        input { width: 95%; border: none; padding: 4px; text-align: center; font-size: 12px; background: transparent; outline: none; }
 
+        /* પ્રિન્ટ માટે ખાસ સુધારો - જે ૧૪ પેજ થતા અટકાવશે */
         @media print {
-            .nav-tabs, .action-bar, .header { display: none !important; }
-            .page { display: block !important; visibility: visible !important; page-break-after: always !important; border: none !important; box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 5mm 0 !important; }
-            body { background: white; }
-            @page { size: landscape; margin: 5mm; }
+            @page { 
+                size: landscape; 
+                margin: 5mm; 
+            }
+            html, body { 
+                height: auto; 
+                overflow: visible !important; 
+            }
+            .nav-tabs, .action-bar, .header { 
+                display: none !important; 
+            }
+            .container { 
+                padding: 0 !important; 
+                margin: 0 !important; 
+            }
+            .page { 
+                display: block !important; 
+                visibility: visible !important;
+                page-break-after: always !important; /* દરેક પેજ પછી બ્રેક લેવો */
+                border: none !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            table { 
+                width: 100% !important; 
+                min-width: 100% !important;
+                font-size: 10px !important;
+            }
+            h3 { 
+                margin: 5px 0 !important; 
+                font-size: 14px !important; 
+            }
         }
     </style>
 </head>
 <body onload="initApp()">
 
-<div class="header">પોષણ સંગમ - રજિસ્ટર</div>
+<div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર</div>
 
 <div class="action-bar">
-    <button class="btn" style="background:#2980b9" onclick="exportData()">📤 બેકઅપ Export</button>
-    <button class="btn" style="background:#8e44ad" onclick="document.getElementById('fileInput').click()">📥 ડેટા લાવો Import</button>
+    <button class="btn" style="background:#2980b9" onclick="exportData()">📤 Export Backup</button>
+    <button class="btn" style="background:#8e44ad" onclick="document.getElementById('fileInput').click()">📥 Import Data</button>
     <input type="file" id="fileInput" style="display:none" onchange="importData(event)">
-    <button class="btn" style="background:#d35400" onclick="window.print()">🖨️ સાતેય પેજ પ્રિન્ટ કરો</button>
+    <button class="btn" style="background:#d35400" onclick="window.print()">🖨️ પ્રિન્ટ (માત્ર ૭ પેજ)</button>
 </div>
 
 <div class="nav-tabs">
     <script>for(let i=1; i<=7; i++) document.write(`<button class="tab-btn ${i==1?'active':''}" onclick="go(${i})">P-${i}</button>`);</script>
 </div>
 
-<div class="container">
+<div class="container" id="allPages">
     <script>
-        const pgHead = [
-            "પૃષ્ઠ ૧: Screening data (૬ મહિના થી ૫ વર્ષ)",
+        const headings = [
+            "પૃષ્ઠ ૧: Screening data",
             "પૃષ્ઠ ૨: Medical assessment & SNP",
-            "પૃષ્ઠ ૩: Medicines during CMAM Program",
+            "પૃષ્ઠ ૩: Medicines during Program",
             "પૃષ્ઠ ૪: Follow up during Program",
-            "પૃષ્ઠ ૫: અંતિમ ગ્રેડિંગ અને પરિણામ",
+            "પૃષ્ઠ ૫: અંતિમ ગ્રેડિંગ",
             "પૃષ્ઠ ૬: ડિસ્ચાર્જના પ્રકાર અને પરિભાષા",
             "પૃષ્ઠ ૭: ડિસ્ચાર્જ પછીનો ફોલોઅપ"
         ];
-        
         for(let p=1; p<=7; p++) {
             document.write(`<div id="page${p}" class="page ${p==1?'active':''}">
-                <h3 style="text-align:center;">${pgHead[p-1]}</h3>
-                <div id="tableContainer${p}"></div>
+                <h3 style="text-align:center;">${headings[p-1]}</h3>
+                <div id="tablePlace${p}"></div>
             </div>`);
         }
     </script>
@@ -73,30 +103,30 @@
     }
 
     function initApp() {
-        const headers = {
-            1: "<tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>ઉંમર</th><th>જાતિ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સોજા</th><th>સ્તર</th></tr>",
-            2: "<tr><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th><th>THR સંખ્યા</th></tr>",
-            3: "<tr><th>ક્રમ</th><th>અઠ. ૧</th><th>અઠ. ૨</th><th>અઠ. ૩</th><th>અઠ. ૪</th><th>પખ. ૧</th><th>પખ. ૨</th></tr>",
+        const heads = {
+            1: "<tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતા</th><th>ઉંમર</th><th>જાતિ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સોજા</th><th>સ્તર</th></tr>",
+            2: "<tr><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th><th>THR</th></tr>",
+            3: "<tr><th>ક્રમ</th><th>અઠ ૧</th><th>અઠ ૨</th><th>અઠ ૩</th><th>અઠ ૪</th><th>પખ ૧</th><th>પખ ૨</th></tr>",
             4: "<tr><th>ક્રમ</th><th>વજન ૧</th><th>વજન ૨</th><th>વજન ૩</th><th>વજન ૪</th><th>સ્તર ૧</th><th>સ્તર ૨</th></tr>",
             5: "<tr><th>ક્રમ</th><th>શરૂઆત</th><th>અંતિમ</th><th>સુધારો %</th><th>શેરો</th></tr>",
-            6: "<tr><th>રિકવર</th><th>નોન-રિકવર</th><th>જટિલતા</th><th>ફેરબદલ</th><th>ગેરહાજર</th><th>મૃત્યુ</th><th>તપાસ હા/ના</th></tr>",
+            6: "<tr><th>રિકવર</th><th>નોન-રિકવર</th><th>જટિલતા</th><th>ફેરબદલ</th><th>ગેરહાજર</th><th>મૃત્યુ</th><th>તપાસ</th></tr>",
             7: "<tr><th>ક્રમ</th><th>૧ માસ</th><th>૨ માસ</th><th>ઊંચાઈ</th><th>સ્થિતિ</th></tr>"
         };
 
         for(let p=1; p<=7; p++) {
-            let html = "<table>" + headers[p];
+            let html = "<table>" + heads[p];
             for(let i=1; i<=15; i++) {
                 html += "<tr>";
                 if([1,3,4,5,7].includes(p)) html += `<td>${i}</td>`;
-                let colCount = (p==1)?9:(p==2)?7:(p==6)?7:(p==3)?6:(p==4)?6:(p==5)?4:4;
-                for(let c=1; c<=colCount; c++) html += `<td><input id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
+                let count = (p==1)?9:(p==2)?7:(p==6)?7:(p==3)?6:(p==4)?6:(p==5)?4:4;
+                for(let c=1; c<=count; c++) html += `<td><input id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
                 html += "</tr>";
             }
             html += "</table>";
-            document.getElementById('tableContainer' + p).innerHTML = html;
+            document.getElementById('tablePlace' + p).innerHTML = html;
         }
 
-        const saved = localStorage.getItem('poshan_final_v12');
+        const saved = localStorage.getItem('poshan_vFinal');
         if(saved) {
             const data = JSON.parse(saved);
             for(const k in data) if(document.getElementById(k)) document.getElementById(k).value = data[k];
@@ -106,11 +136,11 @@
     function saveData() {
         const d = {};
         document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; });
-        localStorage.setItem('poshan_final_v12', JSON.stringify(d));
+        localStorage.setItem('poshan_vFinal', JSON.stringify(d));
     }
 
     function exportData() {
-        const d = localStorage.getItem('poshan_final_v12');
+        const d = localStorage.getItem('poshan_vFinal');
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([d], {type: "application/json"}));
         a.download = "Poshan_Backup.json";
@@ -119,7 +149,7 @@
 
     function importData(e) {
         const r = new FileReader();
-        r.onload = function(ev) { localStorage.setItem('poshan_final_v12', ev.target.result); initApp(); alert("ડેટા લોડ થયો!"); };
+        r.onload = function(ev) { localStorage.setItem('poshan_vFinal', ev.target.result); initApp(); alert("ડેટા લોડ થયો!"); };
         r.readAsText(e.target.files[0]);
     }
 </script>
