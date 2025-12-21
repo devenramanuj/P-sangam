@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>પોષણ સંગમ - રજિસ્ટર</title>
+    <title>પોષણ સંગમ - ફાઈનલ પ્રિન્ટ ફિક્સ</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
         .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; }
@@ -14,33 +14,50 @@
         .page { display: none; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow-x: auto; margin-bottom: 20px; }
         .page.active { display: block; }
         .action-bar { margin: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 12px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 13px; }
-        .btn-blue { background: #2980b9; } .btn-purple { background: #8e44ad; } .btn-dark { background: #34495e; }
-        table { width: 100%; border-collapse: collapse; font-size: 10px; min-width: 1300px; table-layout: fixed; }
-        table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
-        th { background: #ecf0f1; font-weight: bold; vertical-align: top; }
-        input { width: 95%; border: none; padding: 5px; text-align: center; font-size: 12px; background: transparent; outline: none; }
-        .sub-text { font-size: 9px; font-weight: normal; display: block; margin-top: 3px; line-height: 1.2; }
-        
-        /* પ્રિન્ટ માટે ખાસ સેટિંગ */
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1200px; table-layout: fixed; }
+        table, th, td { border: 1px solid #000; text-align: center; padding: 8px; }
+        th { background: #ecf0f1; font-weight: bold; }
+        input { width: 95%; border: none; padding: 5px; text-align: center; font-size: 13px; background: transparent; outline: none; }
+
+        /* પ્રિન્ટ સેટિંગ - જે ખાલી પેજ આવતું અટકાવશે */
         @media print {
-            @page { size: landscape; margin: 10mm; }
+            @page { size: landscape; margin: 5mm; }
             .nav-tabs, .action-bar, .header { display: none !important; }
-            .page { display: block !important; border: 1px solid #000; margin-bottom: 20px; page-break-after: always; box-shadow: none; }
-            table { min-width: 100% !important; page-break-inside: avoid; }
-            input { background: none !important; border: none !important; }
+            .container { padding: 0; margin: 0; width: 100%; }
+            .page { 
+                display: block !important; 
+                visibility: visible !important;
+                position: static !important;
+                overflow: visible !important;
+                page-break-after: always !important; 
+                border: none !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px 0 !important;
+            }
+            table { 
+                width: 100% !important; 
+                min-width: 100% !important; 
+                table-layout: fixed !important;
+                page-break-inside: auto !important;
+            }
+            tr { page-break-inside: avoid !important; page-break-after: auto !important; }
+            input { font-size: 10px !important; }
+            h3 { font-size: 14px !important; margin: 5px 0 !important; }
         }
     </style>
 </head>
 <body onload="initApp()">
 
-<div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર</div>
+<div class="header">પોષણ સંગમ - ડિજિટલ રજિસ્ટર</div>
 
 <div class="action-bar">
-    <button class="btn btn-blue" onclick="exportData()">📤 Backup Export</button>
-    <button class="btn btn-purple" onclick="document.getElementById('importFile').click()">📥 Data Import</button>
-    <input type="file" id="importFile" style="display:none" onchange="importData(event)">
-    <button class="btn btn-dark" onclick="prepareAndPrint()">🖨️ Print / Save PDF</button>
+    <button class="btn" style="background:#2980b9" onclick="exportData()">📤 બેકઅપ Export</button>
+    <button class="btn" style="background:#8e44ad" onclick="document.getElementById('fileIn').click()">📥 ડેટા લાવો Import</button>
+    <input type="file" id="fileIn" style="display:none" onchange="importData(event)">
+    <button class="btn" style="background:#34495e" onclick="window.print()">🖨️ PDF બનાવો / પ્રિન્ટ</button>
 </div>
 
 <div class="nav-tabs" id="tabBar">
@@ -53,66 +70,45 @@
     <button class="tab-btn" onclick="go(7)">P-7</button>
 </div>
 
-<div class="container" id="printableArea">
+<div class="container" id="allPages">
     <div id="page1" class="page active">
         <h3 style="text-align:center;">પૃષ્ઠ ૧: Screening data (૬ મહિના થી ૫ વર્ષ)</h3>
         <table>
-            <tr><th>ક્રમ</th><th>બાળકનું નામ પોષણ ટ્રેકર મુજબ</th><th>માતાનું નામ</th><th>ઉંમર (મહિનામાં)</th><th>જાતિ</th><th>સ્ક્રિનિંગ કર્યા તારીખ</th><th>વજન (કિ.ગ્રા.)</th><th>લંબાઈ/ઊંચાઈ (સે.મી.)</th><th>બંને પગે સોજા (હા/ના)</th><th>પોષણ સ્તર</th></tr>
-            <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p1_n_${i}" oninput="saveData()"></td><td><input id="p1_m_${i}" oninput="saveData()"></td><td><input id="p1_a_${i}" oninput="saveData()"></td><td><input id="p1_g_${i}" oninput="saveData()"></td><td><input type="date" id="p1_d_${i}" oninput="saveData()"></td><td><input id="p1_w_${i}" oninput="saveData()"></td><td><input id="p1_h_${i}" oninput="saveData()"></td><td><input id="p1_b_${i}" oninput="saveData()"></td><td><input id="p1_s_${i}" oninput="saveData()"></td></tr>`);</script>
+            <thead>
+                <tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>ઉંમર</th><th>જાતિ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સોજા</th><th>સ્તર</th></tr>
+            </thead>
+            <tbody>
+                <script>for(let i=1; i<=15; i++) document.write(`<tr><td>${i}</td><td><input id="p1_n_${i}" oninput="saveData()"></td><td><input id="p1_m_${i}" oninput="saveData()"></td><td><input id="p1_a_${i}" oninput="saveData()"></td><td><input id="p1_g_${i}" oninput="saveData()"></td><td><input type="date" id="p1_d_${i}" oninput="saveData()"></td><td><input type="number" step="0.1" id="p1_w_${i}" oninput="saveData()"></td><td><input type="number" step="0.1" id="p1_h_${i}" oninput="saveData()"></td><td><input id="p1_b_${i}" oninput="saveData()"></td><td><input id="p1_s_${i}" oninput="saveData()"></td></tr>`);</script>
+            </tbody>
         </table>
     </div>
 
-    <div id="page6" class="page">
-        <h3 style="text-align:center;">પૃષ્ઠ ૬: ડિસ્ચાર્જના પ્રકાર અને પરિભાષા</h3>
-        <table>
-            <tr>
-                <th>રિકવર (સાજા થવું)<span class="sub-text">૧. W/H > -2SD | ૨. જટિલતા ન હોય | ૩. સોજા ન હોય</span></th>
-                <th>નોન-રિકવર<span class="sub-text">૧૨ અઠવાડિયામાં માપદંડ સુધી ન પહોંચ્યું હોય</span></th>
-                <th>તબીબી જટિલતા<span class="sub-text">ભૂખ ન લાગવી, તાવ, ન્યુમોનિયા, ઝાડા, વજન ઘટવું</span></th>
-                <th>C-MAM કાર્યક્રમ ફેરબદલ</th>
-                <th>ગેરહાજર / કાર્યક્રમ છોડેલ</th>
-                <th>મૃત્યુ</th>
-                <th>વજન તપાસેલ છે? હા/ના</th>
-            </tr>
-            <script>for(let i=1; i<=15; i++) document.write(`<tr><td><input id="p6_a_${i}" oninput="saveData()"></td><td><input id="p6_b_${i}" oninput="saveData()"></td><td><input id="p6_c_${i}" oninput="saveData()"></td><td><input id="p6_d_${i}" oninput="saveData()"></td><td><input id="p6_e_${i}" oninput="saveData()"></td><td><input id="p6_f_${i}" oninput="saveData()"></td><td><input id="p6_g_${i}" oninput="saveData()"></td></tr>`);</script>
-        </table>
-    </div>
-
-    <div id="page2" class="page"><h3>પૃષ્ઠ ૨: Medical Assessment</h3><table id="t2"></table></div>
-    <div id="page3" class="page"><h3>પૃષ્ઠ ૩: Medicines during Prog</h3><table id="t3"></table></div>
-    <div id="page4" class="page"><h3>પૃષ્ઠ ૪: Follow up during Program</h3><table id="t4"></table></div>
-    <div id="page5" class="page"><h3>પૃષ્ઠ ૫: અંતિમ ગ્રેડિંગ</h3><table id="t5"></table></div>
-    <div id="page7" class="page"><h3>પૃષ્ઠ ૭: ડિસ્ચાર્જ પછીનો ફોલોઅપ</h3><table id="t7"></table></div>
+    <div id="page2" class="page"><h3 style="text-align:center;">પૃષ્ઠ ૨: Medical Assessment</h3><table id="t2"></table></div>
+    <div id="page6" class="page"><h3 style="text-align:center;">પૃષ્ઠ ૬: ડિસ્ચાર્જના પ્રકાર અને પરિભાષા</h3><table id="t6"></table></div>
 </div>
 
 <script>
     function go(n) {
-        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('page' + n).style.display = 'block';
+        document.getElementById('page' + n).classList.add('active');
         document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
-        window.scrollTo(0,0);
-    }
-
-    function prepareAndPrint() {
-        alert("તૈયારી થઈ રહી છે... પ્રિન્ટિંગ વિન્ડો ખુલે ત્યાં સુધી રાહ જુઓ");
-        window.print();
     }
 
     function saveData() {
         const d = {};
         document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; });
-        localStorage.setItem('poshan_v10_data', JSON.stringify(d));
+        localStorage.setItem('poshan_print_fix', JSON.stringify(d));
     }
 
     function initApp() {
-        // પેજ ૨ થી ૭ ના ટેબલ જનરેટ કરવા
-        [2,3,4,5,7].forEach(p => {
-            let html = "<tr><th>ક્રમ</th><th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th></tr>";
-            for(let i=1; i<=15; i++) html += `<tr><td>${i}</td><td><input id="p${p}_a_${i}" oninput="saveData()"></td><td><input id="p${p}_b_${i}" oninput="saveData()"></td><td><input id="p${p}_c_${i}" oninput="saveData()"></td><td><input id="p${p}_d_${i}" oninput="saveData()"></td></tr>`;
-            if(document.getElementById('t'+p)) document.getElementById('t'+p).innerHTML = html;
-        });
-        const s = localStorage.getItem('poshan_v10_data');
+        // પેજ જનરેશન લોજિક
+        const t6 = document.getElementById('t6');
+        let h6 = "<tr><th>રિકવર</th><th>નોન-રિકવર</th><th>જટિલતા</th><th>ફેરબદલ</th><th>ગેરહાજર</th><th>મૃત્યુ</th><th>તપાસ હા/ના</th></tr>";
+        for(let i=1; i<=15; i++) h6 += `<tr><td><input id="p6_a_${i}" oninput="saveData()"></td><td><input id="p6_b_${i}" oninput="saveData()"></td><td><input id="p6_c_${i}" oninput="saveData()"></td><td><input id="p6_d_${i}" oninput="saveData()"></td><td><input id="p6_e_${i}" oninput="saveData()"></td><td><input id="p6_f_${i}" oninput="saveData()"></td><td><input id="p6_g_${i}" oninput="saveData()"></td></tr>`;
+        if(t6) t6.innerHTML = h6;
+
+        const s = localStorage.getItem('poshan_print_fix');
         if(s){
             const d = JSON.parse(s);
             for(const k in d) if(document.getElementById(k)) document.getElementById(k).value = d[k];
@@ -120,22 +116,17 @@
     }
 
     function exportData() {
-        const d = localStorage.getItem('poshan_v10_data');
-        const blob = new Blob([d], {type: "application/json"});
+        const d = localStorage.getItem('poshan_print_fix');
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
+        a.href = URL.createObjectURL(new Blob([d], {type: "application/json"}));
         a.download = "Poshan_Backup.json";
         a.click();
     }
 
     function importData(e) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            localStorage.setItem('poshan_v10_data', ev.target.result);
-            initApp();
-            alert("ડેટા સફળતાપૂર્વક લોડ થયો છે!");
-        };
-        reader.readAsText(e.target.files[0]);
+        const r = new FileReader();
+        r.onload = function(ev) { localStorage.setItem('poshan_print_fix', ev.target.result); initApp(); alert("સફળ!"); };
+        r.readAsText(e.target.files[0]);
     }
 </script>
 </body>
