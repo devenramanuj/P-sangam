@@ -2,7 +2,7 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <title>પોષણ સંગમ - સ્માર્ટ રજિસ્ટર 2025</title>
+    <title>પોષણ સંગમ - સ્માર્ટ વાર્ષિક રજિસ્ટર</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
         .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
@@ -17,8 +17,12 @@
         table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
         th { background: #ecf0f1; font-weight: bold; }
         input, select { width: 95%; border: none; padding: 5px; text-align: center; outline: none; font-family: inherit; background: transparent; }
+        
+        /* કોલમ સાઈઝ સેટિંગ */
         .col-month { width: 90px; }
-        .col-name { width: 200px; }
+        .col-name-big { width: 220px; } /* Page 1 માટે મોટી કોલમ */
+        .col-name-small { width: 120px; } /* બાકીના પેજ માટે નાની કોલમ */
+        
         .credit { text-align: center; font-weight: bold; margin-top: 20px; border-top: 1px solid #000; padding-top: 10px; font-size: 12px; }
         .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; font-size: 13px; }
         
@@ -41,9 +45,9 @@
     <div style="border-left: 1px solid #ccc; padding-left: 10px;">
         <strong>બાળકની યાદી:</strong>
         <select id="childSelector" onchange="loadChildData()" style="padding: 8px; border-radius: 5px; border: 1px solid #d35400; width: 150px; background: white;">
-            </select>
+        </select>
     </div>
-    <button class="btn" style="background: #d35400;" onclick="window.print()">🖨️ પ્રિન્ટ</button>
+    <button class="btn" style="background: #d35400;" onclick="window.print()">🖨️ પ્રિન્ટ (૭ પેજ સેટ)</button>
     <button class="btn" style="background: #2980b9;" onclick="exportJSON()">📤 બેકઅપ</button>
     <button class="btn" style="background: #c0392b;" onclick="deleteCurrentChild()">🗑️ ડિલીટ</button>
 </div>
@@ -107,11 +111,16 @@
         let html = "";
         const rowCount = 10;
 
-        // Page 1
+        // --- PAGE 1 (મોટી કોલમ અને માસ ડ્રોપ-ડાઉન) ---
         html += `<div id="page1" class="page active">
             <h3 style="text-align:center;">પૃષ્ઠ ૧: Screening & Basic Info</h3>
             <table>
-                <colgroup><col class="col-month"><col class="col-name"><col><col><col><col style="width:60px;"><col style="width:60px;"><col style="width:80px;"></colgroup>
+                <colgroup>
+                    <col class="col-month">
+                    <col class="col-name-big">
+                    <col><col><col>
+                    <col style="width:60px;"><col style="width:60px;"><col style="width:80px;">
+                </colgroup>
                 <tr><th>માસ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>જન્મ તારીખ</th><th>સ્ક્રિનિંગ તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
         for(let r=1; r<=rowCount; r++) {
             html += `<tr>
@@ -126,25 +135,27 @@
         }
         html += `</table><div class="credit">${creditLine}</div></div>`;
 
-        // Other Pages (2 to 7) - Simplified headers as per previous instructions
+        // --- PAGES 2-7 (નાની કોલમ અને માસ વગર) ---
         const pageConfigs = {
-            2: { title: "Medical Assessment", heads: ["માસ", "ભૂખ પરીક્ષણ", "તારીખ", "જટિલતા", "રેફરલ", "વજન", "ઊંચાઈ"] },
-            3: { title: "Medicines", heads: ["માસ", "વિગત ૧", "વિગત ૨", "વિગત ૩", "વિગત ૪", "તારીખ"] },
-            4: { title: "Follow-up", heads: ["માસ", "વજન ૧", "સ્તર ૧", "વજન ૨", "સ્તર ૨", "તારીખ"] },
-            5: { title: "Grading", heads: ["માસ", "શરૂઆત", "અંતિમ", "સુધારો", "શેરો", "તારીખ"] },
-            6: { title: "Discharge", heads: ["માસ", "રિકવર", "નોન-રિકવર", "જટિલતા", "ફેરબદલ", "તપાસ"] },
-            7: { title: "Post-Followup", heads: ["માસ", "૧ માસ", "૨ માસ", "ઊંચાઈ", "સ્થિતિ", "તારીખ"] }
+            2: { title: "Medical Assessment", heads: ["બાળકનું નામ", "ભૂખ પરીક્ષણ", "તબીબી જટિલતા", "રેફરલ", "વજન", "ઊંચાઈ"] },
+            3: { title: "Medicines during Program", heads: ["બાળકનું નામ", "વિગત ૧", "વિગત ૨", "વિગત ૩", "વિગત ૪", "અન્ય વિગત"] },
+            4: { title: "Follow-up Track", heads: ["બાળકનું નામ", "વજન ૧", "સ્તર ૧", "વજન ૨", "સ્તર ૨"] },
+            5: { title: "Grading & Results", heads: ["બાળકનું નામ", "શરૂઆત ગ્રેડ", "અંતિમ ગ્રેડ", "સુધારો %", "શેરો"] },
+            6: { title: "Discharge Process", heads: ["બાળકનું નામ", "રિકવર", "નોન-રિકવર", "જટિલતા", "ફેરબદલ"] },
+            7: { title: "Post-Discharge Followup", heads: ["બાળકનું નામ", "૧ માસ વજન", "૨ માસ વજન", "ઊંચાઈ", "અંતિમ સ્થિતિ"] }
         };
 
         for(let p=2; p<=7; p++) {
             html += `<div id="page${p}" class="page">
                 <h3 style="text-align:center;">પૃષ્ઠ ${p}: ${pageConfigs[p].title}</h3>
-                <table><tr><th style="width:90px;">${pageConfigs[p].heads[0]}</th>`;
-            for(let h=1; h<6; h++) html += `<th>${pageConfigs[p].heads[h]}</th>`;
-            html += `<th>તારીખ</th></tr>`;
+                <table>
+                    <colgroup><col class="col-name-small"></colgroup>
+                    <tr><th>${pageConfigs[p].heads[0]}</th>`;
+            for(let h=1; h<pageConfigs[p].heads.length; h++) html += `<th>${pageConfigs[p].heads[h]}</th>`;
+            html += `<th>તારીખ (DD/MM/YYYY)</th></tr>`;
             for(let r=1; r<=rowCount; r++) {
-                html += `<tr><td><select id="p${p}_r${r}_month" onchange="saveData()">${getMonthOptions()}</select></td>`;
-                for(let c=1; c<=4; c++) {
+                html += `<tr><td><input id="p${p}_r${r}_name" oninput="saveData()"></td>`;
+                for(let c=1; c<pageConfigs[p].heads.length; c++) {
                     let isLevel = (p==4 && (c==2 || c==4));
                     html += `<td>${isLevel ? `<select id="p${p}_r${r}_c${c}" onchange="saveData()">${getLevelOptions()}</select>` : `<input id="p${p}_r${r}_c${c}" oninput="saveData()">`}</td>`;
                 }
@@ -160,14 +171,14 @@
         if(!childName) return;
         const data = {};
         document.querySelectorAll('input, select').forEach(el => { if(el.id) data[el.id] = el.value; });
-        localStorage.setItem('poshan_data_' + childName, JSON.stringify(data));
+        localStorage.setItem('poshan_annual_data_' + childName, JSON.stringify(data));
     }
 
     function loadChildData() {
         const childName = document.getElementById('childSelector').value;
         document.querySelectorAll('input, select').forEach(el => el.value = ""); 
         if(!childName) return;
-        const saved = localStorage.getItem('poshan_data_' + childName);
+        const saved = localStorage.getItem('poshan_annual_data_' + childName);
         if(saved) {
             const data = JSON.parse(saved);
             for(let key in data) { if(document.getElementById(key)) document.getElementById(key).value = data[key]; }
@@ -177,7 +188,7 @@
     function deleteCurrentChild() {
         const name = document.getElementById('childSelector').value;
         if(!name || !confirm(`શું તમે ${name} નો બધો ડેટા ડિલીટ કરવા માંગો છો?`)) return;
-        localStorage.removeItem('poshan_data_' + name);
+        localStorage.removeItem('poshan_annual_data_' + name);
         childrenList = childrenList.filter(c => c !== name);
         localStorage.setItem('children_names', JSON.stringify(childrenList));
         updateChildDropdown();
@@ -186,11 +197,11 @@
 
     function exportJSON() {
         const name = document.getElementById('childSelector').value;
-        const data = localStorage.getItem('poshan_data_' + name);
+        const data = localStorage.getItem('poshan_annual_data_' + name);
         const blob = new Blob([data], {type: "application/json"});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `${name}_Report.json`;
+        a.download = `${name}_Full_Report_2025.json`;
         a.click();
     }
 </script>
