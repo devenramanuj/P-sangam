@@ -2,130 +2,195 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <title>પોષણ સંગમ - Child Wise Monthly Register</title>
+    <title>પોષણ સંગમ - વાર્ષિક રજિસ્ટર 2025</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
-        .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; }
-        .config-bar { background: #fff; padding: 15px; border-bottom: 2px solid #e67e22; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
+        .config-bar { background: #fff; padding: 15px; border-bottom: 2px solid #e67e22; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .nav-tabs { display: flex; overflow-x: auto; background: #fff; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #e67e22; }
+        .tab-btn { padding: 12px 20px; border: none; background: none; cursor: pointer; font-weight: bold; flex: 1; white-space: nowrap; }
+        .tab-btn.active { color: #e67e22; border-bottom: 4px solid #e67e22; background: #fff5eb; }
         .container { padding: 15px; }
-        .page-set { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; table-layout: fixed; }
+        .page { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .page.active { display: block; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; table-layout: fixed; }
         table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
-        th { background: #ecf0f1; font-weight: bold; }
-        input, select { width: 95%; border: none; padding: 4px; text-align: center; font-size: 12px; background: transparent; outline: none; }
-        .credit { text-align: center; font-weight: bold; margin-top: 15px; border-top: 1px solid #000; padding-top: 5px; font-size: 11px; }
+        th { background: #ecf0f1; }
+        input, select { width: 95%; border: none; padding: 5px; text-align: center; outline: none; font-family: inherit; background: transparent; }
+        .credit { text-align: center; font-weight: bold; margin-top: 20px; border-top: 1px solid #000; padding-top: 10px; font-size: 12px; }
         .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
         
         @media print {
-            .config-bar, .header, .no-print { display: none !important; }
-            .page-set { box-shadow: none !important; margin: 0 !important; padding: 0 !important; page-break-after: always !important; }
             @page { size: landscape; margin: 5mm; }
+            .header, .config-bar, .nav-tabs, .no-print { display: none !important; }
+            .page { display: block !important; page-break-after: always !important; box-shadow: none !important; margin: 0 !important; padding: 10mm 0 !important; }
+            table { width: 100% !important; }
             input, select { border: none !important; appearance: none; -webkit-appearance: none; }
         }
     </style>
 </head>
 <body onload="initApp()">
 
-<div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર</div>
+<div class="header">પોષણ સંગમ - વાર્ષિક ડિજિટલ રજિસ્ટર 2025</div>
 
 <div class="config-bar no-print">
-    <input type="text" id="newChildName" placeholder="બાળકનું નામ લખો" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc; width: 200px;">
-    <button class="btn" style="background: #27ae60;" onclick="addChild()">➕ નવું બાળક ઉમેરો</button>
-    <button class="btn" style="background: #d35400;" onclick="window.print()">🖨️ રિપોર્ટ પ્રિન્ટ કરો</button>
-    <button class="btn" style="background: #2980b9;" onclick="exportBackup()">📤 Backup</button>
+    <div>
+        <strong>બાળક પસંદ કરો:</strong>
+        <select id="childSelector" onchange="loadChildData()" style="padding: 5px; border-radius: 5px; border: 1px solid #d35400;">
+            <option value="child1">બાળક ૧</option>
+            <option value="child2">બાળક ૨</option>
+            <option value="child3">બાળક ૩</option>
+        </select>
+    </div>
+    <button class="btn" style="background: #2980b9;" onclick="exportJSON()">📤 બેકઅપ (Export)</button>
+    <button class="btn" style="background: #8e44ad;" onclick="document.getElementById('importFile').click()">📥 ડેટા લાવો (Import)</button>
+    <input type="file" id="importFile" style="display:none" onchange="importJSON(event)">
+    <button class="btn" style="background: #d35400;" onclick="window.print()">🖨️ આખા વર્ષનો સેટ પ્રિન્ટ કરો</button>
 </div>
 
-<div class="container" id="childContainers">
-    </div>
+<div class="nav-tabs no-print">
+    <button class="tab-btn active" onclick="showPage(1)">P-1 (સ્ક્રિનિંગ)</button>
+    <button class="tab-btn" onclick="showPage(2)">P-2 (મેડિકલ)</button>
+    <button class="tab-btn" onclick="showPage(3)">P-3 (દવાઓ)</button>
+    <button class="tab-btn" onclick="showPage(4)">P-4 (ફોલોઅપ)</button>
+    <button class="tab-btn" onclick="showPage(5)">P-5 (ગ્રેડિંગ)</button>
+    <button class="tab-btn" onclick="showPage(6)">P-6 (ડિસ્ચાર્જ)</button>
+    <button class="tab-btn" onclick="showPage(7)">P-7 (પોસ્ટ-ફોલોઅપ)</button>
+</div>
+
+<div class="container" id="printableContent"></div>
 
 <script>
-    let children = JSON.parse(localStorage.getItem('poshan_children') || "[]");
+    const allMonths = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", "જુલાઈ", "ઓગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
     const creditLine = "Developed by- Devendra ramanuj, 9276505035";
-    const months = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", "જુલાઈ", "ઓગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
+
+    function showPage(n) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('page' + n).classList.add('active');
+        document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+    }
 
     function initApp() {
-        renderAll();
+        renderTables();
+        loadChildData();
     }
 
-    function addChild() {
-        const name = document.getElementById('newChildName').value;
-        if (!name) return alert("કૃપા કરીને નામ લખો");
-        children.push({ id: Date.now(), name: name });
-        localStorage.setItem('poshan_children', JSON.stringify(children));
-        document.getElementById('newChildName').value = "";
-        renderAll();
-    }
-
-    function renderAll() {
-        let html = "";
-        children.forEach(child => {
-            html += `<div class="page-set">
-                <h2 style="text-align:center; color:#d35400;">બાળકનું નામ: ${child.name}</h2>
-                
-                <h3>પૃષ્ઠ ૧: Screening & History (માસવાર વિગત)</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width:100px;">માસ પસંદ કરો</th>
-                            <th>માતાનું નામ</th>
-                            <th>જન્મ તારીખ</th>
-                            <th>તારીખ (DD/MM/YYYY)</th>
-                            <th>વજન</th>
-                            <th>ઊંચાઈ</th>
-                            <th>સ્તર</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-            
-            // દરેક બાળક માટે ૧૦ રો (માર્ચ થી ડિસેમ્બર અથવા કોઈ પણ ૧૦ એન્ટ્રી માટે)
-            for(let r=1; r<=10; r++) {
-                html += `<tr>
-                    <td>
-                        <select id="p1_${child.id}_r${r}_m" onchange="saveData()">
-                            <option value="">--માસ--</option>
-                            ${months.map(m => `<option value="${m}">${m}</option>`).join('')}
-                        </select>
-                    </td>
-                    <td><input id="p1_${child.id}_r${r}_mother" oninput="saveData()"></td>
-                    <td><input id="p1_${child.id}_r${r}_dob" placeholder="DD/MM/YYYY" oninput="saveData()"></td>
-                    <td><input id="p1_${child.id}_r${r}_date" placeholder="DD/MM/YYYY" oninput="saveData()"></td>
-                    <td><input id="p1_${child.id}_r${r}_w" oninput="saveData()"></td>
-                    <td><input id="p1_${child.id}_r${r}_h" oninput="saveData()"></td>
-                    <td><input id="p1_${child.id}_r${r}_s" oninput="saveData()"></td>
-                </tr>`;
-            }
-            
-            html += `</tbody></table>
-                <div class="credit">${creditLine}</div>
-            </div>`;
+    function getMonthOptions(selectedVal = "") {
+        let options = `<option value="">--માસ--</option>`;
+        allMonths.forEach(m => {
+            options += `<option value="${m}">${m}</option>`;
         });
-        document.getElementById('childContainers').innerHTML = html;
-        loadSavedData();
+        return options;
+    }
+
+    function renderTables() {
+        let html = "";
+        const rowCount = 10; // દર પેજ પર ૧૦ હરોળ
+
+        // Page 1: Screening
+        html += `<div id="page1" class="page active">
+            <h3 style="text-align:center;">પૃષ્ઠ ૧: Screening & Basic Info</h3>
+            <table>
+                <tr><th style="width:100px;">માસ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>જન્મ તારીખ (DD/MM/YYYY)</th><th>સ્ક્રિનિંગ તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
+        for(let r=1; r<=rowCount; r++) {
+            html += `<tr>
+                <td><select id="p1_r${r}_month" onchange="saveData()">${getMonthOptions()}</select></td>
+                <td><input id="p1_r${r}_name" oninput="saveData()"></td>
+                <td><input id="p1_r${r}_mother" oninput="saveData()"></td>
+                <td><input id="p1_r${r}_dob" placeholder="DD/MM/YYYY" oninput="saveData()"></td>
+                <td><input id="p1_r${r}_sdate" placeholder="DD/MM/YYYY" oninput="saveData()"></td>
+                <td><input id="p1_r${r}_weight" oninput="saveData()"></td>
+                <td><input id="p1_r${r}_height" oninput="saveData()"></td>
+                <td><input id="p1_r${r}_level" oninput="saveData()"></td></tr>`;
+        }
+        html += `</table><div class="credit">${creditLine}</div></div>`;
+
+        // Page 2: Medical Assessment
+        html += `<div id="page2" class="page">
+            <h3 style="text-align:center;">પૃષ્ઠ ૨: Medical Assessment</h3>
+            <table>
+                <tr><th style="width:100px;">માસ</th><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>તબીબી જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th></tr>`;
+        for(let r=1; r<=rowCount; r++) {
+            html += `<tr>
+                <td><select id="p2_r${r}_month" onchange="saveData()">${getMonthOptions()}</select></td>
+                <td><input id="p2_r${r}_appetite" oninput="saveData()"></td>
+                <td><input id="p2_r${r}_date" placeholder="DD/MM/YYYY" oninput="saveData()"></td>
+                <td><input id="p2_r${r}_comp" oninput="saveData()"></td>
+                <td><input id="p2_r${r}_ref" oninput="saveData()"></td>
+                <td><input id="p2_r${r}_w" oninput="saveData()"></td>
+                <td><input id="p2_r${r}_h" oninput="saveData()"></td></tr>`;
+        }
+        html += `</table><div class="credit">${creditLine}</div></div>`;
+
+        // Pages 3 to 7
+        const headers = {
+            3: ["વિગત ૧", "વિગત ૨", "વિગત ૩", "વિગત ૪", "તારીખ"],
+            4: ["વજન/સ્તર ૧", "વજન/સ્તર ૨", "વજન/સ્તર ૩", "વજન/સ્તર ૪", "પખવાડિયું"],
+            5: ["શરૂઆતનો ગ્રેડ", "અંતિમ ગ્રેડ", "સુધારો (%)", "શેરો", "તારીખ"],
+            6: ["રિકવર", "નોન-રિકવર", "જટિલતા", "ફેરબદલ", "તપાસ હા/ના"],
+            7: ["૧ માસ વજન", "૨ માસ વજન", "ઊંચાઈ", "અંતિમ સ્થિતિ", "તારીખ"]
+        };
+
+        for(let i=3; i<=7; i++) {
+            html += `<div id="page${i}" class="page">
+                <h3 style="text-align:center;">પૃષ્ઠ ${i}: Annual Record</h3>
+                <table><tr><th style="width:100px;">માસ</th><th>${headers[i][0]}</th><th>${headers[i][1]}</th><th>${headers[i][2]}</th><th>${headers[i][3]}</th><th>${headers[i][4]}</th></tr>`;
+            for(let r=1; r<=rowCount; r++) {
+                html += `<tr>
+                    <td><select id="p${i}_r${r}_month" onchange="saveData()">${getMonthOptions()}</select></td>
+                    <td><input id="p${i}_r${r}_c1" oninput="saveData()"></td>
+                    <td><input id="p${i}_r${r}_c2" oninput="saveData()"></td>
+                    <td><input id="p${i}_r${r}_c3" oninput="saveData()"></td>
+                    <td><input id="p${i}_r${r}_c4" oninput="saveData()"></td>
+                    <td><input id="p${i}_r${r}_date" placeholder="DD/MM/YYYY" oninput="saveData()"></td></tr>`;
+            }
+            html += `</table><div class="credit">${creditLine}</div></div>`;
+        }
+
+        document.getElementById('printableContent').innerHTML = html;
     }
 
     function saveData() {
+        const childId = document.getElementById('childSelector').value;
         const data = {};
-        document.querySelectorAll('input, select').forEach(i => { if(i.id) data[i.id] = i.value; });
-        localStorage.setItem('poshan_v14_data', JSON.stringify(data));
+        document.querySelectorAll('input, select').forEach(el => {
+            if(el.id) data[el.id] = el.value;
+        });
+        localStorage.setItem('poshan_v15_' + childId, JSON.stringify(data));
     }
 
-    function loadSavedData() {
-        const s = localStorage.getItem('poshan_v14_data');
-        if(s) {
-            const d = JSON.parse(s);
-            for(const k in d) if(document.getElementById(k)) document.getElementById(k).value = d[k];
+    function loadChildData() {
+        const childId = document.getElementById('childSelector').value;
+        const saved = localStorage.getItem('poshan_v15_' + childId);
+        document.querySelectorAll('input, select').forEach(el => el.value = ""); 
+        if(saved) {
+            const data = JSON.parse(saved);
+            for(let key in data) {
+                if(document.getElementById(key)) document.getElementById(key).value = data[key];
+            }
         }
     }
 
-    function exportBackup() {
-        const d = localStorage.getItem('poshan_v14_data');
-        const c = localStorage.getItem('poshan_children');
-        const fullData = JSON.stringify({ data: JSON.parse(d), children: JSON.parse(c) });
-        const blob = new Blob([fullData], {type: "application/json"});
+    function exportJSON() {
+        const childId = document.getElementById('childSelector').value;
+        const data = localStorage.getItem('poshan_v15_' + childId);
+        const blob = new Blob([data], {type: "application/json"});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "Poshan_Full_Backup.json";
+        a.download = `Report_2025_${childId}.json`;
         a.click();
+    }
+
+    function importJSON(e) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const childId = document.getElementById('childSelector').value;
+            localStorage.setItem('poshan_v15_' + childId, event.target.result);
+            loadChildData();
+            alert("ડેટા સફળતાપૂર્વક લોડ થયો!");
+        };
+        reader.readAsText(e.target.files[0]);
     }
 </script>
 </body>
