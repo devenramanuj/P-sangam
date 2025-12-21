@@ -3,79 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C-MAM 7-Page Export/Import Register</title>
+    <title>C-MAM 7-Page Final Data Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Gujarati:wght@400;700&display=swap');
-        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f3f4f6; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; background: white; margin-bottom: 20px; }
-        th, td { border: 1.5px solid black; padding: 4px; text-align: center; font-size: 11px; }
-        th { background-color: #f1f5f9; font-weight: bold; }
+        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f1f5f9; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; background: white; margin-bottom: 30px; }
+        th, td { border: 1.5px solid black; padding: 5px; text-align: center; font-size: 11px; word-wrap: break-word; }
+        th { background-color: #f8fafc; font-weight: bold; }
+        .input-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 25px; border-t-8 border-indigo-700; }
+        label { font-weight: bold; color: #1e293b; display: block; margin-top: 10px; font-size: 13px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 5px; background-color: #f8fafc; }
         @media print {
             .no-print { display: none !important; }
-            .page-break { display: block !important; page-break-after: always !important; margin: 0 !important; padding: 10mm !important; }
+            .page-break { display: block !important; page-break-after: always !important; padding: 10mm !important; }
             @page { size: A4 landscape; margin: 0; }
         }
-        .input-card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border-t-4 border-indigo-700; }
-        label { font-weight: bold; color: #1e293b; display: block; margin-top: 8px; font-size: 13px; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 3px; }
     </style>
 </head>
-<body class="pb-10">
+<body class="pb-20">
 
-    <div class="no-print bg-indigo-900 p-4 text-white sticky top-0 z-50 flex flex-wrap justify-between items-center gap-2 shadow-lg">
-        <h1 class="font-bold text-lg">C-MAM ડેટા સેન્ટર</h1>
+    <div class="no-print bg-indigo-900 p-4 text-white sticky top-0 z-50 flex flex-wrap justify-between items-center gap-3 shadow-2xl">
+        <h1 class="font-bold text-lg italic">C-MAM ૭ પાનાનું સંપૂર્ણ રજીસ્ટર</h1>
         <div class="flex flex-wrap gap-2">
-            <button onclick="exportData()" class="bg-blue-600 px-3 py-1 rounded text-xs font-bold shadow hover:bg-blue-700">EXPORT (Backup)</button>
-            <label class="bg-orange-600 px-3 py-1 rounded text-xs font-bold shadow cursor-pointer hover:bg-orange-700">
-                IMPORT <input type="file" id="importFile" class="hidden" onchange="importData(event)">
+            <button onclick="exportData()" class="bg-blue-600 px-4 py-2 rounded-lg font-bold shadow text-sm">EXPORT</button>
+            <label class="bg-orange-600 px-4 py-2 rounded-lg font-bold shadow text-sm cursor-pointer">
+                IMPORT <input type="file" class="hidden" onchange="importData(event)">
             </label>
-            <button onclick="window.print()" class="bg-green-600 px-4 py-1 rounded text-xs font-bold shadow hover:bg-green-700">PRINT (7 Page)</button>
+            <button onclick="window.print()" class="bg-green-600 px-4 py-2 rounded-lg font-bold shadow text-sm">PRINT PDF</button>
         </div>
     </div>
 
-    <div class="no-print p-4 max-w-4xl mx-auto">
+    <div class="no-print p-4 max-w-5xl mx-auto">
         <div class="input-card">
-            <h2 class="text-center text-lg font-bold text-indigo-800 mb-4 border-b pb-2">બાળકની માહિતી ભરો (ક્રમ ૧-૧૭)</h2>
-            <select id="childIdx" onchange="loadChildData()" class="bg-blue-50 font-bold border-indigo-300"></select>
+            <h2 class="text-center text-xl font-bold text-indigo-900 mb-6 border-b-2 pb-2">બાળકની માહિતી (Page 1 થી 7)</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+            <div class="bg-blue-50 p-4 rounded-lg mb-6 flex items-center gap-4">
+                <label class="mt-0">ક્રમ પસંદ કરો (૧-૧૭):</label>
+                <select id="childIdx" onchange="loadChildData()" class="font-bold text-indigo-700 bg-white border-indigo-300"></select>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div><label>બાળકનું નામ</label><input type="text" id="cName"></div>
                 <div><label>માતાનું નામ</label><input type="text" id="mName"></div>
-                <div><label>મહિનો</label><input type="text" id="cMonth" placeholder="MM-YYYY"></div>
-                <div><label>ઉંમર</label><input type="number" id="cAge"></div>
+                <div><label>મહિનો</label><input type="text" id="cMonth" placeholder="ડિસેમ્બર-2025"></div>
+                <div><label>ઉંમર (મહિના)</label><input type="number" id="cAge"></div>
                 <div><label>વજન</label><input type="number" step="0.1" id="cWeight"></div>
                 <div><label>ઊંચાઈ</label><input type="number" step="0.1" id="cHeight"></div>
+                <div><label>પોષણ સ્તર</label><select id="cGrade"><option>SAM</option><option>MAM</option></select></div>
+                <div><label>ભૂખ પરીક્ષણ</label><select id="cAppetite"><option>પાસ</option><option>નાપાસ</option></select></div>
+                <div><label>દૂધ યોજના?</label><select id="cMilk"><option>હા</option><option>ના</option></select></div>
             </div>
-            
-            <button onclick="saveData()" class="w-full bg-indigo-700 text-white py-3 rounded-xl font-bold mt-6 hover:bg-indigo-800 transition">માહિતી સેવ કરો</button>
+
+            <div class="p-4 bg-gray-50 rounded-lg mb-6">
+                <h3 class="font-bold text-indigo-800 mb-2 border-l-4 border-indigo-800 pl-2">અઠવાડિક વજન (W1 થી W8)</h3>
+                <div class="grid grid-cols-4 gap-3">
+                    <input type="number" step="0.1" id="w1" placeholder="W1"><input type="number" step="0.1" id="w2" placeholder="W2">
+                    <input type="number" step="0.1" id="w3" placeholder="W3"><input type="number" step="0.1" id="w4" placeholder="W4">
+                    <input type="number" step="0.1" id="w5" placeholder="W5"><input type="number" step="0.1" id="w6" placeholder="W6">
+                    <input type="number" step="0.1" id="w7" placeholder="W7"><input type="number" step="0.1" id="w8" placeholder="W8">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label>પરિણામ (રિકવર/અન્ય)</label><select id="cOutcome"><option>રિકવર</option><option>નોન-રિકવર</option><option>મૃત્યુ</option></select></div>
+                <div><label>પોસ્ટ ફોલો-અપ સ્થિતિ</label><input type="text" id="cPost" placeholder="માસ-૧,૨,૩ ની વિગત"></div>
+            </div>
+
+            <button onclick="saveData()" class="w-full bg-indigo-800 text-white py-4 rounded-xl font-bold text-xl mt-8 shadow-xl hover:bg-black transition">માહિતી સેવ કરો</button>
         </div>
     </div>
 
     <div id="printArea" class="p-4 print:p-0">
-        <div class="page-break bg-white p-4 mb-6 shadow">
-            <h3 class="text-center font-bold mb-2">પાનું ૧: સ્ક્રિનિંગ ડેટા (Screening)</h3>
-            <table><thead><tr><th class="w-10">ક્રમ</th><th class="w-24">મહિનો</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th class="w-12">ઉંમર</th><th class="w-12">વજન</th><th class="w-12">ઊંચાઈ</th></tr></thead><tbody id="b1"></tbody></table>
+        <div class="page-break bg-white p-6 shadow mb-8">
+            <h2 class="text-center font-bold text-xl underline mb-4">પાનું ૧: સ્ક્રિનિંગ ડેટા</h2>
+            <table><thead><tr><th>ક્રમ</th><th>મહિનો</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>ઉંમર</th><th>વજન</th><th>ઊંચાઈ</th></tr></thead><tbody id="b1"></tbody></table>
         </div>
-        <div class="page-break bg-white p-4 mb-6 shadow">
-            <h3 class="text-center font-bold mb-2">પાનું ૨: તબીબી મૂલ્યાંકન (Medical)</h3>
-            <table><thead><tr><th class="w-10">ક્રમ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>તબીબી જટિલતાઓ</th></tr></thead><tbody id="b2"></tbody></table>
+        <div class="page-break bg-white p-6 shadow mb-8">
+            <h2 class="text-center font-bold text-xl underline mb-4">પાનું ૨: તબીબી મૂલ્યાંકન</h2>
+            <table><thead><tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>ભૂખ પરીક્ષણ</th><th>તબીબી જટિલતા</th></tr></thead><tbody id="b2"></tbody></table>
         </div>
+        <div class="page-break bg-white p-6 shadow mb-8">
+            <h2 class="text-center font-bold text-xl underline mb-4">પાનું ૩: SNP અને દૂધ યોજના</h2>
+            <table><thead><tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>પોષણ સ્તર</th><th>દૂધ લાભ?</th></tr></thead><tbody id="b3"></tbody></table>
         </div>
+        <div class="page-break bg-white p-6 shadow mb-8">
+            <h2 class="text-center font-bold text-xl underline mb-4">પાનું ૪: અઠવાડિક ફોલો-અપ વજન</h2>
+            <table><thead><tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>W1</th><th>W2</th><th>W3</th><th>W4</th><th>W5</th><th>W6</th><th>W7</th><th>W8</th></tr></thead><tbody id="b4"></tbody></table>
+        </div>
+        <div class="page-break bg-white p-6 shadow mb-8">
+            <h2 class="text-center font-bold text-xl underline mb-4">પાનું ૬: ડિસ્ચાર્જ અને પરિણામ</h2>
+            <table><thead><tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>પરિણામ</th></tr></thead><tbody id="b6"></tbody></table>
+        </div>
+        <div class="page-break bg-white p-6 shadow mb-8">
+            <h2 class="text-center font-bold text-xl underline mb-4">પાનું ૭: ડિસ્ચાર્જ પછીનું ફોલો-અપ</h2>
+            <table><thead><tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>સ્થિતિ (માસ ૧,૨,૩)</th></tr></thead><tbody id="b7"></tbody></table>
+        </div>
+    </div>
 
     <script>
         const total = 17;
-        let db = JSON.parse(localStorage.getItem('cmam_v8_final')) || {};
+        let db = JSON.parse(localStorage.getItem('cmam_master_final')) || {};
 
         function setup() {
             const sel = document.getElementById('childIdx');
-            const b1 = document.getElementById('b1');
-            const b2 = document.getElementById('b2');
-
             for (let i = 1; i <= total; i++) {
-                sel.innerHTML += `<option value="${i}">બાળક ક્રમ - ${i}</option>`;
-                b1.innerHTML += `<tr><td>${i}</td><td id="m1-${i}"></td><td id="cn1-${i}"></td><td id="mn1-${i}"></td><td id="a1-${i}"></td><td id="w1-${i}"></td><td id="h1-${i}"></td></tr>`;
-                b2.innerHTML += `<tr><td>${i}</td><td id="cn2-${i}"></td><td id="mn2-${i}"></td><td></td></tr>`;
+                sel.innerHTML += `<option value="${i}">ક્રમ - ${i}</option>`;
+                document.getElementById('b1').innerHTML += `<tr><td>${i}</td><td id="m1-${i}"></td><td id="cn1-${i}"></td><td id="mn1-${i}"></td><td id="a1-${i}"></td><td id="w1-${i}"></td><td id="h1-${i}"></td></tr>`;
+                document.getElementById('b2').innerHTML += `<tr><td>${i}</td><td id="cn2-${i}"></td><td id="mn2-${i}"></td><td id="ap2-${i}"></td><td></td></tr>`;
+                document.getElementById('b3').innerHTML += `<tr><td>${i}</td><td id="cn3-${i}"></td><td id="mn3-${i}"></td><td id="st3-${i}"></td><td id="mk3-${i}"></td></tr>`;
+                document.getElementById('b4').innerHTML += `<tr><td>${i}</td><td id="cn4-${i}"></td><td id="ww1-${i}"></td><td id="ww2-${i}"></td><td id="ww3-${i}"></td><td id="ww4-${i}"></td><td id="ww5-${i}"></td><td id="ww6-${i}"></td><td id="ww7-${i}"></td><td id="ww8-${i}"></td></tr>`;
+                document.getElementById('b6').innerHTML += `<tr><td>${i}</td><td id="cn6-${i}"></td><td id="mn6-${i}"></td><td id="oc6-${i}"></td></tr>`;
+                document.getElementById('b7').innerHTML += `<tr><td>${i}</td><td id="cn7-${i}"></td><td id="ps7-${i}"></td></tr>`;
             }
             refresh();
             loadChildData();
@@ -84,71 +123,74 @@
         function saveData() {
             const i = document.getElementById('childIdx').value;
             db[i] = {
-                name: document.getElementById('cName').value,
-                mname: document.getElementById('mName').value,
-                month: document.getElementById('cMonth').value,
-                age: document.getElementById('cAge').value,
-                weight: document.getElementById('cWeight').value,
-                height: document.getElementById('cHeight').value
+                name: document.getElementById('cName').value, mname: document.getElementById('mName').value,
+                month: document.getElementById('cMonth').value, age: document.getElementById('cAge').value,
+                weight: document.getElementById('cWeight').value, height: document.getElementById('cHeight').value,
+                grade: document.getElementById('cGrade').value, app: document.getElementById('cAppetite').value,
+                milk: document.getElementById('cMilk').value, outcome: document.getElementById('cOutcome').value,
+                post: document.getElementById('cPost').value,
+                w1: document.getElementById('w1').value, w2: document.getElementById('w2').value,
+                w3: document.getElementById('w3').value, w4: document.getElementById('w4').value,
+                w5: document.getElementById('w5').value, w6: document.getElementById('w6').value,
+                w7: document.getElementById('w7').value, w8: document.getElementById('w8').value
             };
-            localStorage.setItem('cmam_v8_final', JSON.stringify(db));
+            localStorage.setItem('cmam_master_final', JSON.stringify(db));
             refresh();
-            alert("ડેટા સેવ થયો!");
+            alert("ડેટા સેવ થઈ ગયો!");
         }
 
         function loadChildData() {
             const i = document.getElementById('childIdx').value;
             const d = db[i] || {};
-            document.getElementById('cName').value = d.name || '';
-            document.getElementById('mName').value = d.mname || '';
-            document.getElementById('cMonth').value = d.month || '';
-            document.getElementById('cAge').value = d.age || '';
-            document.getElementById('cWeight').value = d.weight || '';
-            document.getElementById('cHeight').value = d.height || '';
+            document.getElementById('cName').value = d.name || ''; document.getElementById('mName').value = d.mname || '';
+            document.getElementById('cMonth').value = d.month || ''; document.getElementById('cAge').value = d.age || '';
+            document.getElementById('cWeight').value = d.weight || ''; document.getElementById('cHeight').value = d.height || '';
+            document.getElementById('cGrade').value = d.grade || 'SAM'; document.getElementById('cAppetite').value = d.app || 'પાસ';
+            document.getElementById('cMilk').value = d.milk || 'હા'; document.getElementById('cOutcome').value = d.outcome || 'રિકવર';
+            document.getElementById('cPost').value = d.post || '';
+            document.getElementById('w1').value = d.w1 || ''; document.getElementById('w2').value = d.w2 || '';
+            document.getElementById('w3').value = d.w3 || ''; document.getElementById('w4').value = d.w4 || '';
+            document.getElementById('w5').value = d.w5 || ''; document.getElementById('w6').value = d.w6 || '';
+            document.getElementById('w7').value = d.w7 || ''; document.getElementById('w8').value = d.w8 || '';
         }
 
         function refresh() {
             for (let i = 1; i <= total; i++) {
                 const d = db[i];
                 if (d) {
-                    ['1','2'].forEach(p => {
-                        const cn = document.getElementById(`cn${p}-${i}`); if(cn) cn.innerText = d.name;
-                        const mn = document.getElementById(`mn${p}-${i}`); if(mn) mn.innerText = d.mname;
-                    });
+                    ['1','2','3','4','6','7'].forEach(p => { if(document.getElementById(`cn${p}-${i}`)) document.getElementById(`cn${p}-${i}`).innerText = d.name; });
+                    ['1','2','3','6'].forEach(p => { if(document.getElementById(`mn${p}-${i}`)) document.getElementById(`mn${p}-${i}`).innerText = d.mname; });
                     if(document.getElementById(`m1-${i}`)) document.getElementById(`m1-${i}`).innerText = d.month;
                     if(document.getElementById(`a1-${i}`)) document.getElementById(`a1-${i}`).innerText = d.age;
                     if(document.getElementById(`w1-${i}`)) document.getElementById(`w1-${i}`).innerText = d.weight;
                     if(document.getElementById(`h1-${i}`)) document.getElementById(`h1-${i}`).innerText = d.height;
+                    if(document.getElementById(`ap2-${i}`)) document.getElementById(`ap2-${i}`).innerText = d.app;
+                    if(document.getElementById(`st3-${i}`)) document.getElementById(`st3-${i}`).innerText = d.grade;
+                    if(document.getElementById(`mk3-${i}`)) document.getElementById(`mk3-${i}`).innerText = d.milk;
+                    if(document.getElementById(`oc6-${i}`)) document.getElementById(`oc6-${i}`).innerText = d.outcome;
+                    if(document.getElementById(`ps7-${i}`)) document.getElementById(`ps7-${i}`).innerText = d.post;
+                    for(let w=1; w<=8; w++) { if(document.getElementById(`ww${w}-${i}`)) document.getElementById(`ww${w}-${i}`).innerText = d[`w${w}`]; }
                 }
             }
         }
 
-        // Export Function
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "C-MAM_Backup_" + new Date().toLocaleDateString() + ".json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", "CMAM_Full_Backup.json");
+            dl.click();
         }
 
-        // Import Function
-        function importData(event) {
+        function importData(e) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    db = JSON.parse(e.target.result);
-                    localStorage.setItem('cmam_v8_final', JSON.stringify(db));
-                    refresh();
-                    loadChildData();
-                    alert("ડેટા સફળતાપૂર્વક ઇમ્પોર્ટ થયો છે!");
-                } catch (err) {
-                    alert("ફાઈલ વાંચવામાં ભૂલ છે!");
-                }
+            reader.onload = function(ev) {
+                db = JSON.parse(ev.target.result);
+                localStorage.setItem('cmam_master_final', JSON.stringify(db));
+                refresh();
+                alert("ડેટા લોડ થઈ ગયો!");
             };
-            reader.readAsText(event.target.files[0]);
+            reader.readAsText(e.target.files[0]);
         }
 
         setup();
