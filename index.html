@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C-MAM 7-Page Final Register</title>
+    <title>C-MAM 7-Page Separate Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Gujarati:wght@400;700&display=swap');
         body { font-family: 'Hind Gujarati', sans-serif; background-color: #f3f4f6; }
+        
+        /* ટેબલ સેટિંગ્સ - A4 Landscape માટે */
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; background: white; margin-bottom: 20px; }
+        th, td { border: 1.5px solid black; padding: 4px; text-align: center; font-size: 11px; }
+        th { background-color: #f1f5f9; font-weight: bold; }
         
         /* પ્રિન્ટ સેટિંગ્સ - જે ૭ અલગ પાના પાડશે */
         @media print {
@@ -17,92 +22,112 @@
                 page-break-after: always !important; 
                 margin: 0 !important;
                 padding: 10mm !important;
+                width: 100%;
             }
             body { background: white; padding: 0; }
-            table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-            th, td { border: 1.5px solid black; padding: 5px; font-size: 12px; }
             @page { size: A4 landscape; margin: 0; }
         }
 
-        /* એન્ટ્રી ફોર્મ સ્ટાઈલ */
-        .input-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; border-t-4 border-indigo-600; }
-        label { font-weight: bold; color: #1e293b; display: block; margin-top: 10px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 5px; }
+        /* મોબાઈલ એન્ટ્રી ફોર્મ સ્ટાઈલ */
+        .input-card { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border-t-4 border-indigo-700; }
+        label { font-weight: bold; color: #1e293b; display: block; margin-top: 8px; font-size: 13px; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 3px; }
     </style>
 </head>
 <body class="pb-10">
 
-    <div class="no-print bg-indigo-800 p-4 text-white sticky top-0 z-50 flex justify-between items-center shadow-lg">
+    <div class="no-print bg-indigo-900 p-4 text-white sticky top-0 z-50 flex justify-between items-center shadow-lg">
         <h1 class="font-bold text-lg">C-MAM ૭ પાનાનું રજીસ્ટર</h1>
-        <button onclick="window.print()" class="bg-green-600 px-5 py-2 rounded-lg font-bold shadow-lg active:scale-95 transition">PDF પ્રિન્ટ કરો</button>
+        <button onclick="window.print()" class="bg-green-600 px-5 py-2 rounded-lg font-bold shadow-lg">PDF પ્રિન્ટ (૭ પાના)</button>
     </div>
 
-    <div class="no-print p-4 max-w-3xl mx-auto">
+    <div class="no-print p-4 max-w-4xl mx-auto">
         <div class="input-card">
-            <h2 class="text-center text-xl font-bold text-indigo-800 mb-6 border-b pb-2">ડેટા એન્ટ્રી અહીં કરો</h2>
+            <h2 class="text-center text-xl font-bold text-indigo-800 mb-4 border-b pb-2">બાળકની માહિતી અહીં ભરો</h2>
             
-            <label>બાળકનો ક્રમ પસંદ કરો (૧ થી ૧૭)</label>
-            <select id="childIdx" onchange="loadChildData()" class="bg-blue-50 font-bold">
+            <label>ક્રમ પસંદ કરો (૧ થી ૧૭)</label>
+            <select id="childIdx" onchange="loadChildData()" class="bg-blue-50 font-bold border-indigo-300">
                 </select>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
                 <div><label>બાળકનું નામ</label><input type="text" id="cName"></div>
                 <div><label>માતાનું નામ</label><input type="text" id="mName"></div>
-                <div><label>ઉંમર (મહિના)</label><input type="number" id="cAge"></div>
-                <div><label>વજન (કિગ્રા)</label><input type="number" step="0.1" id="cWeight"></div>
-                <div><label>ઊંચાઈ (સેમી)</label><input type="number" step="0.1" id="cHeight"></div>
                 <div><label>મહિનો</label><input type="text" id="cMonth" placeholder="ડિસેમ્બર-2025"></div>
+                <div><label>ઉંમર</label><input type="number" id="cAge"></div>
+                <div><label>વજન</label><input type="number" step="0.1" id="cWeight"></div>
+                <div><label>ઊંચાઈ</label><input type="number" step="0.1" id="cHeight"></div>
+                <div><label>પોષણ સ્તર</label><select id="cStatus"><option>SAM</option><option>MAM</option></select></div>
+                <div><label>ભૂખ પરીક્ષણ</label><select id="cApp"><option>પાસ</option><option>નાપાસ</option></select></div>
+                <div><label>પરિણામ</label><select id="cRes"><option>રિકવર</option><option>નોન-રિકવર</option></select></div>
             </div>
 
-            <div class="mt-6 border-t pt-4">
-                <h3 class="font-bold text-indigo-700">અઠવાડિક વજન (પાનું ૪)</h3>
-                <div class="grid grid-cols-4 gap-2 mt-2">
-                    <div><label>W1</label><input type="number" step="0.1" id="w1"></div>
-                    <div><label>W2</label><input type="number" step="0.1" id="w2"></div>
-                    <div><label>W3</label><input type="number" step="0.1" id="w3"></div>
-                    <div><label>W4</label><input type="number" step="0.1" id="w4"></div>
-                </div>
+            <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 border-t pt-2">
+                <h3 class="col-span-full font-bold text-indigo-700">અઠવાડિક વજન (W1-W8)</h3>
+                <input type="number" step="0.1" id="w1" placeholder="W1">
+                <input type="number" step="0.1" id="w2" placeholder="W2">
+                <input type="number" step="0.1" id="w3" placeholder="W3">
+                <input type="number" step="0.1" id="w4" placeholder="W4">
             </div>
 
-            <button onclick="saveData()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-xl mt-8 shadow-md active:bg-indigo-700 transition">માહિતી સેવ કરો</button>
+            <button onclick="saveData()" class="w-full bg-indigo-700 text-white py-4 rounded-xl font-bold text-xl mt-6 shadow-md active:bg-indigo-800 transition">માહિતી સેવ કરો</button>
         </div>
     </div>
 
     <div id="printArea" class="p-4 print:p-0">
-        <div class="page-break bg-white p-4 shadow mb-8">
-            <h3 class="text-center font-bold text-lg mb-4 border-b-2 border-black">પાનું ૧: સ્ક્રિનિંગ ડેટા (Screening)</h3>
-            <table id="tbl1"><thead><tr><th class="w-12">ક્રમ</th><th class="w-24">મહિનો</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>ઉંમર</th><th>વજન</th><th>ઊંચાઈ</th></tr></thead><tbody id="b1"></tbody></table>
-        </div>
-
-        <div class="page-break bg-white p-4 shadow mb-8">
-            <h3 class="text-center font-bold text-lg mb-4 border-b-2 border-black">પાનું ૨: તબીબી મૂલ્યાંકન (Medical)</h3>
-            <table id="tbl2"><thead><tr><th class="w-12">ક્રમ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>તબીબી વિગત</th></tr></thead><tbody id="b2"></tbody></table>
-        </div>
-
-        <div class="page-break bg-white p-4 shadow mb-8">
-            <h3 class="text-center font-bold text-lg mb-4 border-b-2 border-black">પાનું ૪: અઠવાડિક ફોલો-અપ</h3>
-            <table id="tbl4"><thead><tr><th class="w-12">ક્રમ</th><th>બાળકનું નામ</th><th>W1</th><th>W2</th><th>W3</th><th>W4</th><th>W5</th><th>W6</th></tr></thead><tbody id="b4"></tbody></table>
-        </div>
         
+        <div class="page-break bg-white p-4 mb-8">
+            <h3 class="text-center font-bold text-lg mb-4 underline">પાનું ૧: સ્ક્રિનિંગ ડેટા (Screening Details)</h3>
+            <table id="tbl1"><thead><tr><th class="w-10">ક્રમ</th><th class="w-24">મહિનો</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th class="w-12">ઉંમર</th><th class="w-12">વજન</th><th class="w-12">ઊંચાઈ</th></tr></thead><tbody id="b1"></tbody></table>
         </div>
+
+        <div class="page-break bg-white p-4 mb-8">
+            <h3 class="text-center font-bold text-lg mb-4 underline">પાનું ૨: તબીબી મૂલ્યાંકન (Medical Assessment)</h3>
+            <table id="tbl2"><thead><tr><th class="w-10">ક્રમ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>ભૂખ પરીક્ષણ</th><th>તબીબી જટિલતાઓ</th></tr></thead><tbody id="b2"></tbody></table>
+        </div>
+
+        <div class="page-break bg-white p-4 mb-8">
+            <h3 class="text-center font-bold text-lg mb-4 underline">પાનું ૩: પોષણ સ્તર અને SNP/દૂધ યોજના</h3>
+            <table id="tbl3"><thead><tr><th class="w-10">ક્રમ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>ગ્રેડ</th><th>દૂધ લાભ?</th></tr></thead><tbody id="b3"></tbody></table>
+        </div>
+
+        <div class="page-break bg-white p-4 mb-8">
+            <h3 class="text-center font-bold text-lg mb-4 underline">પાનું ૪: અઠવાડિક ફોલો-અપ (Weekly Weight)</h3>
+            <table id="tbl4"><thead><tr><th class="w-10">ક્રમ</th><th>બાળકનું નામ</th><th>W1</th><th>W2</th><th>W3</th><th>W4</th><th>W5</th><th>W6</th></tr></thead><tbody id="b4"></tbody></table>
+        </div>
+
+        <div class="page-break bg-white p-4 mb-8">
+            <h3 class="text-center font-bold text-lg mb-4 underline">પાનું ૫: દવાઓની વિગત (Medicines)</h3>
+            <table id="tbl5"><thead><tr><th class="w-10">ક્રમ</th><th>બાળકનું નામ</th><th>IFA</th><th>Vit-A</th><th>Albendazole</th><th>Multivitamin</th></tr></thead><tbody id="b5"></tbody></table>
+        </div>
+
+        <div class="page-break bg-white p-4 mb-8">
+            <h3 class="text-center font-bold text-lg mb-4 underline">પાનું ૬: ડિસ્ચાર્જ અને પરિણામ</h3>
+            <table id="tbl6"><thead><tr><th class="w-10">ક્રમ</th><th>બાળકનું નામ</th><th>તારીખ</th><th>વજન</th><th>પરિણામ</th></tr></thead><tbody id="b6"></tbody></table>
+        </div>
+
+        <div class="page-break bg-white p-4 mb-8">
+            <h3 class="text-center font-bold text-lg mb-4 underline">પાનું ૭: ડિસ્ચાર્જ પછીનું ફોલો-અપ</h3>
+            <table id="tbl7"><thead><tr><th class="w-10">ક્રમ</th><th>બાળકનું નામ</th><th>માસ-૧</th><th>માસ-૨</th><th>માસ-૩</th><th>સ્થિતિ</th></tr></thead><tbody id="b7"></tbody></table>
+        </div>
+    </div>
 
     <script>
-        const total = 17;
-        let db = JSON.parse(localStorage.getItem('cmam_final_v7')) || {};
+        const totalRows = 17;
+        let db = JSON.parse(localStorage.getItem('cmam_7page_final')) || {};
 
         function setup() {
             const sel = document.getElementById('childIdx');
-            const b1 = document.getElementById('b1');
-            const b2 = document.getElementById('b2');
-            const b4 = document.getElementById('b4');
-
-            for (let i = 1; i <= total; i++) {
+            for (let i = 1; i <= totalRows; i++) {
                 sel.innerHTML += `<option value="${i}">ક્રમ - ${i}</option>`;
-                b1.innerHTML += `<tr><td>${i}</td><td id="m1-${i}"></td><td id="n1-${i}"></td><td id="mn1-${i}"></td><td id="a1-${i}"></td><td id="w1-${i}"></td><td id="h1-${i}"></td></tr>`;
-                b2.innerHTML += `<tr><td>${i}</td><td id="n2-${i}"></td><td id="mn2-${i}"></td><td></td></tr>`;
-                b4.innerHTML += `<tr><td>${i}</td><td id="n4-${i}"></td><td id="ww1-${i}"></td><td id="ww2-${i}"></td><td id="ww3-${i}"></td><td id="ww4-${i}"></td><td></td><td></td></tr>`;
+                document.getElementById('b1').innerHTML += `<tr><td>${i}</td><td id="m1-${i}"></td><td id="cn1-${i}"></td><td id="mn1-${i}"></td><td id="a1-${i}"></td><td id="w1-${i}"></td><td id="h1-${i}"></td></tr>`;
+                document.getElementById('b2').innerHTML += `<tr><td>${i}</td><td id="cn2-${i}"></td><td id="mn2-${i}"></td><td id="ap2-${i}"></td><td></td></tr>`;
+                document.getElementById('b3').innerHTML += `<tr><td>${i}</td><td id="cn3-${i}"></td><td id="mn3-${i}"></td><td id="st3-${i}"></td><td></td></tr>`;
+                document.getElementById('b4').innerHTML += `<tr><td>${i}</td><td id="cn4-${i}"></td><td id="ww1-${i}"></td><td id="ww2-${i}"></td><td id="ww3-${i}"></td><td id="ww4-${i}"></td><td></td><td></td></tr>`;
+                document.getElementById('b5').innerHTML += `<tr><td>${i}</td><td id="cn5-${i}"></td><td></td><td></td><td></td><td></td></tr>`;
+                document.getElementById('b6').innerHTML += `<tr><td>${i}</td><td id="cn6-${i}"></td><td></td><td></td><td id="re6-${i}"></td></tr>`;
+                document.getElementById('b7').innerHTML += `<tr><td>${i}</td><td id="cn7-${i}"></td><td></td><td></td><td></td><td></td></tr>`;
             }
-            refreshView();
+            refresh();
             loadChildData();
         }
 
@@ -111,18 +136,19 @@
             db[i] = {
                 name: document.getElementById('cName').value,
                 mname: document.getElementById('mName').value,
+                month: document.getElementById('cMonth').value,
                 age: document.getElementById('cAge').value,
                 weight: document.getElementById('cWeight').value,
                 height: document.getElementById('cHeight').value,
-                month: document.getElementById('cMonth').value,
-                w1: document.getElementById('w1').value,
-                w2: document.getElementById('w2').value,
-                w3: document.getElementById('w3').value,
-                w4: document.getElementById('w4').value
+                status: document.getElementById('cStatus').value,
+                app: document.getElementById('cApp').value,
+                res: document.getElementById('cRes').value,
+                w1: document.getElementById('w1').value, w2: document.getElementById('w2').value,
+                w3: document.getElementById('w3').value, w4: document.getElementById('w4').value
             };
-            localStorage.setItem('cmam_final_v7', JSON.stringify(db));
-            refreshView();
-            alert("ડેટા સેવ થયો!");
+            localStorage.setItem('cmam_7page_final', JSON.stringify(db));
+            refresh();
+            alert("માહિતી સેવ થઈ ગઈ છે!");
         }
 
         function loadChildData() {
@@ -130,29 +156,33 @@
             const d = db[i] || {};
             document.getElementById('cName').value = d.name || '';
             document.getElementById('mName').value = d.mname || '';
+            document.getElementById('cMonth').value = d.month || '';
             document.getElementById('cAge').value = d.age || '';
             document.getElementById('cWeight').value = d.weight || '';
             document.getElementById('cHeight').value = d.height || '';
-            document.getElementById('cMonth').value = d.month || '';
             document.getElementById('w1').value = d.w1 || '';
             document.getElementById('w2').value = d.w2 || '';
             document.getElementById('w3').value = d.w3 || '';
             document.getElementById('w4').value = d.w4 || '';
         }
 
-        function refreshView() {
-            for (let i = 1; i <= total; i++) {
+        function refresh() {
+            for (let i = 1; i <= totalRows; i++) {
                 const d = db[i];
                 if (d) {
+                    ['1','2','3','4','5','6','7'].forEach(p => {
+                        const cn = document.getElementById(`cn${p}-${i}`);
+                        if(cn) cn.innerText = d.name;
+                        const mn = document.getElementById(`mn${p}-${i}`);
+                        if(mn) mn.innerText = d.mname;
+                    });
                     document.getElementById(`m1-${i}`).innerText = d.month;
-                    document.getElementById(`n1-${i}`).innerText = d.name;
-                    document.getElementById(`mn1-${i}`).innerText = d.mname;
                     document.getElementById(`a1-${i}`).innerText = d.age;
                     document.getElementById(`w1-${i}`).innerText = d.weight;
                     document.getElementById(`h1-${i}`).innerText = d.height;
-                    document.getElementById(`n2-${i}`).innerText = d.name;
-                    document.getElementById(`mn2-${i}`).innerText = d.mname;
-                    document.getElementById(`n4-${i}`).innerText = d.name;
+                    document.getElementById(`ap2-${i}`).innerText = d.app;
+                    document.getElementById(`st3-${i}`).innerText = d.status;
+                    document.getElementById(`re6-${i}`).innerText = d.res;
                     document.getElementById(`ww1-${i}`).innerText = d.w1;
                     document.getElementById(`ww2-${i}`).innerText = d.w2;
                     document.getElementById(`ww3-${i}`).innerText = d.w3;
