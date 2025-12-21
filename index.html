@@ -31,6 +31,7 @@
     <button class="btn" style="background: #27ae60;" onclick="addNewChild()">➕ ઉમેરો</button>
     <div style="border-left: 1px solid #ccc; padding-left: 10px;">
         <select id="childSelector" onchange="loadChildData()" style="padding: 8px; border-radius: 5px; border: 1px solid #d35400; width: 150px;">
+            <option value="">-- બાળક પસંદ કરો --</option>
         </select>
     </div>
     <button class="btn" style="background: #d35400;" onclick="window.print()">🖨️ પ્રિન્ટ</button>
@@ -78,25 +79,41 @@
         document.getElementById('newChildName').value = "";
         updateChildDropdown();
         document.getElementById('childSelector').value = name;
-        // નવા બાળક માટે ખાલી ડેટા લોડ કરો
-        document.querySelectorAll('input, select').forEach(el => { 
-            if(el.id) el.value = ""; 
-        });
         localStorage.setItem('last_selected_child', name);
+        
+        // નવા બાળક માટે P-1 ની પહેલી પંક્તિમાં નામ દાખલ કરો
+        const nameInput = document.getElementById('p1_r1_name');
+        if (nameInput) {
+            nameInput.value = name;
+        }
+        
+        // તાત્કાલિક સેવ કરો
+        saveCurrentPageData();
+        
         alert("નવું બાળક ઉમેરાયું: " + name);
     }
 
     function updateChildDropdown() {
         const select = document.getElementById('childSelector');
         let children = JSON.parse(localStorage.getItem('children_list_v2') || "[]");
-        select.innerHTML = children.map(n => `<option value="${n}">${n}</option>`).join('');
+        let options = '<option value="">-- બાળક પસંદ કરો --</option>';
+        children.forEach(child => {
+            options += `<option value="${child}">${child}</option>`;
+        });
+        select.innerHTML = options;
     }
 
     function showPage(n) {
+        // પહેલાં ચાલુ પેજનો ડેટા સેવ કરો
+        saveCurrentPageData();
+        
+        // પછી નવો પેજ દર્શાવો
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach((b, index) => {
+            b.classList.remove('active');
+            if(index === n-1) b.classList.add('active');
+        });
         document.getElementById('page' + n).classList.add('active');
-        document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
     }
 
     function renderTables() {
@@ -104,17 +121,63 @@
         const rowCount = 10;
         
         // P-1
-        html += `<div id="page1" class="page active"><h3 style="text-align:center;">P-1: Screening</h3><table><colgroup><col style="width:90px;"><col style="width:180px;"><col><col><col><col style="width:60px;"><col style="width:60px;"><col style="width:80px;"></colgroup><tr><th>માસ</th><th>નામ</th><th>માતા</th><th>જન્મ તારીખ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
+        html += `<div id="page1" class="page active">
+                    <h3 style="text-align:center;">P-1: Screening</h3>
+                    <table>
+                        <colgroup>
+                            <col style="width:90px;">
+                            <col style="width:180px;">
+                            <col>
+                            <col>
+                            <col>
+                            <col style="width:60px;">
+                            <col style="width:60px;">
+                            <col style="width:80px;">
+                        </colgroup>
+                        <tr>
+                            <th>માસ</th><th>નામ</th><th>માતા</th><th>જન્મ તારીખ</th>
+                            <th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th>
+                        </tr>`;
+        
         for(let r=1; r<=rowCount; r++) {
-            html += `<tr><td><select id="p1_r${r}_m" onchange="autoCopy(${r}); saveCurrentPageData();"><option value="">--</option>${months.map(m=>`<option value="${m}">${m}</option>`).join('')}</select></td><td><input id="p1_r${r}_name" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_mom" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_dob" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_w" oninput="saveCurrentPageData()"></td><td><input id="p1_r${r}_h" oninput="saveCurrentPageData()"></td><td><select id="p1_r${r}_lv" onchange="saveCurrentPageData()"><option value="">--</option><option value="SAM">SAM</option><option value="MAM">MAM</option></select></td></tr>`;
+            html += `<tr>
+                <td><select id="p1_r${r}_m" onchange="autoCopy(${r}); saveCurrentPageData();">
+                    <option value="">--</option>${months.map(m=>`<option value="${m}">${m}</option>`).join('')}
+                </select></td>
+                <td><input id="p1_r${r}_name" oninput="saveCurrentPageData()"></td>
+                <td><input id="p1_r${r}_mom" oninput="saveCurrentPageData()"></td>
+                <td><input id="p1_r${r}_dob" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
+                <td><input id="p1_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
+                <td><input id="p1_r${r}_w" oninput="saveCurrentPageData()"></td>
+                <td><input id="p1_r${r}_h" oninput="saveCurrentPageData()"></td>
+                <td><select id="p1_r${r}_lv" onchange="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="SAM">SAM</option>
+                    <option value="MAM">MAM</option>
+                </select></td>
+            </tr>`;
         }
         html += `</table><div class="credit">${creditLine}</div></div>`;
 
         // P-2 થી P-7
         for(let p=2; p<=7; p++) {
-            html += `<div id="page${p}" class="page"><h3 style="text-align:center;">P-${p}</h3><table><tr><th style="width:150px;">નામ</th><th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th><th>તારીખ</th></tr>`;
+            html += `<div id="page${p}" class="page">
+                        <h3 style="text-align:center;">P-${p}</h3>
+                        <table>
+                            <tr>
+                                <th style="width:150px;">નામ</th>
+                                <th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th>
+                                <th>તારીખ</th>
+                            </tr>`;
             for(let r=1; r<=rowCount; r++) {
-                html += `<tr><td><input id="p${p}_r${r}_name" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_c1" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_c2" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_c3" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_c4" oninput="saveCurrentPageData()"></td><td><input id="p${p}_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td></tr>`;
+                html += `<tr>
+                    <td><input id="p${p}_r${r}_name" oninput="saveCurrentPageData()"></td>
+                    <td><input id="p${p}_r${r}_c1" oninput="saveCurrentPageData()"></td>
+                    <td><input id="p${p}_r${r}_c2" oninput="saveCurrentPageData()"></td>
+                    <td><input id="p${p}_r${r}_c3" oninput="saveCurrentPageData()"></td>
+                    <td><input id="p${p}_r${r}_c4" oninput="saveCurrentPageData()"></td>
+                    <td><input id="p${p}_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
+                </tr>`;
             }
             html += `</table><div class="credit">${creditLine}</div></div>`;
         }
@@ -135,8 +198,8 @@
 
     function saveCurrentPageData() {
         const child = document.getElementById('childSelector').value;
-        if(!child) {
-            alert("કૃપા કરીને પહેલા બાળક પસંદ કરો");
+        if(!child || child === "") {
+            console.log("કૃપા કરીને પહેલા બાળક પસંદ કરો");
             return;
         }
         
@@ -149,7 +212,7 @@
         
         // ચાલુ પેજના બધા inputs એકત્રિત કરો
         currentPage.querySelectorAll('input, select').forEach(el => {
-            if(el.id && el.value.trim() !== '') {
+            if(el.id) {
                 data[el.id] = el.value;
             }
         });
@@ -160,36 +223,41 @@
         
         localStorage.setItem('poshan_child_' + child, JSON.stringify(childData));
         
-        // ડીબગિંગ માટે (હટાવી શકાય)
         console.log("ડેટા સેવ થયો:", child, "પેજ:", pageId);
     }
 
     function loadChildData() {
         const child = document.getElementById('childSelector').value;
-        if(!child) return;
+        if(!child || child === "") {
+            console.log("કોઈ બાળક પસંદ નથી");
+            return;
+        }
         
         localStorage.setItem('last_selected_child', child);
-        
-        // પહેલા બધા inputs રીસેટ કરો
-        document.querySelectorAll('input, select').forEach(el => { 
-            if(el.id) el.value = ""; 
-        });
         
         // બાળકનો સંગ્રહિત ડેટા મેળવો
         const savedData = JSON.parse(localStorage.getItem('poshan_child_' + child) || "{}");
         
         if(Object.keys(savedData).length === 0) {
             console.log("આ બાળક માટે કોઈ ડેટા નથી:", child);
+            // બધા ઇનપુટ ખાલી કરો
+            document.querySelectorAll('input, select').forEach(el => { 
+                if(el.id && el.id.startsWith('p')) {
+                    el.value = ""; 
+                }
+            });
             return;
         }
         
-        // દરેક પેજનો ડેટા લોડ કરો
+        // દરેક પેજનો ડેટા લોડ કરો (1-7)
         for(let pageNum = 1; pageNum <= 7; pageNum++) {
-            const pageData = savedData['page' + pageNum] || {};
-            for(let key in pageData) {
-                const element = document.getElementById(key);
-                if(element) {
-                    element.value = pageData[key];
+            const pageData = savedData['page' + pageNum];
+            if(pageData) {
+                for(let key in pageData) {
+                    const element = document.getElementById(key);
+                    if(element) {
+                        element.value = pageData[key];
+                    }
                 }
             }
         }
