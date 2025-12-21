@@ -2,95 +2,95 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <title>પોષણ સંગમ - ફાઈનલ માસ્ટર રજિસ્ટર 2025</title>
+    <title>પોષણ સંગમ - ફાઇનલ ડેટા સેફ રજીસ્ટર</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
-        .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .config-bar { background: #fff; padding: 15px; border-bottom: 2px solid #e67e22; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; align-items: center; position: sticky; top: 0; z-index: 1001; }
-        .nav-tabs { display: flex; overflow-x: auto; background: #fff; position: sticky; top: 65px; z-index: 1000; border-bottom: 2px solid #e67e22; }
-        .tab-btn { padding: 12px 20px; border: none; background: none; cursor: pointer; font-weight: bold; flex: 1; white-space: nowrap; border-right: 1px solid #eee; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
+        .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
+        .config-bar { background: #fff; padding: 15px; border-bottom: 2px solid #e67e22; display: flex; justify-content: center; gap: 10px; padding-bottom: 5px; }
+        .nav-tabs { display: flex; background: #fff; border-bottom: 2px solid #e67e22; overflow-x: auto; }
+        .tab-btn { padding: 12px 20px; border: none; background: none; cursor: pointer; font-weight: bold; white-space: nowrap; }
         .tab-btn.active { color: #e67e22; border-bottom: 4px solid #e67e22; background: #fff5eb; }
-        .container { padding: 15px; }
-        .page { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .page { display: none; background: white; padding: 20px; margin: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .page.active { display: block; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; table-layout: fixed; }
-        table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
-        th { background: #ecf0f1; font-weight: bold; }
-        input, select { width: 95%; border: none; padding: 5px; text-align: center; outline: none; font-family: inherit; background: transparent; }
-        .col-month { width: 90px; }
-        .col-name-big { width: 220px; }
-        .credit { text-align: center; font-weight: bold; margin-top: 20px; border-top: 1px solid #000; padding-top: 10px; font-size: 12px; color: #333; }
-        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; font-size: 13px; transition: 0.3s; }
-        
-        @media print {
-            @page { size: landscape; margin: 5mm; }
-            .header, .config-bar, .nav-tabs, .no-print { display: none !important; }
-            .page { display: block !important; page-break-after: always !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 10mm 0 !important; }
-            table { width: 100% !important; border: 1px solid #000 !important; }
-            th, td { border: 1px solid #000 !important; }
-            input, select { border: none !important; appearance: none; -webkit-appearance: none; }
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
+        table, th, td { border: 1px solid #000; text-align: center; padding: 5px; }
+        th { background: #ecf0f1; }
+        input, select { width: 96%; border: none; padding: 5px; text-align: center; background: transparent; }
+        .credit { text-align: center; font-weight: bold; margin-top: 20px; border-top: 1px solid #000; padding-top: 10px; font-size: 12px; }
+        @media print { .no-print { display: none !important; } .page { display: block !important; page-break-after: always !important; } }
     </style>
 </head>
 <body onload="initApp()">
 
-<div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર 2025</div>
+<div class="header no-print">પોષણ સંગમ - આંગણવાડી રજીસ્ટર 2025</div>
 
 <div class="config-bar no-print">
-    <input type="text" id="newChildName" placeholder="બાળકનું નામ લખો" style="width:200px; border:1px solid #e67e22; padding:8px; border-radius:5px;">
-    <button class="btn" style="background: #27ae60;" onclick="addNewChild()">➕ ઉમેરો</button>
-    <div style="border-left: 1px solid #ccc; padding-left: 10px;">
-        <strong>બાળકની યાદી:</strong>
-        <select id="childSelector" onchange="loadChildData()" style="padding: 8px; border-radius: 5px; border: 1px solid #d35400; width: 150px; background: white;">
-        </select>
-    </div>
-    <button class="btn" style="background: #d35400;" onclick="window.print()">🖨️ પ્રિન્ટ</button>
-    <button class="btn" style="background: #c0392b;" onclick="deleteCurrentChild()">🗑️ ડિલીટ</button>
+    <input type="text" id="newChildName" placeholder="બાળકનું નામ" style="border:1px solid #ccc; padding:5px; border-radius:4px;">
+    <button onclick="addNewChild()" style="background:#27ae60; color:white; border:none; padding:7px 15px; border-radius:4px; cursor:pointer;">➕ ઉમેરો</button>
+    <select id="childSelector" onchange="loadChildData()" style="padding:5px; width:150px; border:1px solid #d35400;"></select>
+    <button onclick="window.print()" style="background:#d35400; color:white; border:none; padding:7px 15px; border-radius:4px; cursor:pointer;">🖨️ પ્રિન્ટ</button>
 </div>
 
 <div class="nav-tabs no-print">
-    <button class="tab-btn active" onclick="showPage(1)">P-1 (સ્ક્રિનિંગ)</button>
-    <button class="tab-btn" onclick="showPage(2)">P-2 (મેડિકલ)</button>
-    <button class="tab-btn" onclick="showPage(3)">P-3 (દવાઓ)</button>
-    <button class="tab-btn" onclick="showPage(4)">P-4 (ફોલોઅપ)</button>
-    <button class="tab-btn" onclick="showPage(5)">P-5 (ગ્રેડિંગ)</button>
-    <button class="tab-btn" onclick="showPage(6)">P-6 (ડિસ્ચાર્જ)</button>
-    <button class="tab-btn" onclick="showPage(7)">P-7 (પોસ્ટ-ફોલોઅપ)</button>
+    <button class="tab-btn active" onclick="showPage(1)">P-1</button>
+    <button class="tab-btn" onclick="showPage(2)">P-2</button>
+    <button class="tab-btn" onclick="showPage(3)">P-3</button>
+    <button class="tab-btn" onclick="showPage(4)">P-4</button>
+    <button class="tab-btn" onclick="showPage(5)">P-5</button>
+    <button class="tab-btn" onclick="showPage(6)">P-6</button>
+    <button class="tab-btn" onclick="showPage(7)">P-7</button>
 </div>
 
-<div class="container" id="printableContent"></div>
+<div id="content"></div>
 
 <script>
-    let childrenNames = JSON.parse(localStorage.getItem('registered_children_v1') || "[]");
-    const monthsArr = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", "જુલાઈ", "ઓગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
-    const devCredit = "Developed by- Devendra ramanuj, 9276505035";
+    let children = JSON.parse(localStorage.getItem('poshan_list_v3') || "[]");
+    const creditText = "Developed by- Devendra ramanuj, 9276505035";
 
     function initApp() {
         renderTables();
-        updateDropdown();
-        const lastSelected = localStorage.getItem('last_active_child');
-        if (lastSelected && childrenNames.includes(lastSelected)) {
-            document.getElementById('childSelector').value = lastSelected;
+        updateList();
+        const last = localStorage.getItem('poshan_last_child');
+        if (last) {
+            document.getElementById('childSelector').value = last;
             loadChildData();
         }
     }
 
+    function renderTables() {
+        let html = "";
+        const m = ["","જાન્યુઆરી","ફેબ્રુઆરી","માર્ચ","એપ્રિલ","મે","જૂન","જુલાઈ","ઓગસ્ટ","સપ્ટેમ્બર","ઓક્ટોબર","નવેમ્બર","ડિસેમ્બર"];
+        
+        // P-1
+        html += `<div id="page1" class="page active"><h3 align="center">P-1: Screening</h3><table><tr><th>માસ</th><th>નામ</th><th>માતા</th><th>જન્મ તારીખ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
+        for(let r=1; r<=10; r++) {
+            html += `<tr><td><select id="p1_r${r}_m" onchange="saveData()"><option value=""></option>${m.map(x=>`<option value="${x}">${x}</option>`).join('')}</select></td><td><input id="p1_r${r}_name" oninput="saveData()"></td><td><input id="p1_r${r}_mom" oninput="saveData()"></td><td><input id="p1_r${r}_dob" oninput="saveData()"></td><td><input id="p1_r${r}_dt" oninput="saveData()"></td><td><input id="p1_r${r}_w" oninput="saveData()"></td><td><input id="p1_r${r}_h" oninput="saveData()"></td><td><select id="p1_r${r}_lv" onchange="saveData()"><option value=""></option><option value="SAM">SAM</option><option value="MAM">MAM</option></select></td></tr>`;
+        }
+        html += `</table><div class="credit">${creditText}</div></div>`;
+
+        // P2 to P7
+        for(let p=2; p<=7; p++) {
+            html += `<div id="page${p}" class="page"><h3 align="center">P-${p}</h3><table><tr><th>નામ</th><th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th><th>તારીખ</th></tr>`;
+            for(let r=1; r<=10; r++) {
+                html += `<tr><td><input id="p${p}_r${r}_name" oninput="saveData()"></td><td><input id="p${p}_r${r}_c1" oninput="saveData()"></td><td><input id="p${p}_r${r}_c2" oninput="saveData()"></td><td><input id="p${p}_r${r}_c3" oninput="saveData()"></td><td><input id="p${p}_r${r}_c4" oninput="saveData()"></td><td><input id="p${p}_r${r}_dt" oninput="saveData()"></td></tr>`;
+            }
+            html += `</table><div class="credit">${creditText}</div></div>`;
+        }
+        document.getElementById('content').innerHTML = html;
+    }
+
     function addNewChild() {
-        const nameInput = document.getElementById('newChildName');
-        const name = nameInput.value.trim();
-        if(!name) return;
-        if(childrenNames.includes(name)) { alert("આ નામ પહેલેથી જ છે!"); return; }
-        childrenNames.push(name);
-        localStorage.setItem('registered_children_v1', JSON.stringify(childrenNames));
-        nameInput.value = "";
-        updateDropdown();
-        document.getElementById('childSelector').value = name;
+        const n = document.getElementById('newChildName').value.trim();
+        if(!n || children.includes(n)) return;
+        children.push(n);
+        localStorage.setItem('poshan_list_v3', JSON.stringify(children));
+        updateList();
+        document.getElementById('childSelector').value = n;
         loadChildData();
     }
 
-    function updateDropdown() {
-        const select = document.getElementById('childSelector');
-        select.innerHTML = childrenNames.map(n => `<option value="${n}">${n}</option>`).join('');
+    function updateList() {
+        document.getElementById('childSelector').innerHTML = children.map(x => `<option value="${x}">${x}</option>`).join('');
     }
 
     function showPage(n) {
@@ -100,97 +100,22 @@
         document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
     }
 
-    function getMonthOpts() {
-        return `<option value="">--માસ--</option>` + monthsArr.map(m => `<option value="${m}">${m}</option>`).join('');
-    }
-
-    function getLevelOpts() {
-        return `<option value="">--સ્તર--</option><option value="SAM">SAM</option><option value="MAM">MAM</option>`;
-    }
-
-    function renderTables() {
-        let finalHtml = "";
-        const rows = 10;
-
-        // P-1
-        finalHtml += `<div id="page1" class="page active"><h3 style="text-align:center;">પૃષ્ઠ ૧: Screening & Basic Info</h3><table><colgroup><col class="col-month"><col class="col-name-big"><col><col><col><col style="width:60px;"><col style="width:60px;"><col style="width:80px;"></colgroup><tr><th>માસ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>જન્મ તારીખ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
-        for(let r=1; r<=rows; r++) {
-            finalHtml += `<tr><td><select id="p1_r${r}_m" onchange="handleRowAction(${r})">${getMonthOpts()}</select></td><td><input id="p1_r${r}_name" oninput="saveData()"></td><td><input id="p1_r${r}_mom" oninput="saveData()"></td><td><input id="p1_r${r}_dob" placeholder="DD/MM/YYYY" oninput="saveData()"></td><td><input id="p1_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveData()"></td><td><input id="p1_r${r}_w" oninput="saveData()"></td><td><input id="p1_r${r}_h" oninput="saveData()"></td><td><select id="p1_r${r}_lv" onchange="saveData()">${getLevelOpts()}</select></td></tr>`;
-        }
-        finalHtml += `</table><div class="credit">${devCredit}</div></div>`;
-
-        // P-2 to P-7
-        const configs = {
-            2: ["નામ", "ભૂખ પરીક્ષણ", "જટિલતા", "રેફરલ", "વજન", "ઊંચાઈ"],
-            3: ["નામ", "દવા ૧", "દવા ૨", "દવા ૩", "દવા ૪", "અન્ય"],
-            4: ["નામ", "વજન ૧", "સ્તર ૧", "વજન ૨", "સ્તર ૨", "તારીખ"],
-            5: ["નામ", "શરૂઆત", "અંતિમ", "સુધારો %", "શેરો", "તારીખ"],
-            6: ["નામ", "રિકવર", "નોન-રિકવર", "જટિલતા", "ફેરબદલ", "તપાસ"],
-            7: ["નામ", "૧ માસ", "૨ માસ", "ઊંચાઈ", "સ્થિતિ", "તારીખ"]
-        };
-
-        for(let p=2; p<=7; p++) {
-            finalHtml += `<div id="page${p}" class="page"><h3 style="text-align:center;">પૃષ્ઠ ${p}</h3><table><colgroup><col style="width:120px;"></colgroup><tr>`;
-            configs[p].forEach(h => finalHtml += `<th>${h}</th>`);
-            finalHtml += `</tr>`;
-            for(let r=1; r<=rows; r++) {
-                finalHtml += `<tr><td><input id="p${p}_r${r}_name" oninput="saveData()"></td>`;
-                for(let c=1; c<=4; c++) {
-                    let isLv = (p==4 && (c==2 || c==4));
-                    finalHtml += `<td>${isLv ? `<select id="p${p}_r${r}_c${c}" onchange="saveData()">${getLevelOpts()}</select>` : `<input id="p${p}_r${r}_c${c}" oninput="saveData()">`}</td>`;
-                }
-                finalHtml += `<td><input id="p${p}_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveData()"></td></tr>`;
-            }
-            finalHtml += `</table><div class="credit">${devCredit}</div></div>`;
-        }
-        document.getElementById('printableContent').innerHTML = finalHtml;
-    }
-
-    function handleRowAction(r) {
-        if(r > 1) {
-            const fields = ["name", "mom", "dob"];
-            fields.forEach(f => {
-                const prev = document.getElementById(`p1_r${r-1}_${f}`).value;
-                const curr = document.getElementById(`p1_r${r}_${f}`);
-                if(prev && !curr.value) curr.value = prev;
-            });
-        }
-        saveData();
-    }
-
     function saveData() {
-        const child = document.getElementById('childSelector').value;
-        if(!child) return;
-        localStorage.setItem('last_active_child', child);
-        const allInputs = document.querySelectorAll('input, select');
-        const dataObj = {};
-        allInputs.forEach(el => { if(el.id) dataObj[el.id] = el.value; });
-        localStorage.setItem('poshan_child_db_' + child, JSON.stringify(dataObj));
+        const c = document.getElementById('childSelector').value;
+        if(!c) return;
+        localStorage.setItem('poshan_last_child', c);
+        const data = {};
+        document.querySelectorAll('input, select').forEach(el => { if(el.id) data[el.id] = el.value; });
+        localStorage.setItem('poshan_v3_data_' + c, JSON.stringify(data));
     }
 
     function loadChildData() {
-        const child = document.getElementById('childSelector').value;
-        if(!child) return;
-        localStorage.setItem('last_active_child', child);
+        const c = document.getElementById('childSelector').value;
+        if(!c) return;
+        localStorage.setItem('poshan_last_child', c);
         document.querySelectorAll('input, select').forEach(el => el.value = "");
-        const rawData = localStorage.getItem('poshan_child_db_' + child);
-        if(rawData) {
-            const data = JSON.parse(rawData);
-            for(let key in data) {
-                const element = document.getElementById(key);
-                if(element) element.value = data[key];
-            }
-        }
-    }
-
-    function deleteCurrentChild() {
-        const child = document.getElementById('childSelector').value;
-        if(!child || !confirm(child + " નો ડેટા ભૂંસી નાખવો છે?")) return;
-        localStorage.removeItem('poshan_child_db_' + child);
-        childrenNames = childrenNames.filter(n => n !== child);
-        localStorage.setItem('registered_children_v1', JSON.stringify(childrenNames));
-        updateDropdown();
-        loadChildData();
+        const saved = JSON.parse(localStorage.getItem('poshan_v3_data_' + c) || "{}");
+        for(let k in saved) { if(document.getElementById(k)) document.getElementById(k).value = saved[k]; }
     }
 </script>
 </body>
