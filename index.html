@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>પોષણ સંગમ - ફાઈનલ રજિસ્ટર</title>
+    <title>પોષણ સંગમ - સંપૂર્ણ રજિસ્ટર</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
         .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
@@ -20,6 +20,7 @@
         .btn-print { background: #34495e; }
         .btn-wa { background: #27ae60; }
         .btn-export { background: #2980b9; }
+        .btn-import { background: #8e44ad; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1200px; table-layout: fixed; }
         table, th, td { border: 1px solid #bdc3c7; text-align: center; }
         th { background: #ecf0f1; padding: 8px; }
@@ -61,9 +62,11 @@
 
 <div class="container">
     <div class="action-bar">
-        <button class="btn btn-print" onclick="window.print()">🖨️ PDF બનાવો / પ્રિન્ટ (૧ થી ૭ પેજ)</button>
-        <button class="btn btn-wa" onclick="shareWhatsApp()">💬 WhatsApp લિસ્ટ શેર</button>
-        <button class="btn btn-export" onclick="exportData()">📤 બેકઅપ Export</button>
+        <button class="btn btn-print" onclick="window.print()">🖨️ પ્રિન્ટ (૧ થી ૭ પેજ)</button>
+        <button class="btn btn-wa" onclick="shareWhatsApp()">💬 WhatsApp શેર</button>
+        <button class="btn btn-export" onclick="exportData()">📤 Export (બેકઅપ લો)</button>
+        <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 Import (બેકઅપ લાવો)</button>
+        <input type="file" id="importFile" style="display:none" onchange="importData(event)">
     </div>
 
     <div id="p1" class="page active">
@@ -138,19 +141,40 @@
     
     function shareWhatsApp() {
         let msg = `*પોષણ સંગમ રિપોર્ટ (${document.getElementById('selectedMonth').value}-${document.getElementById('selectedYear').value})*\n\n`;
+        let found = false;
         for(let i=1; i<=15; i++) {
             let name = document.getElementById(`p1_n_${i}`).value;
-            if(name) msg += `${i}. ${name} - ${document.getElementById(`p1_s_${i}`).value}\n`;
+            if(name) {
+                msg += `${i}. ${name} - ${document.getElementById(`p1_s_${i}`).value}\n`;
+                found = true;
+            }
         }
+        if(!found) return alert("શેર કરવા માટે કોઈ ડેટા નથી");
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
     }
 
+    // Export Function
     function exportData() {
         const d = localStorage.getItem(currentKey);
+        if(!d) return alert("આ માસમાં કોઈ ડેટા નથી!");
+        const blob = new Blob([d], {type: "application/json"});
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([d], {type:"application/json"}));
-        a.download = `Data_${currentKey}.json`;
+        a.href = URL.createObjectURL(blob);
+        a.download = `Poshan_Backup_${currentKey}.json`;
         a.click();
+    }
+
+    // Import Function
+    function importData(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            localStorage.setItem(currentKey, event.target.result);
+            loadData();
+            alert("ડેટા સફળતાપૂર્વક ઈમ્પોર્ટ થઈ ગયો છે!");
+        };
+        reader.readAsText(file);
     }
 </script>
 </body>
