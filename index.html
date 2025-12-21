@@ -19,6 +19,9 @@
         input, select { width: 95%; border: none; padding: 5px; text-align: center; outline: none; background: transparent; }
         .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
         .credit { text-align: center; font-weight: bold; margin-top: 20px; border-top: 1px solid #000; padding-top: 10px; font-size: 12px; }
+        .page-header { text-align: center; margin-bottom: 20px; }
+        .page-title { font-size: 20px; font-weight: bold; }
+        .page-subtitle { font-size: 16px; margin-top: 5px; }
         @media print { .no-print { display: none !important; } .page { display: block !important; page-break-after: always !important; } }
     </style>
 </head>
@@ -53,6 +56,28 @@
 <script>
     const months = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", "જુલાઈ", "ઓગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
     const creditLine = "Developed by- Devendra ramanuj, 9276505035";
+    
+    // દરેક પેજના heading નક્કી કર્યા
+    const pageHeadings = {
+        1: "Screening data",
+        2: "P-2: રોગપ્રતિકારક ટીકાકરણ",
+        3: "P-3: પોષણ પૂરક આહાર વિતરણ",
+        4: "P-4: પોષણ શિક્ષણ",
+        5: "P-5: આરોગ્ય તપાસ",
+        6: "P-6: પૂર્વ શાળા શિક્ષણ",
+        7: "P-7: સંદર્ભ સેવાઓ"
+    };
+    
+    // P-1 ના subheading
+    const pageSubheadings = {
+        1: "Aww- 0492/1401 01: 3-7",
+        2: "",
+        3: "",
+        4: "",
+        5: "",
+        6: "",
+        7: ""
+    };
 
     function initApp() {
         renderTables();
@@ -120,80 +145,283 @@
         let html = "";
         const rowCount = 10;
         
-        // P-1
+        // P-1: Screening data (ચિત્ર અનુસાર)
         html += `<div id="page1" class="page active">
-                    <h3 style="text-align:center;">P-1: Screening</h3>
+                    <div class="page-header">
+                        <div class="page-title">${pageHeadings[1]}</div>
+                        <div class="page-subtitle">${pageSubheadings[1]}</div>
+                    </div>
                     <table>
-                        <colgroup>
-                            <col style="width:90px;">
-                            <col style="width:180px;">
-                            <col>
-                            <col>
-                            <col>
-                            <col style="width:60px;">
-                            <col style="width:60px;">
-                            <col style="width:80px;">
-                        </colgroup>
                         <tr>
-                            <th>માસ</th><th>નામ</th><th>માતા</th><th>જન્મ તારીખ</th>
-                            <th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th>
+                            <th style="width:120px;">Step 5</th>
+                            <th>Step 6</th>
+                            <th>Step 7</th>
+                            <th>Step 8</th>
+                            <th>Step 9</th>
+                            <th>Step 10</th>
+                            <th>Step 11</th>
+                            <th>Step 12</th>
                         </tr>`;
         
         for(let r=1; r<=rowCount; r++) {
             html += `<tr>
-                <td><select id="p1_r${r}_m" onchange="autoCopy(${r}); saveCurrentPageData();">
-                    <option value="">--</option>${months.map(m=>`<option value="${m}">${m}</option>`).join('')}
-                </select></td>
-                <td><input id="p1_r${r}_name" oninput="saveCurrentPageData()"></td>
-                <td><input id="p1_r${r}_mom" oninput="saveCurrentPageData()"></td>
-                <td><input id="p1_r${r}_dob" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
-                <td><input id="p1_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
-                <td><input id="p1_r${r}_w" oninput="saveCurrentPageData()"></td>
-                <td><input id="p1_r${r}_h" oninput="saveCurrentPageData()"></td>
-                <td><select id="p1_r${r}_lv" onchange="saveCurrentPageData()">
+                <td><select id="p1_r${r}_step5" onchange="saveCurrentPageData()">
                     <option value="">--</option>
                     <option value="SAM">SAM</option>
                     <option value="MAM">MAM</option>
+                    <option value="NORMAL">NORMAL</option>
+                </select></td>
+                <td><select id="p1_r${r}_step6" onchange="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="SAM">SAM</option>
+                    <option value="MAM">MAM</option>
+                    <option value="NORMAL">NORMAL</option>
+                </select></td>
+                <td><select id="p1_r${r}_step7" onchange="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="SAM">SAM</option>
+                    <option value="MAM">MAM</option>
+                    <option value="NORMAL">NORMAL</option>
+                </select></td>
+                <td><select id="p1_r${r}_step8" onchange="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="SAM">SAM</option>
+                    <option value="MAM">MAM</option>
+                    <option value="NORMAL">NORMAL</option>
+                </select></td>
+                <td><select id="p1_r${r}_step9" onchange="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="SAM">SAM</option>
+                    <option value="MAM">MAM</option>
+                    <option value="NORMAL">NORMAL</option>
+                </select></td>
+                <td><select id="p1_r${r}_step10" onchange="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="SAM">SAM</option>
+                    <option value="MAM">MAM</option>
+                    <option value="NORMAL">NORMAL</option>
+                </select></td>
+                <td><select id="p1_r${r}_step11" onchange="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="SAM">SAM</option>
+                    <option value="MAM">MAM</option>
+                    <option value="NORMAL">NORMAL</option>
+                </select></td>
+                <td><select id="p1_r${r}_step12" onchange="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="SAM">SAM</option>
+                    <option value="MAM">MAM</option>
+                    <option value="NORMAL">NORMAL</option>
                 </select></td>
             </tr>`;
         }
         html += `</table><div class="credit">${creditLine}</div></div>`;
 
-        // P-2 થી P-7
-        for(let p=2; p<=7; p++) {
-            html += `<div id="page${p}" class="page">
-                        <h3 style="text-align:center;">P-${p}</h3>
-                        <table>
-                            <tr>
-                                <th style="width:150px;">નામ</th>
-                                <th>વિગત ૧</th><th>વિગત ૨</th><th>વિગત ૩</th><th>વિગત ૪</th>
-                                <th>તારીખ</th>
-                            </tr>`;
-            for(let r=1; r<=rowCount; r++) {
-                html += `<tr>
-                    <td><input id="p${p}_r${r}_name" oninput="saveCurrentPageData()"></td>
-                    <td><input id="p${p}_r${r}_c1" oninput="saveCurrentPageData()"></td>
-                    <td><input id="p${p}_r${r}_c2" oninput="saveCurrentPageData()"></td>
-                    <td><input id="p${p}_r${r}_c3" oninput="saveCurrentPageData()"></td>
-                    <td><input id="p${p}_r${r}_c4" oninput="saveCurrentPageData()"></td>
-                    <td><input id="p${p}_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
-                </tr>`;
-            }
-            html += `</table><div class="credit">${creditLine}</div></div>`;
+        // P-2: રોગપ્રતિકારક ટીકાકરણ
+        html += `<div id="page2" class="page">
+                    <div class="page-header">
+                        <div class="page-title">${pageHeadings[2]}</div>
+                    </div>
+                    <table>
+                        <tr>
+                            <th style="width:150px;">નામ</th>
+                            <th>BCG</th><th>ઓપીવી</th><th>ડી.પી.ટી.</th><th>એમ.એમ.આર.</th>
+                            <th>તારીખ</th>
+                        </tr>`;
+        for(let r=1; r<=rowCount; r++) {
+            html += `<tr>
+                <td><input id="p2_r${r}_name" oninput="saveCurrentPageData()"></td>
+                <td><select id="p2_r${r}_c1" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="થયેલ">થયેલ</option>
+                    <option value="બાકી">બાકી</option>
+                </select></td>
+                <td><select id="p2_r${r}_c2" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="થયેલ">થયેલ</option>
+                    <option value="બાકી">બાકી</option>
+                </select></td>
+                <td><select id="p2_r${r}_c3" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="થયેલ">થયેલ</option>
+                    <option value="બાકી">બાકી</option>
+                </select></td>
+                <td><select id="p2_r${r}_c4" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="થયેલ">થયેલ</option>
+                    <option value="બાકી">બાકી</option>
+                </select></td>
+                <td><input id="p2_r${r}_dt" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
+            </tr>`;
         }
+        html += `</table><div class="credit">${creditLine}</div></div>`;
+
+        // P-3: પોષણ પૂરક આહાર વિતરણ
+        html += `<div id="page3" class="page">
+                    <div class="page-header">
+                        <div class="page-title">${pageHeadings[3]}</div>
+                    </div>
+                    <table>
+                        <tr>
+                            <th style="width:150px;">નામ</th>
+                            <th>તારીખ</th><th>સમય</th><th>પ્રકાર</th><th>પ્રમાણ</th>
+                            <th>હાજરી</th>
+                        </tr>`;
+        for(let r=1; r<=rowCount; r++) {
+            html += `<tr>
+                <td><input id="p3_r${r}_name" oninput="saveCurrentPageData()"></td>
+                <td><input id="p3_r${r}_c1" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
+                <td><select id="p3_r${r}_c2" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="સવાર">સવાર</option>
+                    <option value="બપોર">બપોર</option>
+                    <option value="સાંજ">સાંજ</option>
+                </select></td>
+                <td><select id="p3_r${r}_c3" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="દળ">દળ</option>
+                    <option value="દાળ">દાળ</option>
+                    <option value="દૂધ">દૂધ</option>
+                    <option value="ફળ">ફળ</option>
+                </select></td>
+                <td><input id="p3_r${r}_c4" placeholder="ગ્રામ/મિલી" oninput="saveCurrentPageData()"></td>
+                <td><select id="p3_r${r}_dt" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="હાજર">હાજર</option>
+                    <option value="ગેરહાજર">ગેરહાજર</option>
+                </select></td>
+            </tr>`;
+        }
+        html += `</table><div class="credit">${creditLine}</div></div>`;
+
+        // P-4: પોષણ શિક્ષણ
+        html += `<div id="page4" class="page">
+                    <div class="page-header">
+                        <div class="page-title">${pageHeadings[4]}</div>
+                    </div>
+                    <table>
+                        <tr>
+                            <th style="width:150px;">નામ</th>
+                            <th>તારીખ</th><th>વિષય</th><th>સમય</th><th>માતાની હાજરી</th>
+                            <th>ટિપ્પણી</th>
+                        </tr>`;
+        for(let r=1; r<=rowCount; r++) {
+            html += `<tr>
+                <td><input id="p4_r${r}_name" oninput="saveCurrentPageData()"></td>
+                <td><input id="p4_r${r}_c1" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
+                <td><select id="p4_r${r}_c2" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="સ્તનપાન">સ્તનપાન</option>
+                    <option value="આહાર">આહાર</option>
+                    <option value="સ્વચ્છતા">સ્વચ્છતા</option>
+                </select></td>
+                <td><input id="p4_r${r}_c3" placeholder="મિનિટ" oninput="saveCurrentPageData()"></td>
+                <td><select id="p4_r${r}_c4" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="હાજર">હાજર</option>
+                    <option value="ગેરહાજર">ગેરહાજર</option>
+                </select></td>
+                <td><input id="p4_r${r}_dt" placeholder="ટિપ્પણી" oninput="saveCurrentPageData()"></td>
+            </tr>`;
+        }
+        html += `</table><div class="credit">${creditLine}</div></div>`;
+
+        // P-5: આરોગ્ય તપાસ
+        html += `<div id="page5" class="page">
+                    <div class="page-header">
+                        <div class="page-title">${pageHeadings[5]}</div>
+                    </div>
+                    <table>
+                        <tr>
+                            <th style="width:150px;">નામ</th>
+                            <th>તારીખ</th><th>તાવ</th><th>રુધિરદબાવ</th><th>આંખ</th>
+                            <th>ટિપ્પણી</th>
+                        </tr>`;
+        for(let r=1; r<=rowCount; r++) {
+            html += `<tr>
+                <td><input id="p5_r${r}_name" oninput="saveCurrentPageData()"></td>
+                <td><input id="p5_r${r}_c1" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
+                <td><input id="p5_r${r}_c2" placeholder="°F" oninput="saveCurrentPageData()"></td>
+                <td><input id="p5_r${r}_c3" placeholder="mmHg" oninput="saveCurrentPageData()"></td>
+                <td><select id="p5_r${r}_c4" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="સામાન્ય">સામાન્ય</option>
+                    <option value="સમસ્યા">સમસ્યા</option>
+                </select></td>
+                <td><input id="p5_r${r}_dt" placeholder="ટિપ્પણી" oninput="saveCurrentPageData()"></td>
+            </tr>`;
+        }
+        html += `</table><div class="credit">${creditLine}</div></div>`;
+
+        // P-6: પૂર્વ શાળા શિક્ષણ
+        html += `<div id="page6" class="page">
+                    <div class="page-header">
+                        <div class="page-title">${pageHeadings[6]}</div>
+                    </div>
+                    <table>
+                        <tr>
+                            <th style="width:150px;">નામ</th>
+                            <th>તારીખ</th><th>ક્રિયાપદ</th><th>ગીત/કવિતા</th><th>કહાણી</th>
+                            <th>હાજરી</th>
+                        </tr>`;
+        for(let r=1; r<=rowCount; r++) {
+            html += `<tr>
+                <td><input id="p6_r${r}_name" oninput="saveCurrentPageData()"></td>
+                <td><input id="p6_r${r}_c1" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
+                <td><select id="p6_r${r}_c2" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="સર્વ">સર્વ</option>
+                    <option value="બેસવું">બેસવું</option>
+                    <option value="ઉભા રહેવું">ઉભા રહેવું</option>
+                </select></td>
+                <td><select id="p6_r${r}_c3" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="ગાયું">ગાયું</option>
+                    <option value="શીખ્યું">શીખ્યું</option>
+                </select></td>
+                <td><select id="p6_r${r}_c4" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="સાંભળી">સાંભળી</option>
+                    <option value="સમજી">સમજી</option>
+                </select></td>
+                <td><select id="p6_r${r}_dt" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="હાજર">હાજર</option>
+                    <option value="ગેરહાજર">ગેરહાજર</option>
+                </select></td>
+            </tr>`;
+        }
+        html += `</table><div class="credit">${creditLine}</div></div>`;
+
+        // P-7: સંદર્ભ સેવાઓ
+        html += `<div id="page7" class="page">
+                    <div class="page-header">
+                        <div class="page-title">${pageHeadings[7]}</div>
+                    </div>
+                    <table>
+                        <tr>
+                            <th style="width:150px;">નામ</th>
+                            <th>તારીખ</th><th>સેવા પ્રકાર</th><th>કેન્દ્ર</th><th>ડૉક્ટર</th>
+                            <th>સૂચના</th>
+                        </tr>`;
+        for(let r=1; r<=rowCount; r++) {
+            html += `<tr>
+                <td><input id="p7_r${r}_name" oninput="saveCurrentPageData()"></td>
+                <td><input id="p7_r${r}_c1" placeholder="DD/MM/YYYY" oninput="saveCurrentPageData()"></td>
+                <td><select id="p7_r${r}_c2" oninput="saveCurrentPageData()">
+                    <option value="">--</option>
+                    <option value="આરોગ્ય">આરોગ્ય</option>
+                    <option value="પોષણ">પોષણ</option>
+                    <option value="શિક્ષણ">શિક્ષણ</option>
+                </select></td>
+                <td><input id="p7_r${r}_c3" oninput="saveCurrentPageData()"></td>
+                <td><input id="p7_r${r}_c4" oninput="saveCurrentPageData()"></td>
+                <td><input id="p7_r${r}_dt" placeholder="સૂચના" oninput="saveCurrentPageData()"></td>
+            </tr>`;
+        }
+        html += `</table><div class="credit">${creditLine}</div></div>`;
         
         document.getElementById('printableContent').innerHTML = html;
-    }
-
-    function autoCopy(r) {
-        if(r > 1) {
-            ["name", "mom", "dob"].forEach(f => {
-                const prevVal = document.getElementById(`p1_r${r-1}_${f}`).value;
-                if(prevVal && !document.getElementById(`p1_r${r}_${f}`).value) {
-                    document.getElementById(`p1_r${r}_${f}`).value = prevVal;
-                }
-            });
-        }
     }
 
     function saveCurrentPageData() {
