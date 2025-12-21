@@ -3,158 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C-MAM 7-Page Digital Register</title>
+    <title>માસિક પોષણ રજીસ્ટર</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Gujarati:wght@400;700&display=swap');
-        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f8fafc; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        input, select, textarea { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 6px; margin-top: 4px; }
-        label { font-weight: bold; color: #334155; font-size: 0.9rem; }
-        @media print { .no-print { display: none; } body { background: white; } }
+        body { font-family: 'Hind Gujarati', sans-serif; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 4px; text-align: center; }
+        @media print { 
+            .no-print { display: none; } 
+            body { padding: 0; background: white; }
+            table { font-size: 10px; } /* પ્રિન્ટમાં અક્ષરો નાના જેથી વધુ સમાય */
+        }
     </style>
 </head>
-<body class="p-2 md:p-4">
+<body class="bg-gray-100 p-4">
 
-<div class="max-w-6xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden">
-    <div class="bg-indigo-800 p-5 text-white flex justify-between items-center no-print">
-        <h1 class="text-xl font-bold">C-MAM સંપૂર્ણ ૭ પાનાનું રજીસ્ટર</h1>
+<div class="max-w-7xl mx-auto bg-white p-4 shadow-lg">
+    <div class="flex justify-between items-center mb-4 no-print bg-blue-600 p-4 text-white rounded">
+        <div class="flex items-center gap-4">
+            <label class="font-bold">મહિનો પસંદ કરો:</label>
+            <select id="monthSelect" onchange="renderTable()" class="text-black p-1 rounded">
+                <option value="0">જાન્યુઆરી</option><option value="1">ફેબ્રુઆરી</option>
+                <option value="2">માર્ચ</option><option value="3">એપ્રિલ</option>
+                <option value="4">મે</option><option value="5">જૂન</option>
+                <option value="6">જુલાઈ</option><option value="7">ઓગસ્ટ</option>
+                <option value="8">સપ્ટેમ્બર</option><option value="9">ઓક્ટોબર</option>
+                <option value="10">નવેમ્બર</option><option value="11" selected>ડિસેમ્બર</option>
+            </select>
+            <select id="yearSelect" onchange="renderTable()" class="text-black p-1 rounded">
+                <option>2024</option><option selected>2025</option><option>2026</option>
+            </select>
+        </div>
         <div class="flex gap-2">
-            <button onclick="exportJSON()" class="text-xs bg-indigo-600 px-3 py-1 rounded">બેકઅપ</button>
-            <button onclick="window.print()" class="bg-white text-indigo-800 px-3 py-1 rounded font-bold">PDF</button>
+            <button onclick="window.print()" class="bg-white text-blue-600 px-4 py-1 rounded font-bold">PDF પ્રિન્ટ</button>
+            <button onclick="showAddModal()" class="bg-green-500 text-white px-4 py-1 rounded font-bold">+ નવું બાળક</button>
         </div>
     </div>
 
-    <div class="flex overflow-x-auto bg-slate-100 border-b no-print">
-        <button onclick="openTab(event, 'p1')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-indigo-600 font-bold">૧ સ્ક્રિનિંગ</button>
-        <button onclick="openTab(event, 'p2')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૨ મેડિકલ</button>
-        <button onclick="openTab(event, 'p3')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૩ SNP/દૂધ</button>
-        <button onclick="openTab(event, 'p4')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૪ ફોલો-અપ</button>
-        <button onclick="openTab(event, 'p5')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૫ દવાઓ</button>
-        <button onclick="openTab(event, 'p6')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૬ ડિસ્ચાર્જ</button>
-        <button onclick="openTab(event, 'p7')" class="tab-btn p-4 whitespace-nowrap border-b-2 border-transparent">૭ પોસ્ટ-ફોલોઅપ</button>
+    <h2 class="text-center font-bold text-lg mb-2">બાળ પોષણ અને તબીબી મૂલ્યાંકન રજીસ્ટર (માસિક)</h2>
+    <table id="registerTable">
+        <thead>
+            <tr class="bg-gray-200">
+                <th rowspan="2">ક્રમ</th>
+                <th rowspan="2">બાળકનું નામ / માતાનું નામ</th>
+                <th colspan="3">પ્રાથમિક માપન (Page 1)</th>
+                <th colspan="2">તબીબી (Page 2)</th>
+                <th colspan="4">અઠવાડિક વજન (Page 4)</th>
+                <th rowspan="2">પરિણામ</th>
+            </tr>
+            <tr class="bg-gray-100">
+                <th>ઉંમર</th><th>વજન</th><th>ઊંચાઈ</th>
+                <th>ભૂખ</th><th>જટિલતા</th>
+                <th>W1</th><th>W2</th><th>W3</th><th>W4</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            </tbody>
+    </table>
+    <p class="mt-4 text-gray-500 no-print">* જે મહિનામાં બાળક ન હોય તે રો (Row) ખાલી દેખાશે અથવા તમે પ્રિન્ટ વખતે કાઢી શકશો</p>
+</div>
+
+<div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center no-print">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md">
+        <h3 class="font-bold mb-4">બાળકની વિગત ઉમેરો</h3>
+        <input type="text" id="cName" placeholder="બાળકનું નામ" class="w-full border p-2 mb-2">
+        <input type="number" id="cAge" placeholder="ઉંમર (મહિના)" class="w-full border p-2 mb-2">
+        <input type="number" id="cWeight" placeholder="વજન (કિગ્રા)" class="w-full border p-2 mb-2">
+        <div class="flex justify-end gap-2">
+            <button onclick="closeModal()" class="p-2 text-gray-500">રદ કરો</button>
+            <button onclick="saveChild()" class="p-2 bg-blue-600 text-white rounded">સેવ કરો</button>
+        </div>
     </div>
-
-    <form id="mainForm" class="p-6">
-        
-        <div id="p1" class="tab-content active space-y-4">
-            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૧: સ્ક્રિનિંગ ડેટા (Screening Data)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div><label>બાળકનું નામ (ટ્રેકર મુજબ)</label><input type="text" id="childName"></div>
-                <div><label>માતાનું નામ</label><input type="text" id="motherName"></div>
-                <div><label>ઉંમર (મહિનામાં)</label><input type="number" id="age"></div>
-                <div><label>જાતિ</label><select id="gender"><option>કુમાર</option><option>કન્યા</option></select></div>
-                <div><label>વજન (કિગ્રા)</label><input type="number" step="0.1" id="scrWeight"></div>
-                <div><label>લંબાઈ/ઊંચાઈ (સેમી)</label><input type="number" step="0.1" id="scrHeight"></div>
-                <div><label>બંને પગે સોજા?</label><select id="edema"><option>ના</option><option>હા</option></select></div>
-            </div>
-        </div>
-
-        <div id="p2" class="tab-content space-y-4">
-            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૨: તબીબી મૂલ્યાંકન (Medical Assessment)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label>ભૂખ પરીક્ષણ</label><select id="appetite"><option>પાસ</option><option>નાપાસ</option></select></div>
-                <div><label>તબીબી તપાસની તારીખ</label><input type="date" id="medDate"></div>
-                <div class="md:col-span-2"><label>તબીબી જટિલતાઓ (તાવ, ઉધરસ, ઝાડા વગેરે)</label><textarea id="complications"></textarea></div>
-                <div><label>રેફરલની જરૂરિયાત?</label><select id="referral"><option>ના</option><option>હા</option></select></div>
-            </div>
-        </div>
-
-        <div id="p3" class="tab-content space-y-4">
-            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૩: પોષણ સ્તર અને SNP</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div><label>C-MAM માં દાખલ તારીખ</label><input type="date" id="cmamEntryDate"></div>
-                <div><label>પોષણ સ્તર</label><select id="nutriStatus"><option>SAM</option><option>MAM</option></select></div>
-                <div><label>દૂધ સંજીવની યોજનાનો લાભ?</label><select id="milkScheme"><option>હા</option><option>ના</option></select></div>
-                <div><label>THR પેકેટ સંખ્યા (૧ મો મહિનો)</label><input type="number" id="thr1"></div>
-                <div><label>THR પેકેટ સંખ્યા (૨ જો મહિનો)</label><input type="number" id="thr2"></div>
-                <div><label>THR પેકેટ સંખ્યા (૩ જો મહિનો)</label><input type="number" id="thr3"></div>
-            </div>
-        </div>
-
-        <div id="p4" class="tab-content space-y-4">
-            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૪: કાર્યક્રમ દરમિયાન ફોલો-અપ</h2>
-            <p class="text-xs text-red-500">* દરેક અઠવાડિયાનું વજન અને ઊંચાઈ અહીં નોંધો</p>
-            <div class="overflow-x-auto">
-                <table class="w-full border text-sm text-center">
-                    <tr class="bg-slate-100"><th>અઠવાડિયું</th><th>વજન</th><th>ઊંચાઈ</th><th>MUAC</th></tr>
-                    <tr><td>૧ લું</td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td></tr>
-                    <tr><td>૨ જું</td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td></tr>
-                    <tr><td>૩ જું</td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td></tr>
-                    <tr><td>૪ થું</td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td><td><input type="number" step="0.1"></td></tr>
-                </table>
-            </div>
-        </div>
-
-        <div id="p5" class="tab-content space-y-4">
-            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૫: દવાઓની વિગત (Medicines)</h2>
-            <div class="space-y-2">
-                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>આલ્બેન્ડાઝોલ (Albendazole)</span></div>
-                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>ફોલિક એસિડ (Folic Acid)</span></div>
-                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>મલ્ટી-વિટામીન સીરપ (૬૦ દિવસ)</span></div>
-                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>વિટામિન-એ (Vitamin A)</span></div>
-                <div class="flex items-center gap-4 border-b py-2"><input type="checkbox" class="w-5 h-5"> <span>આયર્ન ફોલિક એસિડ (IFA)</span></div>
-            </div>
-        </div>
-
-        <div id="p6" class="tab-content space-y-4">
-            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૬: ડિસ્ચાર્જ (Discharge Summary)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label>ડિસ્ચાર્જ તારીખ</label><input type="date" id="disDate"></div>
-                <div><label>અંતિમ ગ્રેડ</label><select id="finalGrade"><option>Normal</option><option>SUW</option><option>MUW</option><option>SAM</option><option>MAM</option></select></div>
-                <div><label>પરિણામ</label><select id="outcome"><option>રિકવર</option><option>નોન-રિકવર</option><option>ડ્રોપ આઉટ</option><option>મૃત્યુ</option></select></div>
-            </div>
-        </div>
-
-        <div id="p7" class="tab-content space-y-4">
-            <h2 class="text-lg font-bold text-indigo-700 border-b pb-2">પાનું ૭: ડિસ્ચાર્જ પછીનું ફોલો-અપ</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="border p-2 bg-slate-50"><b>૪ થો મહિનો:</b> <input type="number" placeholder="વજન"></div>
-                <div class="border p-2 bg-slate-50"><b>૫ મો મહિનો:</b> <input type="number" placeholder="વજન"></div>
-                <div class="border p-2 bg-slate-50"><b>૬ ઠ્ઠો મહિનો:</b> <input type="number" placeholder="વજન"></div>
-            </div>
-        </div>
-
-        <div class="mt-8 flex justify-between no-print">
-            <button type="button" onclick="saveToMemory()" class="bg-green-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg">માહિતી સેવ કરો</button>
-            <button type="button" onclick="clearForm()" class="text-red-600 font-bold">ફોર્મ ખાલી કરો</button>
-        </div>
-
-    </form>
 </div>
 
 <script>
-    function openTab(evt, tabId) {
-        let contents = document.getElementsByClassName("tab-content");
-        for (let content of contents) { content.style.display = "none"; }
-        
-        let btns = document.getElementsByClassName("tab-btn");
-        for (let btn of btns) { 
-            btn.classList.remove("border-indigo-600", "text-indigo-600"); 
-            btn.classList.add("border-transparent");
+    let children = JSON.parse(localStorage.getItem('cmam_v2')) || [];
+
+    function renderTable() {
+        const m = document.getElementById('monthSelect').value;
+        const y = document.getElementById('yearSelect').value;
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        // ફિલ્ટર કરેલ ડેટા
+        let filtered = children.filter(c => c.month == m && c.year == y);
+
+        // ૧૭ રો (Row) પૂરી કરવા માટે લૂપ
+        for (let i = 0; i < 17; i++) {
+            let c = filtered[i] || { name: '', age: '', weight: '', height: '', appetite: '', comp: '', w1: '', w2: '', w3: '', w4: '', status: '' };
+            tbody.innerHTML += `
+                <tr class="${c.name ? '' : 'text-transparent'}">
+                    <td>${i + 1}</td>
+                    <td class="text-left">${c.name}</td>
+                    <td>${c.age}</td>
+                    <td>${c.weight}</td>
+                    <td>${c.height}</td>
+                    <td>${c.appetite}</td>
+                    <td>${c.comp}</td>
+                    <td>${c.w1}</td><td>${c.w2}</td><td>${c.w3}</td><td>${c.w4}</td>
+                    <td>${c.status}</td>
+                </tr>
+            `;
         }
+    }
+
+    function showAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
+    function closeModal() { document.getElementById('addModal').classList.add('hidden'); }
+
+    function saveChild() {
+        const name = document.getElementById('cName').value;
+        const month = document.getElementById('monthSelect').value;
+        const year = document.getElementById('yearSelect').value;
         
-        document.getElementById(tabId).style.display = "block";
-        evt.currentTarget.classList.add("border-indigo-600", "text-indigo-600");
+        children.push({ name: name, month: month, year: year, age: document.getElementById('cAge').value, weight: document.getElementById('cWeight').value });
+        localStorage.setItem('cmam_v2', JSON.stringify(children));
+        closeModal();
+        renderTable();
     }
 
-    function saveToMemory() {
-        // અહીં તમે દરેક ઇનપુટ વેલ્યુ લોકલ સ્ટોરેજમાં સેવ કરી શકો છો
-        alert("તમામ ૭ પાનાની માહિતી તમારા ફોનમાં સેવ થઈ ગઈ છે!");
-        localStorage.setItem('cmam_full_data', JSON.stringify({date: new Date()}));
-    }
-
-    function exportJSON() {
-        alert("બેકઅપ ડાઉનલોડ થઈ રહ્યો છે...");
-    }
-
-    function clearForm() {
-        if(confirm("શું તમે બધી વિગતો ભૂંસી નાખવા માંગો છો?")) {
-            document.getElementById("mainForm").reset();
-        }
-    }
+    renderTable();
 </script>
-
 </body>
 </html>
