@@ -3,124 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C-MAM સ્મૂધ એન્ટ્રી રજીસ્ટર</title>
+    <title>મોબાઈલ ફ્રેન્ડલી C-MAM રજીસ્ટર</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Gujarati:wght@400;700&display=swap');
-        
-        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f8fafc; }
-
-        /* મોબાઈલ સ્ક્રોલ માટે ખાસ કન્ટેનર */
-        .table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* સ્મૂધ સ્ક્રોલ માટે */
-            margin-bottom: 2rem;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-
-        table { border-collapse: separate; border-spacing: 0; min-width: 1200px; } /* ટેબલની પહોળાઈ વધારી */
-        
-        th, td { border: 1px solid #000; padding: 10px; text-align: center; white-space: nowrap; }
-
-        /* નામની કોલમ ફિક્સ રાખવા માટેનું લોજિક */
-        .sticky-col {
-            position: sticky;
-            left: 0;
-            background-color: #f1f5f9 !important;
-            z-index: 10;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-        }
-        
-        .sticky-col-2 {
-            position: sticky;
-            left: 50px; /* ક્રમ પછીનું અંતર */
-            background-color: #f1f5f9 !important;
-            z-index: 10;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-        }
-
-        th { background-color: #1e293b !important; color: white; position: sticky; top: 0; z-index: 20; }
-        
-        [contenteditable]:focus { background-color: #fffde7; outline: 2px solid #3b82f6; }
-
-        @media print {
-            .no-print { display: none !important; }
-            .sticky-col, .sticky-col-2 { position: static; box-shadow: none; }
-            .table-wrapper { overflow: visible; }
-            table { min-width: 100%; width: 100%; table-layout: fixed; }
-            th, td { font-size: 10px; padding: 4px; white-space: normal; }
-            @page { size: A4 landscape; margin: 5mm; }
-        }
+        body { font-family: 'Hind Gujarati', sans-serif; }
+        .tab-btn.active { border-bottom: 3px solid #4f46e5; color: #4f46e5; font-weight: bold; }
+        @media print { .no-print { display: none !important; } .page-break { page-break-after: always; display: block; } }
     </style>
 </head>
-<body class="p-2 md:p-4">
+<body class="bg-gray-100 min-h-screen">
 
-    <div class="no-print bg-indigo-900 p-4 text-white flex justify-between items-center rounded-t-lg shadow-lg">
-        <div>
-            <h1 class="font-bold text-lg">C-MAM રજીસ્ટર (૭ પાના)</h1>
-            <p class="text-[10px] text-indigo-200">નામની કોલમ ફિક્સ છે, સાઈડમાં સ્ક્રોલ કરીને એન્ટ્રી કરો</p>
+    <div class="no-print bg-indigo-700 p-4 text-white sticky top-0 z-50 shadow-md">
+        <div class="flex justify-between items-center">
+            <h1 class="text-lg font-bold">C-MAM ડિજિટલ રજીસ્ટર</h1>
+            <button onclick="window.print()" class="bg-white text-indigo-700 px-3 py-1 rounded text-sm font-bold">પ્રિન્ટ</button>
         </div>
-        <button onclick="window.print()" class="bg-green-600 px-4 py-1 rounded font-bold shadow">પ્રિન્ટ</button>
     </div>
 
-    <div class="table-wrapper">
-        <h2 class="p-3 bg-gray-100 font-bold border-b">પાનું ૧: સ્ક્રિનિંગ ડેટા</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th class="sticky-col w-12">ક્રમ</th>
-                    <th class="sticky-col-2 w-48">બાળકનું નામ</th>
-                    <th class="w-48">માતાનું નામ</th>
-                    <th class="w-24">મહિનો</th>
-                    <th class="w-20">ઉંમર</th>
-                    <th class="w-20">વજન</th>
-                    <th class="w-20">ઊંચાઈ</th>
-                    <th class="w-20">સોજા?</th>
-                </tr>
-            </thead>
-            <tbody id="p1-body">
-                </tbody>
-        </table>
+    <div class="no-print p-4">
+        <div class="bg-white rounded-xl shadow-lg p-5 border-t-4 border-indigo-600">
+            <h2 class="font-bold text-indigo-800 mb-4 text-center border-b pb-2">નવી એન્ટ્રી / એડિટ</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700">ક્રમ સિલેક્ટ કરો (૧ થી ૧૭)</label>
+                    <select id="rowSelect" onchange="loadRowData()" class="w-full p-2 border rounded-lg bg-blue-50">
+                        </select>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-3">
+                    <input type="text" id="cName" placeholder="બાળકનું નામ" class="w-full p-3 border rounded-lg focus:ring-2 ring-indigo-200">
+                    <input type="text" id="mName" placeholder="માતાનું નામ" class="w-full p-3 border rounded-lg focus:ring-2 ring-indigo-200">
+                    <div class="flex gap-2">
+                        <input type="number" id="cAge" placeholder="ઉંમર" class="w-1/2 p-3 border rounded-lg">
+                        <input type="number" id="cWeight" placeholder="વજન" class="w-1/2 p-3 border rounded-lg">
+                    </div>
+                </div>
+
+                <button onclick="saveCurrentRow()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:bg-indigo-700 active:scale-95 transition">માહિતી સેવ કરો</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-10 p-4 overflow-x-auto print:p-0">
+        <h3 class="text-center font-bold text-gray-500 mb-4 no-print">રિપોર્ટ પ્રિવ્યુ (નીચે જુઓ)</h3>
+        
+        <div class="page-break bg-white p-4 mb-10 border border-black shadow-sm">
+            <h2 class="text-center font-bold text-lg mb-4 border-b border-black">પાનું ૧: સ્ક્રિનિંગ ડેટા</h2>
+            <table class="w-full border-collapse border border-black text-[10px] md:text-sm">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-black p-1">ક્રમ</th>
+                        <th class="border border-black p-1">બાળકનું નામ</th>
+                        <th class="border border-black p-1">માતાનું નામ</th>
+                        <th class="border border-black p-1">ઉંમર</th>
+                        <th class="border border-black p-1">વજન</th>
+                        <th class="border border-black p-1">ઊંચાઈ</th>
+                    </tr>
+                </thead>
+                <tbody id="print-body">
+                    </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
         const totalRows = 17;
-        
+        let masterData = JSON.parse(localStorage.getItem('cmam_final_data')) || {};
+
         function init() {
-            const p1 = document.getElementById('p1-body');
+            const select = document.getElementById('rowSelect');
+            const tbody = document.getElementById('print-body');
+            
             for(let i=1; i<=totalRows; i++) {
-                p1.innerHTML += `
-                    <tr>
-                        <td class="sticky-col font-bold bg-gray-50">${i}</td>
-                        <td contenteditable="true" class="sticky-col-2 text-left font-bold px-3"></td>
-                        <td contenteditable="true" class="text-left px-3"></td>
-                        <td><input type="text" placeholder="MM/YY" class="w-full text-center"></td>
-                        <td contenteditable="true"></td>
-                        <td contenteditable="true"></td>
-                        <td contenteditable="true"></td>
-                        <td contenteditable="true"></td>
+                // Dropdown options
+                let opt = document.createElement('option');
+                opt.value = i;
+                opt.innerText = `બાળક ક્રમ - ${i}`;
+                select.appendChild(opt);
+
+                // Table Rows
+                tbody.innerHTML += `
+                    <tr id="row-${i}">
+                        <td class="border border-black p-1 text-center">${i}</td>
+                        <td class="border border-black p-1" id="td-name-${i}"></td>
+                        <td class="border border-black p-1" id="td-mname-${i}"></td>
+                        <td class="border border-black p-1 text-center" id="td-age-${i}"></td>
+                        <td class="border border-black p-1 text-center" id="td-weight-${i}"></td>
+                        <td class="border border-black p-1 text-center" id="td-height-${i}"></td>
                     </tr>
                 `;
             }
-            restoreData();
+            loadTableFromData();
+            loadRowData();
         }
 
-        // ડેટા સેવ/લોડ લોજિક
-        document.addEventListener('input', () => {
-            const inputs = Array.from(document.querySelectorAll('[contenteditable], input')).map(el => el.innerText || el.value);
-            localStorage.setItem('cmam_v4_data', JSON.stringify(inputs));
-        });
+        function saveCurrentRow() {
+            const r = document.getElementById('rowSelect').value;
+            masterData[r] = {
+                name: document.getElementById('cName').value,
+                mname: document.getElementById('mName').value,
+                age: document.getElementById('cAge').value,
+                weight: document.getElementById('cWeight').value
+            };
+            localStorage.setItem('cmam_final_data', JSON.stringify(masterData));
+            loadTableFromData();
+            alert("ક્રમ " + r + " ની માહિતી સેવ થઈ ગઈ છે");
+        }
 
-        function restoreData() {
-            const saved = JSON.parse(localStorage.getItem('cmam_v4_data'));
-            if(saved) {
-                const elements = document.querySelectorAll('[contenteditable], input');
-                elements.forEach((el, i) => {
-                    if(el.tagName === 'INPUT') el.value = saved[i] || '';
-                    else el.innerText = saved[i] || '';
-                });
+        function loadRowData() {
+            const r = document.getElementById('rowSelect').value;
+            const d = masterData[r] || {name:'', mname:'', age:'', weight:''};
+            document.getElementById('cName').value = d.name;
+            document.getElementById('mName').value = d.mname;
+            document.getElementById('cAge').value = d.age;
+            document.getElementById('cWeight').value = d.weight;
+        }
+
+        function loadTableFromData() {
+            for(let i=1; i<=totalRows; i++) {
+                const d = masterData[i];
+                if(d) {
+                    document.getElementById(`td-name-${i}`).innerText = d.name;
+                    document.getElementById(`td-mname-${i}`).innerText = d.mname;
+                    document.getElementById(`td-age-${i}`).innerText = d.age;
+                    document.getElementById(`td-weight-${i}`).innerText = d.weight;
+                }
             }
         }
 
