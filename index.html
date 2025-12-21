@@ -3,126 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>માસિક પોષણ રજીસ્ટર</title>
+    <title>C-MAM હોરીઝોન્ટલ રજીસ્ટર</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Gujarati:wght@400;700&display=swap');
-        body { font-family: 'Hind Gujarati', sans-serif; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #000; padding: 4px; text-align: center; }
+        body { font-family: 'Hind Gujarati', sans-serif; background-color: #f0f2f5; }
+        .table-container { overflow-x: auto; background: white; border-radius: 8px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        table { border-collapse: collapse; min-width: 1800px; } /* ૭ પાના સમાવવા માટે લંબાઈ વધારી */
+        th, td { border: 1px solid #000; padding: 6px; text-align: center; font-size: 11px; }
+        th { background-color: #e2e8f0; position: sticky; top: 0; }
+        input, select { width: 100%; border: none; background: transparent; text-align: center; outline: none; }
+        input:focus { background: #e0f2fe; }
         @media print { 
             .no-print { display: none; } 
-            body { padding: 0; background: white; }
-            table { font-size: 10px; } /* પ્રિન્ટમાં અક્ષરો નાના જેથી વધુ સમાય */
+            body { padding: 0; }
+            .table-container { overflow: visible; }
+            table { min-width: 100%; width: 100%; font-size: 9px; }
         }
     </style>
 </head>
-<body class="bg-gray-100 p-4">
+<body class="p-2">
 
-<div class="max-w-7xl mx-auto bg-white p-4 shadow-lg">
-    <div class="flex justify-between items-center mb-4 no-print bg-blue-600 p-4 text-white rounded">
-        <div class="flex items-center gap-4">
-            <label class="font-bold">મહિનો પસંદ કરો:</label>
-            <select id="monthSelect" onchange="renderTable()" class="text-black p-1 rounded">
-                <option value="0">જાન્યુઆરી</option><option value="1">ફેબ્રુઆરી</option>
-                <option value="2">માર્ચ</option><option value="3">એપ્રિલ</option>
-                <option value="4">મે</option><option value="5">જૂન</option>
-                <option value="6">જુલાઈ</option><option value="7">ઓગસ્ટ</option>
-                <option value="8">સપ્ટેમ્બર</option><option value="9">ઓક્ટોબર</option>
-                <option value="10">નવેમ્બર</option><option value="11" selected>ડિસેમ્બર</option>
-            </select>
-            <select id="yearSelect" onchange="renderTable()" class="text-black p-1 rounded">
-                <option>2024</option><option selected>2025</option><option>2026</option>
-            </select>
+<div class="max-w-full mx-auto">
+    <div class="flex justify-between items-center mb-3 no-print bg-indigo-700 p-3 text-white rounded-lg shadow">
+        <div>
+            <h1 class="text-xl font-bold">C-MAM પ્રોફેશનલ રજીસ્ટર (૭ પાના હોરીઝોન્ટલ)</h1>
+            <p class="text-xs text-indigo-100">દરેક રો માં ડેટા ઓટો-સેવ થાય છે</p>
         </div>
-        <div class="flex gap-2">
-            <button onclick="window.print()" class="bg-white text-blue-600 px-4 py-1 rounded font-bold">PDF પ્રિન્ટ</button>
-            <button onclick="showAddModal()" class="bg-green-500 text-white px-4 py-1 rounded font-bold">+ નવું બાળક</button>
+        <div class="flex gap-3">
+            <button onclick="window.print()" class="bg-white text-indigo-700 px-4 py-1 rounded font-bold shadow hover:bg-gray-100">PDF પ્રિન્ટ</button>
+            <button onclick="clearAll()" class="bg-red-500 text-white px-4 py-1 rounded font-bold shadow hover:bg-red-600">બધું ભૂંસી નાખો</button>
         </div>
     </div>
 
-    <h2 class="text-center font-bold text-lg mb-2">બાળ પોષણ અને તબીબી મૂલ્યાંકન રજીસ્ટર (માસિક)</h2>
-    <table id="registerTable">
-        <thead>
-            <tr class="bg-gray-200">
-                <th rowspan="2">ક્રમ</th>
-                <th rowspan="2">બાળકનું નામ / માતાનું નામ</th>
-                <th colspan="3">પ્રાથમિક માપન (Page 1)</th>
-                <th colspan="2">તબીબી (Page 2)</th>
-                <th colspan="4">અઠવાડિક વજન (Page 4)</th>
-                <th rowspan="2">પરિણામ</th>
-            </tr>
-            <tr class="bg-gray-100">
-                <th>ઉંમર</th><th>વજન</th><th>ઊંચાઈ</th>
-                <th>ભૂખ</th><th>જટિલતા</th>
-                <th>W1</th><th>W2</th><th>W3</th><th>W4</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            </tbody>
-    </table>
-    <p class="mt-4 text-gray-500 no-print">* જે મહિનામાં બાળક ન હોય તે રો (Row) ખાલી દેખાશે અથવા તમે પ્રિન્ટ વખતે કાઢી શકશો</p>
-</div>
-
-<div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center no-print">
-    <div class="bg-white p-6 rounded-lg w-full max-w-md">
-        <h3 class="font-bold mb-4">બાળકની વિગત ઉમેરો</h3>
-        <input type="text" id="cName" placeholder="બાળકનું નામ" class="w-full border p-2 mb-2">
-        <input type="number" id="cAge" placeholder="ઉંમર (મહિના)" class="w-full border p-2 mb-2">
-        <input type="number" id="cWeight" placeholder="વજન (કિગ્રા)" class="w-full border p-2 mb-2">
-        <div class="flex justify-end gap-2">
-            <button onclick="closeModal()" class="p-2 text-gray-500">રદ કરો</button>
-            <button onclick="saveChild()" class="p-2 bg-blue-600 text-white rounded">સેવ કરો</button>
-        </div>
+    <div class="table-container shadow-inner">
+        <table id="mainTable">
+            <thead>
+                <tr class="bg-indigo-100 text-indigo-900">
+                    <th rowspan="2" class="w-10">ક્રમ</th>
+                    <th rowspan="2" class="w-24">મહિનો</th>
+                    <th colspan="5">પાનું ૧: સ્ક્રિનિંગ (Screening)</th>
+                    <th colspan="3">પાનું ૨: મેડિકલ (Medical)</th>
+                    <th colspan="3">પાનું ૩: SNP/દૂધ</th>
+                    <th colspan="4">પાનું ૪: ફોલો-અપ (Weekly Weight)</th>
+                    <th colspan="3">પાનું ૫: દવાઓ (Check)</th>
+                    <th colspan="2">પાનું ૬: ડિસ્ચાર્જ</th>
+                    <th rowspan="2" class="w-32">પાનું ૭: પોસ્ટ ફોલો-અપ</th>
+                </tr>
+                <tr>
+                    <th class="w-48">બાળક / માતાનું નામ</th><th class="w-16">ઉંમર</th><th class="w-16">વજન</th><th class="w-16">ઊંચાઈ</th><th class="w-16">સોજા?</th>
+                    <th class="w-16">ભૂખ</th><th class="w-32">જટિલતા</th><th class="w-16">રેફરલ</th>
+                    <th class="w-24">દાખલ તારીખ</th><th class="w-16">ગ્રેડ</th><th class="w-16">દૂધ?</th>
+                    <th class="w-12">W1</th><th class="w-12">W2</th><th class="w-12">W3</th><th class="w-12">W4</th>
+                    <th class="w-12">IFA</th><th class="w-12">Vit-A</th><th class="w-12">Alb.</th>
+                    <th class="w-24">તારીખ</th><th class="w-20">પરિણામ</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
     </div>
 </div>
 
 <script>
-    let children = JSON.parse(localStorage.getItem('cmam_v2')) || [];
+    const totalRows = 17;
+    const months = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", "જુલાઈ", "ઓગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
 
-    function renderTable() {
-        const m = document.getElementById('monthSelect').value;
-        const y = document.getElementById('yearSelect').value;
+    // લોકલ સ્ટોરેજ માંથી ડેટા લાવવો
+    let rowData = JSON.parse(localStorage.getItem('cmam_horizontal_v3')) || Array(totalRows).fill({});
+
+    function createRows() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
 
-        // ફિલ્ટર કરેલ ડેટા
-        let filtered = children.filter(c => c.month == m && c.year == y);
+        for (let i = 0; i < totalRows; i++) {
+            const data = rowData[i] || {};
+            let monthOptions = months.map((m, idx) => `<option value="${idx}" ${data.month == idx ? 'selected' : ''}>${m}</option>`).join('');
 
-        // ૧૭ રો (Row) પૂરી કરવા માટે લૂપ
-        for (let i = 0; i < 17; i++) {
-            let c = filtered[i] || { name: '', age: '', weight: '', height: '', appetite: '', comp: '', w1: '', w2: '', w3: '', w4: '', status: '' };
             tbody.innerHTML += `
-                <tr class="${c.name ? '' : 'text-transparent'}">
-                    <td>${i + 1}</td>
-                    <td class="text-left">${c.name}</td>
-                    <td>${c.age}</td>
-                    <td>${c.weight}</td>
-                    <td>${c.height}</td>
-                    <td>${c.appetite}</td>
-                    <td>${c.comp}</td>
-                    <td>${c.w1}</td><td>${c.w2}</td><td>${c.w3}</td><td>${c.w4}</td>
-                    <td>${c.status}</td>
+                <tr>
+                    <td class="bg-gray-50 font-bold">${i + 1}</td>
+                    <td><select onchange="updateData(${i}, 'month', this.value)" class="bg-blue-50 font-bold">${monthOptions}</select></td>
+                    <td><input type="text" value="${data.name || ''}" onchange="updateData(${i}, 'name', this.value)" placeholder="નામ..."></td>
+                    <td><input type="number" value="${data.age || ''}" onchange="updateData(${i}, 'age', this.value)"></td>
+                    <td><input type="number" step="0.1" value="${data.w || ''}" onchange="updateData(${i}, 'w', this.value)"></td>
+                    <td><input type="number" step="0.1" value="${data.h || ''}" onchange="updateData(${i}, 'h', this.value)"></td>
+                    <td><select onchange="updateData(${i}, 'edema', this.value)"><option value="ના" ${data.edema=='ના'?'selected':''}>ના</option><option value="હા" ${data.edema=='હા'?'selected':''}>હા</option></select></td>
+                    <td><select onchange="updateData(${i}, 'app', this.value)"><option value="પાસ" ${data.app=='પાસ'?'selected':''}>પાસ</option><option value="નાપાસ" ${data.app=='નાપાસ'?'selected':''}>નાપાસ</option></select></td>
+                    <td><input type="text" value="${data.comp || ''}" onchange="updateData(${i}, 'comp', this.value)"></td>
+                    <td><select onchange="updateData(${i}, 'ref', this.value)"><option value="ના" ${data.ref=='ના'?'selected':''}>ના</option><option value="હા" ${data.ref=='હા'?'selected':''}>હા</option></select></td>
+                    <td><input type="text" value="${data.edate || ''}" onchange="updateData(${i}, 'edate', this.value)" placeholder="DD/MM"></td>
+                    <td><select onchange="updateData(${i}, 'grade', this.value)"><option value="SAM" ${data.grade=='SAM'?'selected':''}>SAM</option><option value="MAM" ${data.grade=='MAM'?'selected':''}>MAM</option></select></td>
+                    <td><select onchange="updateData(${i}, 'milk', this.value)"><option value="હા" ${data.milk=='હા'?'selected':''}>હા</option><option value="ના" ${data.milk=='ના'?'selected':''}>ના</option></select></td>
+                    <td><input type="number" step="0.1" value="${data.w1 || ''}" onchange="updateData(${i}, 'w1', this.value)"></td>
+                    <td><input type="number" step="0.1" value="${data.w2 || ''}" onchange="updateData(${i}, 'w2', this.value)"></td>
+                    <td><input type="number" step="0.1" value="${data.w3 || ''}" onchange="updateData(${i}, 'w3', this.value)"></td>
+                    <td><input type="number" step="0.1" value="${data.w4 || ''}" onchange="updateData(${i}, 'w4', this.value)"></td>
+                    <td><input type="checkbox" ${data.ifa ? 'checked' : ''} onchange="updateData(${i}, 'ifa', this.checked)"></td>
+                    <td><input type="checkbox" ${data.vita ? 'checked' : ''} onchange="updateData(${i}, 'vita', this.checked)"></td>
+                    <td><input type="checkbox" ${data.alb ? 'checked' : ''} onchange="updateData(${i}, 'alb', this.checked)"></td>
+                    <td><input type="text" value="${data.ddate || ''}" onchange="updateData(${i}, 'ddate', this.value)"></td>
+                    <td><select onchange="updateData(${i}, 'res', this.value)"><option value="રિકવર" ${data.res=='રિકવર'?'selected':''}>રિકવર</option><option value="ના" ${data.res=='ના'?'selected':''}>ના</option></select></td>
+                    <td><input type="text" value="${data.post || ''}" onchange="updateData(${i}, 'post', this.value)" placeholder="વજન/સ્થિતિ"></td>
                 </tr>
             `;
         }
     }
 
-    function showAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
-    function closeModal() { document.getElementById('addModal').classList.add('hidden'); }
-
-    function saveChild() {
-        const name = document.getElementById('cName').value;
-        const month = document.getElementById('monthSelect').value;
-        const year = document.getElementById('yearSelect').value;
-        
-        children.push({ name: name, month: month, year: year, age: document.getElementById('cAge').value, weight: document.getElementById('cWeight').value });
-        localStorage.setItem('cmam_v2', JSON.stringify(children));
-        closeModal();
-        renderTable();
+    function updateData(rowIndex, field, value) {
+        if (!rowData[rowIndex]) rowData[rowIndex] = {};
+        rowData[rowIndex][field] = value;
+        localStorage.setItem('cmam_horizontal_v3', JSON.stringify(rowData));
     }
 
-    renderTable();
+    function clearAll() {
+        if(confirm("શું તમે આખું રજીસ્ટર ખાલી કરવા માંગો છો?")) {
+            localStorage.removeItem('cmam_horizontal_v3');
+            location.reload();
+        }
+    }
+
+    createRows();
 </script>
+
 </body>
 </html>
