@@ -15,8 +15,11 @@
         .page.active { display: block; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; table-layout: fixed; }
         table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
-        th { background: #ecf0f1; }
+        th { background: #ecf0f1; font-weight: bold; }
         input, select { width: 95%; border: none; padding: 5px; text-align: center; outline: none; font-family: inherit; background: transparent; }
+        .col-month { width: 80px; }
+        .col-name { width: 180px; } /* બાળકનું નામ મોટી કોલમ */
+        .col-small { width: 70px; }
         .credit { text-align: center; font-weight: bold; margin-top: 20px; border-top: 1px solid #000; padding-top: 10px; font-size: 12px; }
         .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
         
@@ -31,12 +34,12 @@
 </head>
 <body onload="initApp()">
 
-<div class="header">પોષણ સંગમ - વાર્ષિક ડિજિટલ રજિસ્ટર 2025</div>
+<div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર 2025</div>
 
 <div class="config-bar no-print">
     <div>
         <strong>બાળક પસંદ કરો:</strong>
-        <select id="childSelector" onchange="loadChildData()" style="padding: 5px; border-radius: 5px; border: 1px solid #d35400;">
+        <select id="childSelector" onchange="loadChildData()" style="padding: 5px; border-radius: 5px; border: 1px solid #d35400; width: 150px;">
             <option value="child1">બાળક ૧</option>
             <option value="child2">બાળક ૨</option>
             <option value="child3">બાળક ૩</option>
@@ -76,23 +79,35 @@
         loadChildData();
     }
 
-    function getMonthOptions(selectedVal = "") {
+    function getMonthOptions() {
         let options = `<option value="">--માસ--</option>`;
-        allMonths.forEach(m => {
-            options += `<option value="${m}">${m}</option>`;
-        });
+        allMonths.forEach(m => { options += `<option value="${m}">${m}</option>`; });
         return options;
+    }
+
+    function getLevelOptions() {
+        return `<option value="">--સ્તર--</option><option value="SAM">SAM</option><option value="MAM">MAM</option>`;
     }
 
     function renderTables() {
         let html = "";
-        const rowCount = 10; // દર પેજ પર ૧૦ હરોળ
+        const rowCount = 10;
 
         // Page 1: Screening
         html += `<div id="page1" class="page active">
             <h3 style="text-align:center;">પૃષ્ઠ ૧: Screening & Basic Info</h3>
             <table>
-                <tr><th style="width:100px;">માસ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>જન્મ તારીખ (DD/MM/YYYY)</th><th>સ્ક્રિનિંગ તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
+                <colgroup>
+                    <col class="col-month">
+                    <col class="col-name">
+                    <col>
+                    <col>
+                    <col>
+                    <col class="col-small">
+                    <col class="col-small">
+                    <col class="col-small">
+                </colgroup>
+                <tr><th>માસ</th><th>બાળકનું નામ</th><th>માતાનું નામ</th><th>જન્મ તારીખ (DD/MM/YYYY)</th><th>સ્ક્રિનિંગ તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સ્તર</th></tr>`;
         for(let r=1; r<=rowCount; r++) {
             html += `<tr>
                 <td><select id="p1_r${r}_month" onchange="saveData()">${getMonthOptions()}</select></td>
@@ -102,7 +117,7 @@
                 <td><input id="p1_r${r}_sdate" placeholder="DD/MM/YYYY" oninput="saveData()"></td>
                 <td><input id="p1_r${r}_weight" oninput="saveData()"></td>
                 <td><input id="p1_r${r}_height" oninput="saveData()"></td>
-                <td><input id="p1_r${r}_level" oninput="saveData()"></td></tr>`;
+                <td><select id="p1_r${r}_level" onchange="saveData()">${getLevelOptions()}</select></td></tr>`;
         }
         html += `</table><div class="credit">${creditLine}</div></div>`;
 
@@ -110,7 +125,7 @@
         html += `<div id="page2" class="page">
             <h3 style="text-align:center;">પૃષ્ઠ ૨: Medical Assessment</h3>
             <table>
-                <tr><th style="width:100px;">માસ</th><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>તબીબી જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th></tr>`;
+                <tr><th style="width:100px;">માસ</th><th>ભૂખ પરીક્ષણ</th><th>तારીખ</th><th>તબીબી જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th></tr>`;
         for(let r=1; r<=rowCount; r++) {
             html += `<tr>
                 <td><select id="p2_r${r}_month" onchange="saveData()">${getMonthOptions()}</select></td>
@@ -126,7 +141,7 @@
         // Pages 3 to 7
         const headers = {
             3: ["વિગત ૧", "વિગત ૨", "વિગત ૩", "વિગત ૪", "તારીખ"],
-            4: ["વજન/સ્તર ૧", "વજન/સ્તર ૨", "વજન/સ્તર ૩", "વજન/સ્તર ૪", "પખવાડિયું"],
+            4: ["વજન ૧", "સ્તર ૧", "વજન ૨", "સ્તર ૨", "તારીખ"],
             5: ["શરૂઆતનો ગ્રેડ", "અંતિમ ગ્રેડ", "સુધારો (%)", "શેરો", "તારીખ"],
             6: ["રિકવર", "નોન-રિકવર", "જટિલતા", "ફેરબદલ", "તપાસ હા/ના"],
             7: ["૧ માસ વજન", "૨ માસ વજન", "ઊંચાઈ", "અંતિમ સ્થિતિ", "તારીખ"]
@@ -138,12 +153,19 @@
                 <table><tr><th style="width:100px;">માસ</th><th>${headers[i][0]}</th><th>${headers[i][1]}</th><th>${headers[i][2]}</th><th>${headers[i][3]}</th><th>${headers[i][4]}</th></tr>`;
             for(let r=1; r<=rowCount; r++) {
                 html += `<tr>
-                    <td><select id="p${i}_r${r}_month" onchange="saveData()">${getMonthOptions()}</select></td>
-                    <td><input id="p${i}_r${r}_c1" oninput="saveData()"></td>
-                    <td><input id="p${i}_r${r}_c2" oninput="saveData()"></td>
-                    <td><input id="p${i}_r${r}_c3" oninput="saveData()"></td>
-                    <td><input id="p${i}_r${r}_c4" oninput="saveData()"></td>
-                    <td><input id="p${i}_r${r}_date" placeholder="DD/MM/YYYY" oninput="saveData()"></td></tr>`;
+                    <td><select id="p${i}_r${r}_month" onchange="saveData()">${getMonthOptions()}</select></td>`;
+                
+                // Column 1 to 4 logic (Page 4 contains levels too)
+                for(let c=1; c<=4; c++) {
+                    let isLevelColumn = (i == 4 && (c == 2 || c == 4)); // Page 4 column 2 and 4 are levels
+                    if(isLevelColumn) {
+                        html += `<td><select id="p${i}_r${r}_c${c}" onchange="saveData()">${getLevelOptions()}</select></td>`;
+                    } else {
+                        html += `<td><input id="p${i}_r${r}_c${c}" oninput="saveData()"></td>`;
+                    }
+                }
+                
+                html += `<td><input id="p${i}_r${r}_date" placeholder="DD/MM/YYYY" oninput="saveData()"></td></tr>`;
             }
             html += `</table><div class="credit">${creditLine}</div></div>`;
         }
@@ -157,12 +179,12 @@
         document.querySelectorAll('input, select').forEach(el => {
             if(el.id) data[el.id] = el.value;
         });
-        localStorage.setItem('poshan_v15_' + childId, JSON.stringify(data));
+        localStorage.setItem('poshan_v16_' + childId, JSON.stringify(data));
     }
 
     function loadChildData() {
         const childId = document.getElementById('childSelector').value;
-        const saved = localStorage.getItem('poshan_v15_' + childId);
+        const saved = localStorage.getItem('poshan_v16_' + childId);
         document.querySelectorAll('input, select').forEach(el => el.value = ""); 
         if(saved) {
             const data = JSON.parse(saved);
@@ -174,7 +196,7 @@
 
     function exportJSON() {
         const childId = document.getElementById('childSelector').value;
-        const data = localStorage.getItem('poshan_v15_' + childId);
+        const data = localStorage.getItem('poshan_v16_' + childId);
         const blob = new Blob([data], {type: "application/json"});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -186,7 +208,7 @@
         const reader = new FileReader();
         reader.onload = function(event) {
             const childId = document.getElementById('childSelector').value;
-            localStorage.setItem('poshan_v15_' + childId, event.target.result);
+            localStorage.setItem('poshan_v16_' + childId, event.target.result);
             loadChildData();
             alert("ડેટા સફળતાપૂર્વક લોડ થયો!");
         };
