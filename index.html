@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>પોષણ સંગમ - ૭ પેજ પ્રિન્ટ ફિક્સ</title>
+    <title>પોષણ સંગમ - ફાઈનલ રજિસ્ટર</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
         .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; }
@@ -19,43 +19,31 @@
         table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
         th { background: #ecf0f1; font-weight: bold; }
         input { width: 95%; border: none; padding: 4px; text-align: center; font-size: 12px; background: transparent; outline: none; }
+        
+        /* ક્રેડિટ લાઈન સ્ટાઈલ */
+        .credit-line { 
+            text-align: center; 
+            margin-top: 15px; 
+            font-size: 12px; 
+            font-weight: bold; 
+            color: #d35400; 
+            border-top: 1px dashed #e67e22; 
+            padding-top: 5px; 
+        }
 
-        /* પ્રિન્ટ માટે ખાસ સુધારો - જે ૧૪ પેજ થતા અટકાવશે */
         @media print {
-            @page { 
-                size: landscape; 
-                margin: 5mm; 
-            }
-            html, body { 
-                height: auto; 
-                overflow: visible !important; 
-            }
-            .nav-tabs, .action-bar, .header { 
-                display: none !important; 
-            }
-            .container { 
-                padding: 0 !important; 
-                margin: 0 !important; 
-            }
+            @page { size: landscape; margin: 5mm; }
+            .nav-tabs, .action-bar, .header { display: none !important; }
             .page { 
                 display: block !important; 
-                visibility: visible !important;
-                page-break-after: always !important; /* દરેક પેજ પછી બ્રેક લેવો */
-                border: none !important;
-                box-shadow: none !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
+                page-break-after: always !important; 
+                border: none !important; 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                padding: 10px 0 !important; 
             }
-            table { 
-                width: 100% !important; 
-                min-width: 100% !important;
-                font-size: 10px !important;
-            }
-            h3 { 
-                margin: 5px 0 !important; 
-                font-size: 14px !important; 
-            }
+            .credit-line { display: block !important; position: relative; bottom: 0; color: black !important; border-top: 1px solid #000; }
+            table { width: 100% !important; min-width: 100% !important; font-size: 10px !important; }
         }
     </style>
 </head>
@@ -67,7 +55,7 @@
     <button class="btn" style="background:#2980b9" onclick="exportData()">📤 Export Backup</button>
     <button class="btn" style="background:#8e44ad" onclick="document.getElementById('fileInput').click()">📥 Import Data</button>
     <input type="file" id="fileInput" style="display:none" onchange="importData(event)">
-    <button class="btn" style="background:#d35400" onclick="window.print()">🖨️ પ્રિન્ટ (માત્ર ૭ પેજ)</button>
+    <button class="btn" style="background:#d35400" onclick="window.print()">🖨️ પ્રિન્ટ (ક્રેડિટ સાથે)</button>
 </div>
 
 <div class="nav-tabs">
@@ -89,6 +77,7 @@
             document.write(`<div id="page${p}" class="page ${p==1?'active':''}">
                 <h3 style="text-align:center;">${headings[p-1]}</h3>
                 <div id="tablePlace${p}"></div>
+                <div class="credit-line">Developed by: Devendrabhai Ramanuj, 9276505035</div>
             </div>`);
         }
     </script>
@@ -126,7 +115,7 @@
             document.getElementById('tablePlace' + p).innerHTML = html;
         }
 
-        const saved = localStorage.getItem('poshan_vFinal');
+        const saved = localStorage.getItem('poshan_final_credit');
         if(saved) {
             const data = JSON.parse(saved);
             for(const k in data) if(document.getElementById(k)) document.getElementById(k).value = data[k];
@@ -136,11 +125,11 @@
     function saveData() {
         const d = {};
         document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; });
-        localStorage.setItem('poshan_vFinal', JSON.stringify(d));
+        localStorage.setItem('poshan_final_credit', JSON.stringify(d));
     }
 
     function exportData() {
-        const d = localStorage.getItem('poshan_vFinal');
+        const d = localStorage.getItem('poshan_final_credit');
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([d], {type: "application/json"}));
         a.download = "Poshan_Backup.json";
@@ -149,7 +138,7 @@
 
     function importData(e) {
         const r = new FileReader();
-        r.onload = function(ev) { localStorage.setItem('poshan_vFinal', ev.target.result); initApp(); alert("ડેટા લોડ થયો!"); };
+        r.onload = function(ev) { localStorage.setItem('poshan_final_credit', ev.target.result); initApp(); alert("ડેટા લોડ થયો!"); };
         r.readAsText(e.target.files[0]);
     }
 </script>
