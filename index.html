@@ -6,7 +6,9 @@
     <title>પોષણ સંગમ - ફાઈનલ રજિસ્ટર</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
-        .header { background: #e67e22; color: white; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; }
+        .header { background: #e67e22; color: white; padding: 10px; text-align: center; font-size: 18px; font-weight: bold; }
+        .selector-bar { background: #fff; padding: 10px; text-align: center; border-bottom: 2px solid #e67e22; display: flex; justify-content: center; gap: 10px; }
+        .styled-select { padding: 8px; font-weight: bold; border: 2px solid #d35400; border-radius: 8px; outline: none; }
         .nav-tabs { display: flex; overflow-x: auto; background: #fff; border-bottom: 2px solid #e67e22; position: sticky; top: 0; z-index: 1000; }
         .tab-btn { padding: 12px 15px; border: none; background: none; cursor: pointer; font-weight: bold; color: #555; white-space: nowrap; flex: 1; }
         .tab-btn.active { color: #e67e22; background: #fff5eb; border-bottom: 4px solid #e67e22; }
@@ -14,36 +16,18 @@
         .page { display: none; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow-x: auto; margin-bottom: 20px; }
         .page.active { display: block; }
         .action-bar { margin: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 14px; }
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1100px; table-layout: fixed; }
         table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
         th { background: #ecf0f1; font-weight: bold; }
         input { width: 95%; border: none; padding: 4px; text-align: center; font-size: 12px; background: transparent; outline: none; }
-        
-        /* ક્રેડિટ લાઈન સ્ટાઈલ */
-        .credit-line { 
-            text-align: center; 
-            margin-top: 15px; 
-            font-size: 12px; 
-            font-weight: bold; 
-            color: #d35400; 
-            border-top: 1px dashed #e67e22; 
-            padding-top: 5px; 
-        }
+        .credit-line { text-align: center; margin-top: 15px; font-size: 12px; font-weight: bold; color: #000; border-top: 1px solid #000; padding-top: 5px; }
 
         @media print {
             @page { size: landscape; margin: 5mm; }
-            .nav-tabs, .action-bar, .header { display: none !important; }
-            .page { 
-                display: block !important; 
-                page-break-after: always !important; 
-                border: none !important; 
-                box-shadow: none !important; 
-                margin: 0 !important; 
-                padding: 10px 0 !important; 
-            }
-            .credit-line { display: block !important; position: relative; bottom: 0; color: black !important; border-top: 1px solid #000; }
-            table { width: 100% !important; min-width: 100% !important; font-size: 10px !important; }
+            .nav-tabs, .action-bar, .header, .selector-bar { display: none !important; }
+            .page { display: block !important; page-break-after: always !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 10px 0 !important; }
+            table { width: 100% !important; min-width: 100% !important; }
         }
     </style>
 </head>
@@ -51,28 +35,32 @@
 
 <div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર</div>
 
+<div class="selector-bar">
+    <select id="selectedMonth" class="styled-select" onchange="changeTime()">
+        <option value="1">જાન્યુઆરી</option><option value="2">ફેબ્રુઆરી</option><option value="3">માર્ચ</option>
+        <option value="4">એપ્રિલ</option><option value="5">મે</option><option value="6">જૂન</option>
+        <option value="7">જુલાઈ</option><option value="8">ઓગસ્ટ</option><option value="9">સપ્ટેમ્બર</option>
+        <option value="10">ઓક્ટોબર</option><option value="11">નવેમ્બર</option><option value="12">ડિસેમ્બર</option>
+    </select>
+    <select id="selectedYear" class="styled-select" onchange="changeTime()">
+        <option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option>
+    </select>
+</div>
+
 <div class="action-bar">
-    <button class="btn" style="background:#2980b9" onclick="exportData()">📤 Export Backup</button>
-    <button class="btn" style="background:#8e44ad" onclick="document.getElementById('fileInput').click()">📥 Import Data</button>
-    <input type="file" id="fileInput" style="display:none" onchange="importData(event)">
-    <button class="btn" style="background:#d35400" onclick="window.print()">🖨️ પ્રિન્ટ (ક્રેડિટ સાથે)</button>
+    <button class="btn" style="background:#2980b9" onclick="exportData()">📤 Backup Export</button>
+    <button class="btn" style="background:#8e44ad" onclick="document.getElementById('fileIn').click()">📥 Import Data</button>
+    <input type="file" id="fileIn" style="display:none" onchange="importData(event)">
+    <button class="btn" style="background:#d35400" onclick="window.print()">🖨️ પ્રિન્ટ</button>
 </div>
 
 <div class="nav-tabs">
     <script>for(let i=1; i<=7; i++) document.write(`<button class="tab-btn ${i==1?'active':''}" onclick="go(${i})">P-${i}</button>`);</script>
 </div>
 
-<div class="container" id="allPages">
+<div class="container" id="mainPages">
     <script>
-        const headings = [
-            "પૃષ્ઠ ૧: Screening data",
-            "પૃષ્ઠ ૨: Medical assessment & SNP",
-            "પૃષ્ઠ ૩: Medicines during Program",
-            "પૃષ્ઠ ૪: Follow up during Program",
-            "પૃષ્ઠ ૫: અંતિમ ગ્રેડિંગ",
-            "પૃષ્ઠ ૬: ડિસ્ચાર્જના પ્રકાર અને પરિભાષા",
-            "પૃષ્ઠ ૭: ડિસ્ચાર્જ પછીનો ફોલોઅપ"
-        ];
+        const headings = ["પૃષ્ઠ ૧: Screening data", "પૃષ્ઠ ૨: Medical assessment & SNP", "પૃષ્ઠ ૩: Medicines during Program", "પૃષ્ઠ ૪: Follow up during Program", "પૃષ્ઠ ૫: અંતિમ ગ્રેડિંગ", "પૃષ્ઠ ૬: ડિસ્ચાર્જના પ્રકાર અને પરિભાષા", "પૃષ્ઠ ૭: ડિસ્ચાર્જ પછીનો ફોલોઅપ"];
         for(let p=1; p<=7; p++) {
             document.write(`<div id="page${p}" class="page ${p==1?'active':''}">
                 <h3 style="text-align:center;">${headings[p-1]}</h3>
@@ -84,6 +72,8 @@
 </div>
 
 <script>
+    let currentKey = "";
+
     function go(n) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -91,7 +81,18 @@
         document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
     }
 
+    function changeTime() {
+        const m = document.getElementById('selectedMonth').value;
+        const y = document.getElementById('selectedYear').value;
+        currentKey = `poshan_data_${m}_${y}`;
+        loadStoredData();
+    }
+
     function initApp() {
+        const d = new Date();
+        document.getElementById('selectedMonth').value = d.getMonth() + 1;
+        document.getElementById('selectedYear').value = d.getFullYear();
+        
         const heads = {
             1: "<tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતા</th><th>ઉંમર</th><th>જાતિ</th><th>તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સોજા</th><th>સ્તર</th></tr>",
             2: "<tr><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th><th>THR</th></tr>",
@@ -114,31 +115,35 @@
             html += "</table>";
             document.getElementById('tablePlace' + p).innerHTML = html;
         }
-
-        const saved = localStorage.getItem('poshan_final_credit');
-        if(saved) {
-            const data = JSON.parse(saved);
-            for(const k in data) if(document.getElementById(k)) document.getElementById(k).value = data[k];
-        }
+        changeTime();
     }
 
     function saveData() {
         const d = {};
         document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; });
-        localStorage.setItem('poshan_final_credit', JSON.stringify(d));
+        localStorage.setItem(currentKey, JSON.stringify(d));
+    }
+
+    function loadStoredData() {
+        document.querySelectorAll('input').forEach(i => i.value = ""); // Clear first
+        const s = localStorage.getItem(currentKey);
+        if(s) {
+            const d = JSON.parse(s);
+            for(const k in d) if(document.getElementById(k)) document.getElementById(k).value = d[k];
+        }
     }
 
     function exportData() {
-        const d = localStorage.getItem('poshan_final_credit');
+        const d = localStorage.getItem(currentKey);
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([d], {type: "application/json"}));
-        a.download = "Poshan_Backup.json";
+        a.download = `Backup_${currentKey}.json`;
         a.click();
     }
 
     function importData(e) {
         const r = new FileReader();
-        r.onload = function(ev) { localStorage.setItem('poshan_final_credit', ev.target.result); initApp(); alert("ડેટા લોડ થયો!"); };
+        r.onload = function(ev) { localStorage.setItem(currentKey, ev.target.result); loadStoredData(); alert("સફળ!"); };
         r.readAsText(e.target.files[0]);
     }
 </script>
