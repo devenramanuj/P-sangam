@@ -43,13 +43,12 @@
         .credit-line { text-align: center; margin-top: 15px; font-size: 12px; font-weight: bold; color: #000; border-top: 1px solid #000; padding-top: 5px; }
         
         /* Custom column widths */
-        .col-serial { width: 4% !important; } /* Very small for serial number */
-        .col-child-name { width: 18% !important; } /* Larger for child name */
-        .col-gender { width: 8% !important; } /* Smaller for gender */
-        .col-regular { width: 10% !important; } /* Regular columns */
-        .col-date { width: 12% !important; } /* Date columns */
+        .col-serial { width: 4% !important; }
+        .col-child-name { width: 18% !important; }
+        .col-gender { width: 8% !important; }
+        .col-regular { width: 10% !important; }
+        .col-date { width: 12% !important; }
         
-        /* Dropdown styling */
         .row-dropdown {
             width: 100%;
             border: 1px solid #ccc;
@@ -102,20 +101,51 @@
 </div>
 
 <div class="nav-tabs">
-    <script>for(let i=1; i<=7; i++) document.write(`<button class="tab-btn ${i==1?'active':''}" onclick="go(${i})">P-${i}</button>`);</script>
+    <button class="tab-btn active" onclick="go(1)">P-1</button>
+    <button class="tab-btn" onclick="go(2)">P-2</button>
+    <button class="tab-btn" onclick="go(3)">P-3</button>
+    <button class="tab-btn" onclick="go(4)">P-4</button>
+    <button class="tab-btn" onclick="go(5)">P-5</button>
+    <button class="tab-btn" onclick="go(6)">P-6</button>
+    <button class="tab-btn" onclick="go(7)">P-7</button>
 </div>
 
 <div class="container" id="mainPages">
-    <script>
-        const headings = ["પૃષ્ઠ ૧: Screening data", "પૃષ્ઠ ૨: Medical assessment & SNP", "પૃષ્ઠ ૩: Medicines during Program", "પૃષ્ઠ ૪: Follow up during Program", "પૃષ્ઠ ૫: અંતિમ ગ્રેડિંગ", "પૃષ્ઠ ૬: ડિસ્ચાર્જના પ્રકાર અને પરિભાષા", "પૃષ્ઠ ૭: ડિસ્ચાર્જ પછીનો ફોલોઅપ"];
-        for(let p=1; p<=7; p++) {
-            document.write(`<div id="page${p}" class="page ${p==1?'active':''}">
-                <h3 style="text-align:center;">${headings[p-1]}</h3>
-                <div id="tablePlace${p}"></div>
-                <div class="credit-line">Developed by: Devendrabhai Ramanuj, 9276505035</div>
-            </div>`);
-        }
-    </script>
+    <div id="page1" class="page active">
+        <h3 style="text-align:center;">પૃષ્ઠ ૧: Screening data</h3>
+        <div id="tablePlace1"></div>
+        <div class="credit-line">Developed by: Devendrabhai Ramanuj, 9276505035</div>
+    </div>
+    <div id="page2" class="page">
+        <h3 style="text-align:center;">પૃષ્ઠ ૨: Medical assessment & SNP</h3>
+        <div id="tablePlace2"></div>
+        <div class="credit-line">Developed by: Devendrabhai Ramanuj, 9276505035</div>
+    </div>
+    <div id="page3" class="page">
+        <h3 style="text-align:center;">પૃષ્ઠ ૩: Medicines during Program</h3>
+        <div id="tablePlace3"></div>
+        <div class="credit-line">Developed by: Devendrabhai Ramanuj, 9276505035</div>
+    </div>
+    <div id="page4" class="page">
+        <h3 style="text-align:center;">પૃષ્ઠ ૪: Follow up during Program</h3>
+        <div id="tablePlace4"></div>
+        <div class="credit-line">Developed by: Devendrabhai Ramanuj, 9276505035</div>
+    </div>
+    <div id="page5" class="page">
+        <h3 style="text-align:center;">પૃષ્ઠ ૫: અંતિમ ગ્રેડિંગ</h3>
+        <div id="tablePlace5"></div>
+        <div class="credit-line">Developed by: Devendrabhai Ramanuj, 9276505035</div>
+    </div>
+    <div id="page6" class="page">
+        <h3 style="text-align:center;">પૃષ્ઠ ૬: ડિસ્ચાર્જના પ્રકાર અને પરિભાષા</h3>
+        <div id="tablePlace6"></div>
+        <div class="credit-line">Developed by: Devendrabhai Ramanuj, 9276505035</div>
+    </div>
+    <div id="page7" class="page">
+        <h3 style="text-align:center;">પૃષ્ઠ ૭: ડિસ્ચાર્જ પછીનો ફોલોઅપ</h3>
+        <div id="tablePlace7"></div>
+        <div class="credit-line">Developed by: Devendrabhai Ramanuj, 9276505035</div>
+    </div>
 </div>
 
 <script>
@@ -202,9 +232,23 @@
         // Update header with current selection
         updateHeader();
         
-        // Initialize tables
-        const heads = {
-            1: `<tr>
+        // Initialize tables for all pages
+        createPage1Table();
+        createPage2Table();
+        createPage3Table();
+        createPage4Table();
+        createPage5Table();
+        createPage6Table();
+        createPage7Table();
+        
+        // Load data after creating tables
+        loadStoredData();
+    }
+
+    // Page 1 table creation
+    function createPage1Table() {
+        let html = `<table>
+            <tr>
                 <th class="col-serial">ક્રમ</th>
                 <th class="col-child-name">બાળકનું નામ</th>
                 <th class="col-regular">માતા</th>
@@ -215,8 +259,53 @@
                 <th class="col-regular">ઊંચાઈ</th>
                 <th class="col-regular">સોજા</th>
                 <th class="col-regular">સ્તર</th>
-                </tr>`,
-            2: `<tr>
+            </tr>`;
+        
+        for(let i=1; i<=15; i++) {
+            html += `<tr>
+                <td class="col-serial">
+                    <select id="p1_r${i}_c0" class="row-dropdown" onchange="saveData()">
+                        <option value="">-- પસંદ કરો --</option>
+                        <option value="1">જાન્યુઆરી</option>
+                        <option value="2">ફેબ્રુઆરી</option>
+                        <option value="3">માર્ચ</option>
+                        <option value="4">એપ્રિલ</option>
+                        <option value="5">મે</option>
+                        <option value="6">જૂન</option>
+                        <option value="7">જુલાઈ</option>
+                        <option value="8">ઑગસ્ટ</option>
+                        <option value="9">સપ્ટેમ્બર</option>
+                        <option value="10">ઓક્ટોબર</option>
+                        <option value="11">નવેમ્બર</option>
+                        <option value="12">ડિસેમ્બર</option>
+                    </select>
+                </td>
+                <td class="col-child-name"><input type="text" id="p1_r${i}_c1" oninput="saveData()"></td>
+                <td><input type="text" id="p1_r${i}_c2" oninput="saveData()"></td>
+                <td class="col-date"><input type="date" id="p1_r${i}_c3" oninput="saveData()"></td>
+                <td class="col-gender">
+                    <select id="p1_r${i}_c4" class="row-dropdown" onchange="saveData()">
+                        <option value="">પસંદ કરો</option>
+                        <option value="કુમાર">કુમાર</option>
+                        <option value="કન્યા">કન્યા</option>
+                    </select>
+                </td>
+                <td class="col-date"><input type="date" id="p1_r${i}_c5" oninput="saveData()"></td>
+                <td><input type="text" id="p1_r${i}_c6" oninput="saveData()"></td>
+                <td><input type="text" id="p1_r${i}_c7" oninput="saveData()"></td>
+                <td><input type="text" id="p1_r${i}_c8" oninput="saveData()"></td>
+                <td><input type="text" id="p1_r${i}_c9" oninput="saveData()"></td>
+            </tr>`;
+        }
+        
+        html += "</table>";
+        document.getElementById('tablePlace1').innerHTML = html;
+    }
+
+    // Page 2 table creation
+    function createPage2Table() {
+        let html = `<table>
+            <tr>
                 <th class="col-serial">ક્રમ</th>
                 <th class="col-child-name">બાળકનું નામ</th>
                 <th class="col-regular">ભૂખ પરીક્ષણ</th>
@@ -226,8 +315,30 @@
                 <th class="col-regular">વજન</th>
                 <th class="col-regular">ઊંચાઈ</th>
                 <th class="col-regular">THR</th>
-                </tr>`,
-            3: `<tr>
+            </tr>`;
+        
+        for(let i=1; i<=15; i++) {
+            html += `<tr>
+                <td class="col-serial">${i}</td>
+                <td class="col-child-name"><input type="text" id="p2_r${i}_c1" oninput="saveData()"></td>
+                <td><input type="text" id="p2_r${i}_c2" oninput="saveData()"></td>
+                <td class="col-date"><input type="date" id="p2_r${i}_c3" oninput="saveData()"></td>
+                <td><input type="text" id="p2_r${i}_c4" oninput="saveData()"></td>
+                <td><input type="text" id="p2_r${i}_c5" oninput="saveData()"></td>
+                <td><input type="text" id="p2_r${i}_c6" oninput="saveData()"></td>
+                <td><input type="text" id="p2_r${i}_c7" oninput="saveData()"></td>
+                <td><input type="text" id="p2_r${i}_c8" oninput="saveData()"></td>
+            </tr>`;
+        }
+        
+        html += "</table>";
+        document.getElementById('tablePlace2').innerHTML = html;
+    }
+
+    // Page 3 table creation
+    function createPage3Table() {
+        let html = `<table>
+            <tr>
                 <th class="col-serial">ક્રમ</th>
                 <th class="col-child-name">બાળકનું નામ</th>
                 <th class="col-regular">અઠ ૧</th>
@@ -236,8 +347,29 @@
                 <th class="col-regular">અઠ ૪</th>
                 <th class="col-regular">પખ ૧</th>
                 <th class="col-regular">પખ ૨</th>
-                </tr>`,
-            4: `<tr>
+            </tr>`;
+        
+        for(let i=1; i<=15; i++) {
+            html += `<tr>
+                <td class="col-serial">${i}</td>
+                <td class="col-child-name"><input type="text" id="p3_r${i}_c1" oninput="saveData()"></td>
+                <td><input type="text" id="p3_r${i}_c2" oninput="saveData()"></td>
+                <td><input type="text" id="p3_r${i}_c3" oninput="saveData()"></td>
+                <td><input type="text" id="p3_r${i}_c4" oninput="saveData()"></td>
+                <td><input type="text" id="p3_r${i}_c5" oninput="saveData()"></td>
+                <td><input type="text" id="p3_r${i}_c6" oninput="saveData()"></td>
+                <td><input type="text" id="p3_r${i}_c7" oninput="saveData()"></td>
+            </tr>`;
+        }
+        
+        html += "</table>";
+        document.getElementById('tablePlace3').innerHTML = html;
+    }
+
+    // Page 4 table creation
+    function createPage4Table() {
+        let html = `<table>
+            <tr>
                 <th class="col-serial">ક્રમ</th>
                 <th class="col-child-name">બાળકનું નામ</th>
                 <th class="col-regular">વજન ૧</th>
@@ -246,16 +378,56 @@
                 <th class="col-regular">વજન ૪</th>
                 <th class="col-regular">સ્તર ૧</th>
                 <th class="col-regular">સ્તર ૨</th>
-                </tr>`,
-            5: `<tr>
+            </tr>`;
+        
+        for(let i=1; i<=15; i++) {
+            html += `<tr>
+                <td class="col-serial">${i}</td>
+                <td class="col-child-name"><input type="text" id="p4_r${i}_c1" oninput="saveData()"></td>
+                <td><input type="text" id="p4_r${i}_c2" oninput="saveData()"></td>
+                <td><input type="text" id="p4_r${i}_c3" oninput="saveData()"></td>
+                <td><input type="text" id="p4_r${i}_c4" oninput="saveData()"></td>
+                <td><input type="text" id="p4_r${i}_c5" oninput="saveData()"></td>
+                <td><input type="text" id="p4_r${i}_c6" oninput="saveData()"></td>
+                <td><input type="text" id="p4_r${i}_c7" oninput="saveData()"></td>
+            </tr>`;
+        }
+        
+        html += "</table>";
+        document.getElementById('tablePlace4').innerHTML = html;
+    }
+
+    // Page 5 table creation
+    function createPage5Table() {
+        let html = `<table>
+            <tr>
                 <th class="col-serial">ક્રમ</th>
                 <th class="col-child-name">બાળકનું નામ</th>
                 <th class="col-regular">શરૂઆત</th>
                 <th class="col-regular">અંતિમ</th>
                 <th class="col-regular">સુધારો %</th>
                 <th class="col-regular">શેરો</th>
-                </tr>`,
-            6: `<tr>
+            </tr>`;
+        
+        for(let i=1; i<=15; i++) {
+            html += `<tr>
+                <td class="col-serial">${i}</td>
+                <td class="col-child-name"><input type="text" id="p5_r${i}_c1" oninput="saveData()"></td>
+                <td><input type="text" id="p5_r${i}_c2" oninput="saveData()"></td>
+                <td><input type="text" id="p5_r${i}_c3" oninput="saveData()"></td>
+                <td><input type="text" id="p5_r${i}_c4" oninput="saveData()"></td>
+                <td><input type="text" id="p5_r${i}_c5" oninput="saveData()"></td>
+            </tr>`;
+        }
+        
+        html += "</table>";
+        document.getElementById('tablePlace5').innerHTML = html;
+    }
+
+    // Page 6 table creation
+    function createPage6Table() {
+        let html = `<table>
+            <tr>
                 <th class="col-serial">ક્રમ</th>
                 <th class="col-child-name">બાળકનું નામ</th>
                 <th class="col-regular">રિકવર</th>
@@ -265,97 +437,51 @@
                 <th class="col-regular">ગેરહાજર</th>
                 <th class="col-regular">મૃત્યુ</th>
                 <th class="col-regular">તપાસ</th>
-                </tr>`,
-            7: `<tr>
+            </tr>`;
+        
+        for(let i=1; i<=15; i++) {
+            html += `<tr>
+                <td class="col-serial">${i}</td>
+                <td class="col-child-name"><input type="text" id="p6_r${i}_c1" oninput="saveData()"></td>
+                <td><input type="text" id="p6_r${i}_c2" oninput="saveData()"></td>
+                <td><input type="text" id="p6_r${i}_c3" oninput="saveData()"></td>
+                <td><input type="text" id="p6_r${i}_c4" oninput="saveData()"></td>
+                <td><input type="text" id="p6_r${i}_c5" oninput="saveData()"></td>
+                <td><input type="text" id="p6_r${i}_c6" oninput="saveData()"></td>
+                <td><input type="text" id="p6_r${i}_c7" oninput="saveData()"></td>
+                <td><input type="text" id="p6_r${i}_c8" oninput="saveData()"></td>
+            </tr>`;
+        }
+        
+        html += "</table>";
+        document.getElementById('tablePlace6').innerHTML = html;
+    }
+
+    // Page 7 table creation
+    function createPage7Table() {
+        let html = `<table>
+            <tr>
                 <th class="col-serial">ક્રમ</th>
                 <th class="col-child-name">બાળકનું નામ</th>
                 <th class="col-regular">૧ માસ</th>
                 <th class="col-regular">૨ માસ</th>
                 <th class="col-regular">ઊંચાઈ</th>
                 <th class="col-regular">સ્થિતિ</th>
-                </tr>`
-        };
-
-        for(let p=1; p<=7; p++) {
-            let html = "<table>" + heads[p];
-            for(let i=1; i<=15; i++) {
-                html += "<tr>";
-                
-                // For all pages, first column is serial number (for page 1 it's month dropdown, for others it's number)
-                if(p === 1) {
-                    // Page 1: First column is month dropdown
-                    html += `<td class="col-serial">
-                        <select id="p1_r${i}_c0" class="row-dropdown" onchange="saveData()">
-                            <option value="">-- પસંદ કરો --</option>
-                            <option value="1">જાન્યુઆરી</option>
-                            <option value="2">ફેબ્રુઆરી</option>
-                            <option value="3">માર્ચ</option>
-                            <option value="4">એપ્રિલ</option>
-                            <option value="5">મે</option>
-                            <option value="6">જૂન</option>
-                            <option value="7">જુલાઈ</option>
-                            <option value="8">ઑગસ્ટ</option>
-                            <option value="9">સપ્ટેમ્બર</option>
-                            <option value="10">ઓક્ટોબર</option>
-                            <option value="11">નવેમ્બર</option>
-                            <option value="12">ડિસેમ્બર</option>
-                        </select>
-                    </td>`;
-                } else {
-                    // Other pages: First column is serial number
-                    html += `<td class="col-serial">${i}</td>`;
-                }
-                
-                // For all pages, second column is child name
-                html += `<td class="col-child-name"><input type="text" id="p${p}_r${i}_c1" oninput="saveData()"></td>`;
-                
-                // Now generate the rest of the columns based on page
-                let columnCounts = {
-                    1: 8,  // Page 1: After serial and child name, we have 8 more columns
-                    2: 7,  // Page 2: After serial and child name, we have 7 more columns
-                    3: 6,  // Page 3: After serial and child name, we have 6 more columns
-                    4: 6,  // Page 4: After serial and child name, we have 6 more columns
-                    5: 4,  // Page 5: After serial and child name, we have 4 more columns
-                    6: 7,  // Page 6: After serial and child name, we have 7 more columns
-                    7: 4   // Page 7: After serial and child name, we have 4 more columns
-                };
-                
-                for(let c=2; c<=columnCounts[p]+1; c++) {
-                    // For page 1, column 5 (which is index 4 in our loop) is gender dropdown
-                    if(p === 1 && c === 5) {
-                        html += `<td class="col-gender">
-                            <select id="p${p}_r${i}_c${c}" class="row-dropdown" onchange="saveData()">
-                                <option value="">પસંદ કરો</option>
-                                <option value="કુમાર">કુમાર</option>
-                                <option value="કન્યા">કન્યા</option>
-                            </select>
-                        </td>`;
-                    } 
-                    // For page 1, only column 4 and 6 are date inputs (birth date and screening date)
-                    else if(p === 1 && (c === 4 || c === 6)) {
-                        html += `<td class="col-date"><input type="date" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
-                    }
-                    // For page 1, column 7 (weight) should be text input, not date
-                    else if(p === 1 && c === 7) {
-                        html += `<td><input type="text" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
-                    }
-                    // For page 2, column 4 is date (તારીખ)
-                    else if(p === 2 && c === 4) {
-                        html += `<td class="col-date"><input type="date" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
-                    }
-                    else {
-                        // All other columns are regular text inputs
-                        html += `<td><input type="text" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
-                    }
-                }
-                html += "</tr>";
-            }
-            html += "</table>";
-            document.getElementById('tablePlace' + p).innerHTML = html;
+            </tr>`;
+        
+        for(let i=1; i<=15; i++) {
+            html += `<tr>
+                <td class="col-serial">${i}</td>
+                <td class="col-child-name"><input type="text" id="p7_r${i}_c1" oninput="saveData()"></td>
+                <td><input type="text" id="p7_r${i}_c2" oninput="saveData()"></td>
+                <td><input type="text" id="p7_r${i}_c3" oninput="saveData()"></td>
+                <td><input type="text" id="p7_r${i}_c4" oninput="saveData()"></td>
+                <td><input type="text" id="p7_r${i}_c5" oninput="saveData()"></td>
+            </tr>`;
         }
         
-        // Load data after creating tables
-        loadStoredData();
+        html += "</table>";
+        document.getElementById('tablePlace7').innerHTML = html;
     }
 
     function saveData() {
@@ -368,12 +494,16 @@
             }
         });
         
-        // Save all dropdown values (including page 1 row dropdowns and gender dropdowns)
+        // Save all dropdown values
         document.querySelectorAll('select').forEach(s => { 
-            if(s.id && (s.id.startsWith('p') || s.id === 'selectedMonth' || s.id === 'selectedYear')) {
+            if(s.id && s.id.startsWith('p')) {
                 d[s.id] = s.value; 
             }
         });
+        
+        // Save month and year dropdowns
+        d['selectedMonth'] = document.getElementById('selectedMonth').value;
+        d['selectedYear'] = document.getElementById('selectedYear').value;
         
         // Save to localStorage with current key
         localStorage.setItem(currentKey, JSON.stringify(d));
@@ -392,10 +522,6 @@
                     element.value = d[k];
                 }
             }
-        } else {
-            // Clear all inputs if no data found for this key
-            document.querySelectorAll('input').forEach(i => i.value = "");
-            document.querySelectorAll('select.row-dropdown').forEach(s => s.value = "");
         }
     }
 
