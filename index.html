@@ -36,13 +36,20 @@
         .page.active { display: block; }
         .action-bar { margin: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
         .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1100px; table-layout: fixed; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1200px; table-layout: fixed; }
         table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
         th { background: #ecf0f1; font-weight: bold; }
         input { width: 95%; border: none; padding: 4px; text-align: center; font-size: 12px; background: transparent; outline: none; }
         .credit-line { text-align: center; margin-top: 15px; font-size: 12px; font-weight: bold; color: #000; border-top: 1px solid #000; padding-top: 5px; }
         
-        /* Added for page 1 dropdown styling */
+        /* Custom column widths */
+        .col-serial { width: 4% !important; } /* Very small for serial number */
+        .col-child-name { width: 18% !important; } /* Larger for child name */
+        .col-gender { width: 8% !important; } /* Smaller for gender */
+        .col-regular { width: 10% !important; } /* Regular columns */
+        .col-date { width: 12% !important; } /* Date columns */
+        
+        /* Dropdown styling */
         .row-dropdown {
             width: 100%;
             border: 1px solid #ccc;
@@ -197,13 +204,76 @@
         
         // Initialize tables
         const heads = {
-            1: "<tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતા</th><th>જન્મ તારીખ</th><th>જાતિ</th><th>સ્ક્રિનિંગ તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સોજા</th><th>સ્તર</th></tr>",
-            2: "<tr><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th><th>THR</th></tr>",
-            3: "<tr><th>ક્રમ</th><th>અઠ ૧</th><th>અઠ ૨</th><th>અઠ ૩</th><th>અઠ ૪</th><th>પખ ૧</th><th>પખ ૨</th></tr>",
-            4: "<tr><th>ક્રમ</th><th>વજન ૧</th><th>વજન ૨</th><th>વજન ૩</th><th>વજન ૪</th><th>સ્તર ૧</th><th>સ્તર ૨</th></tr>",
-            5: "<tr><th>ક્રમ</th><th>શરૂઆત</th><th>અંતિમ</th><th>સુધારો %</th><th>શેરો</th></tr>",
-            6: "<tr><th>રિકવર</th><th>નોન-રિકવર</th><th>જટિલતા</th><th>ફેરબદલ</th><th>ગેરહાજર</th><th>મૃત્યુ</th><th>તપાસ</th></tr>",
-            7: "<tr><th>ક્રમ</th><th>૧ માસ</th><th>૨ માસ</th><th>ઊંચાઈ</th><th>સ્થિતિ</th></tr>"
+            1: `<tr>
+                <th class="col-serial">ક્રમ</th>
+                <th class="col-child-name">બાળકનું નામ</th>
+                <th class="col-regular">માતા</th>
+                <th class="col-date">જન્મ તારીખ</th>
+                <th class="col-gender">જાતિ</th>
+                <th class="col-date">સ્ક્રિનિંગ તારીખ</th>
+                <th class="col-regular">વજન</th>
+                <th class="col-regular">ઊંચાઈ</th>
+                <th class="col-regular">સોજા</th>
+                <th class="col-regular">સ્તર</th>
+                </tr>`,
+            2: `<tr>
+                <th class="col-serial">ક્રમ</th>
+                <th class="col-child-name">બાળકનું નામ</th>
+                <th class="col-regular">ભૂખ પરીક્ષણ</th>
+                <th class="col-date">તારીખ</th>
+                <th class="col-regular">જટિલતા</th>
+                <th class="col-regular">રેફરલ</th>
+                <th class="col-regular">વજન</th>
+                <th class="col-regular">ઊંચાઈ</th>
+                <th class="col-regular">THR</th>
+                </tr>`,
+            3: `<tr>
+                <th class="col-serial">ક્રમ</th>
+                <th class="col-child-name">બાળકનું નામ</th>
+                <th class="col-regular">અઠ ૧</th>
+                <th class="col-regular">અઠ ૨</th>
+                <th class="col-regular">અઠ ૩</th>
+                <th class="col-regular">અઠ ૪</th>
+                <th class="col-regular">પખ ૧</th>
+                <th class="col-regular">પખ ૨</th>
+                </tr>`,
+            4: `<tr>
+                <th class="col-serial">ક્રમ</th>
+                <th class="col-child-name">બાળકનું નામ</th>
+                <th class="col-regular">વજન ૧</th>
+                <th class="col-regular">વજન ૨</th>
+                <th class="col-regular">વજન ૩</th>
+                <th class="col-regular">વજન ૪</th>
+                <th class="col-regular">સ્તર ૧</th>
+                <th class="col-regular">સ્તર ૨</th>
+                </tr>`,
+            5: `<tr>
+                <th class="col-serial">ક્રમ</th>
+                <th class="col-child-name">બાળકનું નામ</th>
+                <th class="col-regular">શરૂઆત</th>
+                <th class="col-regular">અંતિમ</th>
+                <th class="col-regular">સુધારો %</th>
+                <th class="col-regular">શેરો</th>
+                </tr>`,
+            6: `<tr>
+                <th class="col-serial">ક્રમ</th>
+                <th class="col-child-name">બાળકનું નામ</th>
+                <th class="col-regular">રિકવર</th>
+                <th class="col-regular">નોન-રિકવર</th>
+                <th class="col-regular">જટિલતા</th>
+                <th class="col-regular">ફેરબદલ</th>
+                <th class="col-regular">ગેરહાજર</th>
+                <th class="col-regular">મૃત્યુ</th>
+                <th class="col-regular">તપાસ</th>
+                </tr>`,
+            7: `<tr>
+                <th class="col-serial">ક્રમ</th>
+                <th class="col-child-name">બાળકનું નામ</th>
+                <th class="col-regular">૧ માસ</th>
+                <th class="col-regular">૨ માસ</th>
+                <th class="col-regular">ઊંચાઈ</th>
+                <th class="col-regular">સ્થિતિ</th>
+                </tr>`
         };
 
         for(let p=1; p<=7; p++) {
@@ -211,9 +281,10 @@
             for(let i=1; i<=15; i++) {
                 html += "<tr>";
                 
-                // For page 1, add dropdown in first column
+                // For all pages, first column is serial number (for page 1 it's month dropdown, for others it's number)
                 if(p === 1) {
-                    html += `<td>
+                    // Page 1: First column is month dropdown
+                    html += `<td class="col-serial">
                         <select id="p1_r${i}_c0" class="row-dropdown" onchange="saveData()">
                             <option value="">-- પસંદ કરો --</option>
                             <option value="1">જાન્યુઆરી</option>
@@ -230,14 +301,48 @@
                             <option value="12">ડિસેમ્બર</option>
                         </select>
                     </td>`;
-                } else if([3,4,5,7].includes(p)) {
-                    html += `<td>${i}</td>`;
+                } else {
+                    // Other pages: First column is serial number
+                    html += `<td class="col-serial">${i}</td>`;
                 }
                 
-                let count = (p==1)?9:(p==2)?7:(p==6)?7:(p==3)?6:(p==4)?6:(p==5)?4:4;
-                for(let c=1; c<=count; c++) {
-                    let type = (p==1 && (c==3 || c==5)) ? "date" : "text";
-                    html += `<td><input type="${type}" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
+                // For all pages, second column is child name
+                html += `<td class="col-child-name"><input type="text" id="p${p}_r${i}_c1" oninput="saveData()"></td>`;
+                
+                // Now generate the rest of the columns based on page
+                let columnCounts = {
+                    1: 8,  // Page 1: After serial and child name, we have 8 more columns
+                    2: 7,  // Page 2: After serial and child name, we have 7 more columns
+                    3: 6,  // Page 3: After serial and child name, we have 6 more columns
+                    4: 6,  // Page 4: After serial and child name, we have 6 more columns
+                    5: 4,  // Page 5: After serial and child name, we have 4 more columns
+                    6: 7,  // Page 6: After serial and child name, we have 7 more columns
+                    7: 4   // Page 7: After serial and child name, we have 4 more columns
+                };
+                
+                for(let c=2; c<=columnCounts[p]+1; c++) {
+                    // For page 1, column 5 (which is index 4 in our loop) is gender dropdown
+                    if(p === 1 && c === 5) {
+                        html += `<td class="col-gender">
+                            <select id="p${p}_r${i}_c${c}" class="row-dropdown" onchange="saveData()">
+                                <option value="">પસંદ કરો</option>
+                                <option value="કુમાર">કુમાર</option>
+                                <option value="કન્યા">કન્યા</option>
+                            </select>
+                        </td>`;
+                    } 
+                    // For page 1, column 4 and 6 are date inputs (birth date and screening date)
+                    else if(p === 1 && (c === 4 || c === 6)) {
+                        html += `<td class="col-date"><input type="date" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
+                    }
+                    else {
+                        // For page 2, column 4 is date (તારીખ)
+                        if(p === 2 && c === 4) {
+                            html += `<td class="col-date"><input type="date" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
+                        } else {
+                            html += `<td><input type="text" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
+                        }
+                    }
                 }
                 html += "</tr>";
             }
@@ -259,7 +364,7 @@
             }
         });
         
-        // Save all dropdown values (including page 1 row dropdowns)
+        // Save all dropdown values (including page 1 row dropdowns and gender dropdowns)
         document.querySelectorAll('select').forEach(s => { 
             if(s.id && (s.id.startsWith('p') || s.id === 'selectedMonth' || s.id === 'selectedYear')) {
                 d[s.id] = s.value; 
