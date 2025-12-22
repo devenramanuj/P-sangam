@@ -41,6 +41,17 @@
         th { background: #ecf0f1; font-weight: bold; }
         input { width: 95%; border: none; padding: 4px; text-align: center; font-size: 12px; background: transparent; outline: none; }
         .credit-line { text-align: center; margin-top: 15px; font-size: 12px; font-weight: bold; color: #000; border-top: 1px solid #000; padding-top: 5px; }
+        
+        /* Added for page 1 dropdown styling */
+        .row-dropdown {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 2px;
+            font-size: 11px;
+            background-color: white;
+            text-align: center;
+        }
 
         @media print {
             @page { size: landscape; margin: 5mm; }
@@ -52,22 +63,22 @@
 </head>
 <body>
 
-<div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર</div>
+<div class="header" id="mainHeader">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર</div>
 
 <div class="selector-bar">
     <select id="selectedMonth" class="styled-select" onchange="changeTime()">
-        <option value="1">જાન્વ</option>
-        <option value="2">ફેબ્ર</option>
+        <option value="1">જાન્યુઆરી</option>
+        <option value="2">ફેબ્રુઆરી</option>
         <option value="3">માર્ચ</option>
-        <option value="4">એપ્ર</option>
+        <option value="4">એપ્રિલ</option>
         <option value="5">મે</option>
         <option value="6">જૂન</option>
-        <option value="7">જુલ</option>
-        <option value="8">ઓગ</option>
-        <option value="9">સપ્ટ</option>
-        <option value="10">ઓક્ટ</option>
-        <option value="11">નવે</option>
-        <option value="12">ડિસે</option>
+        <option value="7">જુલાઈ</option>
+        <option value="8">ઑગસ્ટ</option>
+        <option value="9">સપ્ટેમ્બર</option>
+        <option value="10">ઓક્ટોબર</option>
+        <option value="11">નવેમ્બર</option>
+        <option value="12">ડિસેમ્બર</option>
     </select>
     <select id="selectedYear" class="styled-select" onchange="changeTime()">
         <option value="2025">2025</option>
@@ -104,6 +115,20 @@
     let currentKey = "";
     let appData = {};
 
+    // Function to update header with month and year
+    function updateHeader() {
+        const monthNames = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", 
+                          "જુલાઈ", "ઑગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
+        const monthSelect = document.getElementById('selectedMonth');
+        const yearSelect = document.getElementById('selectedYear');
+        const monthIndex = parseInt(monthSelect.value) - 1;
+        const monthName = monthNames[monthIndex];
+        const year = yearSelect.value;
+        
+        document.getElementById('mainHeader').innerHTML = 
+            `પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર (${monthName} ${year})`;
+    }
+
     function go(n) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -115,47 +140,26 @@
         const m = document.getElementById('selectedMonth').value;
         const y = document.getElementById('selectedYear').value;
         currentKey = `poshan_data_${m}_${y}`;
+        updateHeader();
         loadStoredData();
     }
 
     function initApp() {
         const d = new Date();
-        const currentMonth = d.getMonth() + 1;
+        const currentMonth = d.getMonth() + 1; // 1-12
         const currentYear = d.getFullYear();
         
-        // Set month and year with proper selection
-        const monthSelect = document.getElementById('selectedMonth');
-        const yearSelect = document.getElementById('selectedYear');
+        // Set month and year dropdowns
+        document.getElementById('selectedMonth').value = currentMonth;
+        document.getElementById('selectedYear').value = currentYear;
         
-        // Set month - ensure something is always selected
-        let monthSelected = false;
-        for(let i = 0; i < monthSelect.options.length; i++) {
-            if(monthSelect.options[i].value == currentMonth) {
-                monthSelect.options[i].selected = true;
-                monthSelected = true;
-                break;
-            }
-        }
-        if(!monthSelected) {
-            monthSelect.options[0].selected = true; // Default to first option
-        }
+        // Initialize currentKey
+        currentKey = `poshan_data_${currentMonth}_${currentYear}`;
         
-        // Set year - ensure something is always selected
-        let yearSelected = false;
-        for(let i = 0; i < yearSelect.options.length; i++) {
-            if(yearSelect.options[i].value == currentYear) {
-                yearSelect.options[i].selected = true;
-                yearSelected = true;
-                break;
-            }
-        }
-        if(!yearSelected) {
-            yearSelect.options[0].selected = true; // Default to first option
-        }
+        // Update header with month and year
+        updateHeader();
         
-        // Initialize currentKey with default values
-        currentKey = `poshan_data_${monthSelect.value}_${yearSelect.value}`;
-        
+        // Initialize tables
         const heads = {
             1: "<tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતા</th><th>જન્મ તારીખ</th><th>જાતિ</th><th>સ્ક્રિનિંગ તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સોજા</th><th>સ્તર</th></tr>",
             2: "<tr><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th><th>THR</th></tr>",
@@ -170,30 +174,30 @@
             let html = "<table>" + heads[p];
             for(let i=1; i<=15; i++) {
                 html += "<tr>";
-                if([1,3,4,5,7].includes(p)) {
-                    // Add dropdown button for ક્રમ column on page 1
-                    if(p === 1) {
-                        html += `<td>
-                            <select id="rowDropdown_p1_r${i}" class="styled-select" style="width: 100%; padding: 4px; border: none; background: transparent; outline: none;">
-                                <option value="">-- પસંદ કરો --</option>
-                                <option value="1">જાન્વ</option>
-                                <option value="2">ફેબ્ર</option>
-                                <option value="3">માર્ચ</option>
-                                <option value="4">એપ્ર</option>
-                                <option value="5">મે</option>
-                                <option value="6">જૂન</option>
-                                <option value="7">જુલ</option>
-                                <option value="8">ઓગ</option>
-                                <option value="9">સપ્ટ</option>
-                                <option value="10">ઓક્ટ</option>
-                                <option value="11">નવે</option>
-                                <option value="12">ડિસે</option>
-                            </select>
-                        </td>`;
-                    } else {
-                        html += `<td>${i}</td>`;
-                    }
+                
+                // For page 1, add dropdown in first column
+                if(p === 1) {
+                    html += `<td>
+                        <select id="p1_r${i}_c0" class="row-dropdown" onchange="saveData()">
+                            <option value="">-- પસંદ કરો --</option>
+                            <option value="1">જાન્યુઆરી</option>
+                            <option value="2">ફેબ્રુઆરી</option>
+                            <option value="3">માર્ચ</option>
+                            <option value="4">એપ્રિલ</option>
+                            <option value="5">મે</option>
+                            <option value="6">જૂન</option>
+                            <option value="7">જુલાઈ</option>
+                            <option value="8">ઑગસ્ટ</option>
+                            <option value="9">સપ્ટેમ્બર</option>
+                            <option value="10">ઓક્ટોબર</option>
+                            <option value="11">નવેમ્બર</option>
+                            <option value="12">ડિસેમ્બર</option>
+                        </select>
+                    </td>`;
+                } else if([3,4,5,7].includes(p)) {
+                    html += `<td>${i}</td>`;
                 }
+                
                 let count = (p==1)?9:(p==2)?7:(p==6)?7:(p==3)?6:(p==4)?6:(p==5)?4:4;
                 for(let c=1; c<=count; c++) {
                     let type = (p==1 && (c==3 || c==5)) ? "date" : "text";
@@ -205,56 +209,65 @@
             document.getElementById('tablePlace' + p).innerHTML = html;
         }
         
-        // Load data immediately after creating elements
+        // Load data after creating tables
         loadStoredData();
     }
 
     function saveData() {
         const d = {};
-        document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; });
-        // Also save dropdown values including row dropdowns
-        document.querySelectorAll('select').forEach(s => { if(s.id) d[s.id] = s.value; });
         
-        // Save to localStorage
+        // Save all input values
+        document.querySelectorAll('input').forEach(i => { 
+            if(i.id && i.id.startsWith('p')) {
+                d[i.id] = i.value; 
+            }
+        });
+        
+        // Save all dropdown values (including page 1 row dropdowns)
+        document.querySelectorAll('select').forEach(s => { 
+            if(s.id && (s.id.startsWith('p') || s.id === 'selectedMonth' || s.id === 'selectedYear')) {
+                d[s.id] = s.value; 
+            }
+        });
+        
+        // Save to localStorage with current key
         localStorage.setItem(currentKey, JSON.stringify(d));
         
-        // Also save to a persistent key to prevent data loss on refresh
-        localStorage.setItem('poshan_app_data', JSON.stringify({
-            currentKey: currentKey,
-            data: d
-        }));
+        // Also save current month/year selection separately
+        const settings = {
+            currentMonth: document.getElementById('selectedMonth').value,
+            currentYear: document.getElementById('selectedYear').value,
+            lastUpdate: new Date().toISOString()
+        };
+        localStorage.setItem('poshan_settings', JSON.stringify(settings));
     }
 
     function loadStoredData() {
-        // First try to load from the persistent key
-        const persistentData = localStorage.getItem('poshan_app_data');
-        if(persistentData) {
-            const parsedData = JSON.parse(persistentData);
-            if(parsedData.currentKey && parsedData.data) {
-                currentKey = parsedData.currentKey;
-                appData = parsedData.data;
+        // Load month/year settings first
+        const settings = localStorage.getItem('poshan_settings');
+        if(settings) {
+            const parsedSettings = JSON.parse(settings);
+            if(parsedSettings.currentMonth) {
+                document.getElementById('selectedMonth').value = parsedSettings.currentMonth;
+            }
+            if(parsedSettings.currentYear) {
+                document.getElementById('selectedYear').value = parsedSettings.currentYear;
             }
         }
         
-        // Load the specific data for currentKey
+        // Update header with loaded month/year
+        updateHeader();
+        
+        // Load data for current key
         const storedData = localStorage.getItem(currentKey);
         if(storedData) {
             const d = JSON.parse(storedData);
-            appData = { ...appData, ...d };
-        }
-        
-        // Clear all inputs and selects
-        document.querySelectorAll('input').forEach(i => i.value = "");
-        document.querySelectorAll('select').forEach(s => s.value = "");
-        
-        // Populate with loaded data
-        for(const k in appData) {
-            const element = document.getElementById(k);
-            if(element) {
-                if(element.tagName === 'INPUT') {
-                    element.value = appData[k];
-                } else if(element.tagName === 'SELECT') {
-                    element.value = appData[k];
+            
+            // Populate inputs
+            for(const k in d) {
+                const element = document.getElementById(k);
+                if(element) {
+                    element.value = d[k];
                 }
             }
         }
@@ -271,15 +284,37 @@
     function importData(e) {
         const r = new FileReader();
         r.onload = function(ev) { 
-            localStorage.setItem(currentKey, ev.target.result); 
-            loadStoredData(); 
-            alert("સફળ!"); 
+            const importedData = JSON.parse(ev.target.result);
+            
+            // Save imported data to current key
+            localStorage.setItem(currentKey, ev.target.result);
+            
+            // Update the form with imported data
+            for(const k in importedData) {
+                const element = document.getElementById(k);
+                if(element) {
+                    element.value = importedData[k];
+                }
+            }
+            
+            alert("ડેટા સફળતાપૂર્વક ઇમ્પોર્ટ થયો!"); 
         };
         r.readAsText(e.target.files[0]);
     }
 
     // Initialize the app
     window.onload = initApp;
+    
+    // Save month/year selection when changed
+    document.getElementById('selectedMonth').addEventListener('change', function() {
+        saveData();
+        changeTime();
+    });
+    
+    document.getElementById('selectedYear').addEventListener('change', function() {
+        saveData();
+        changeTime();
+    });
 </script>
 </body>
 </html>
