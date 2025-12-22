@@ -331,17 +331,21 @@
                             </select>
                         </td>`;
                     } 
-                    // For page 1, column 4 and 6 are date inputs (birth date and screening date)
+                    // For page 1, only column 4 and 6 are date inputs (birth date and screening date)
                     else if(p === 1 && (c === 4 || c === 6)) {
                         html += `<td class="col-date"><input type="date" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
                     }
+                    // For page 1, column 7 (weight) should be text input, not date
+                    else if(p === 1 && c === 7) {
+                        html += `<td><input type="text" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
+                    }
+                    // For page 2, column 4 is date (તારીખ)
+                    else if(p === 2 && c === 4) {
+                        html += `<td class="col-date"><input type="date" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
+                    }
                     else {
-                        // For page 2, column 4 is date (તારીખ)
-                        if(p === 2 && c === 4) {
-                            html += `<td class="col-date"><input type="date" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
-                        } else {
-                            html += `<td><input type="text" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
-                        }
+                        // All other columns are regular text inputs
+                        html += `<td><input type="text" id="p${p}_r${i}_c${c}" oninput="saveData()"></td>`;
                     }
                 }
                 html += "</tr>";
