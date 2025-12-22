@@ -43,11 +43,11 @@
         .credit-line { text-align: center; margin-top: 15px; font-size: 12px; font-weight: bold; color: #000; border-top: 1px solid #000; padding-top: 5px; }
         
         /* Custom column widths */
-        .col-serial { width: 4% !important; }
+        .col-serial { width: 7% !important; } /* મહિનાના નામ માટે મોટી */
         .col-child-name { width: 18% !important; }
         .col-gender { width: 8% !important; }
-        .col-regular { width: 10% !important; }
-        .col-date { width: 12% !important; }
+        .col-regular { width: 9% !important; }
+        .col-date { width: 11% !important; }
         
         .row-dropdown {
             width: 100%;
@@ -98,6 +98,7 @@
     <button class="btn" style="background:#8e44ad" onclick="document.getElementById('fileIn').click()">📥 Import Data</button>
     <input type="file" id="fileIn" style="display:none" onchange="importData(event)">
     <button class="btn" style="background:#d35400" onclick="window.print()">🖨️ પ્રિન્ટ</button>
+    <button class="btn" style="background:#27ae60" onclick="copyDataToOtherMonths()">📋 અન્ય મહિનામાં કોપી કરો</button>
 </div>
 
 <div class="nav-tabs">
@@ -151,6 +152,10 @@
 <script>
     let currentKey = "";
     let appData = {};
+    let monthNames = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", 
+                     "જુલાઈ", "ઑગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
+    let monthShortNames = ["જાન્યુ", "ફેબ્રુ", "માર્ચ", "એપ્રિલ", "મે", "જૂન", 
+                          "જુલાઈ", "ઑગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
 
     // Function to save month and year to localStorage
     function saveMonthYear() {
@@ -180,8 +185,6 @@
 
     // Function to update header with month and year
     function updateHeader() {
-        const monthNames = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", 
-                          "જુલાઈ", "ઑગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
         const monthSelect = document.getElementById('selectedMonth');
         const yearSelect = document.getElementById('selectedYear');
         const monthIndex = parseInt(monthSelect.value) - 1;
@@ -204,6 +207,49 @@
         const y = document.getElementById('selectedYear').value;
         currentKey = `poshan_data_${m}_${y}`;
         loadStoredData();
+    }
+
+    // Function to copy child name to all pages automatically
+    function copyChildNameToAllPages(row, childName) {
+        // Copy to all other pages (2-7)
+        for(let p=2; p<=7; p++) {
+            const inputId = `p${p}_r${row}_c1`;
+            const inputElement = document.getElementById(inputId);
+            if(inputElement) {
+                inputElement.value = childName;
+            }
+        }
+    }
+
+    // Function to copy data to other months automatically
+    function copyDataToOtherMonths() {
+        const currentMonth = document.getElementById('selectedMonth').value;
+        const currentYear = document.getElementById('selectedYear').value;
+        const currentData = localStorage.getItem(`poshan_data_${currentMonth}_${currentYear}`);
+        
+        if(!currentData) {
+            alert("હાલના મહિનામાં કોઈ ડેટા નથી!");
+            return;
+        }
+        
+        const parsedData = JSON.parse(currentData);
+        
+        // Ask which months to copy to
+        const targetMonths = [];
+        for(let m=1; m<=12; m++) {
+            if(m != currentMonth) {
+                targetMonths.push(m);
+            }
+        }
+        
+        let copiedCount = 0;
+        targetMonths.forEach(month => {
+            const targetKey = `poshan_data_${month}_${currentYear}`;
+            localStorage.setItem(targetKey, JSON.stringify(parsedData));
+            copiedCount++;
+        });
+        
+        alert(`${copiedCount} મહિનામાં ડેટા સફળતાપૂર્વક કોપી કર્યો!`);
     }
 
     function initApp() {
@@ -243,6 +289,24 @@
         
         // Load data after creating tables
         loadStoredData();
+        
+        // Set up automatic child name copying
+        setupAutoCopy();
+    }
+
+    // Setup automatic child name copying across pages
+    function setupAutoCopy() {
+        // Add event listeners to all child name inputs in page 1
+        for(let i=1; i<=15; i++) {
+            const inputId = `p1_r${i}_c1`;
+            const inputElement = document.getElementById(inputId);
+            if(inputElement) {
+                inputElement.addEventListener('input', function() {
+                    copyChildNameToAllPages(i, this.value);
+                    saveData();
+                });
+            }
+        }
     }
 
     // Page 1 table creation
@@ -265,20 +329,14 @@
             html += `<tr>
                 <td class="col-serial">
                     <select id="p1_r${i}_c0" class="row-dropdown" onchange="saveData()">
-                        <option value="">-- પસંદ કરો --</option>
-                        <option value="1">જાન્યુઆરી</option>
-                        <option value="2">ફેબ્રુઆરી</option>
-                        <option value="3">માર્ચ</option>
-                        <option value="4">એપ્રિલ</option>
-                        <option value="5">મે</option>
-                        <option value="6">જૂન</option>
-                        <option value="7">જુલાઈ</option>
-                        <option value="8">ઑગસ્ટ</option>
-                        <option value="9">સપ્ટેમ્બર</option>
-                        <option value="10">ઓક્ટોબર</option>
-                        <option value="11">નવેમ્બર</option>
-                        <option value="12">ડિસેમ્બર</option>
-                    </select>
+                        <option value="">-- પસંદ કરો --</option>`;
+            
+            // Add month options with short names
+            monthShortNames.forEach((monthName, index) => {
+                html += `<option value="${index + 1}">${monthName}</option>`;
+            });
+            
+            html += `</select>
                 </td>
                 <td class="col-child-name"><input type="text" id="p1_r${i}_c1" oninput="saveData()"></td>
                 <td><input type="text" id="p1_r${i}_c2" oninput="saveData()"></td>
@@ -522,6 +580,14 @@
                     element.value = d[k];
                 }
             }
+            
+            // Automatically copy child names to all pages after loading
+            for(let i=1; i<=15; i++) {
+                const childName = d[`p1_r${i}_c1`];
+                if(childName && childName.trim() !== '') {
+                    copyChildNameToAllPages(i, childName);
+                }
+            }
         }
     }
 
@@ -546,6 +612,14 @@
                 const element = document.getElementById(k);
                 if(element) {
                     element.value = importedData[k];
+                }
+            }
+            
+            // Automatically copy child names after import
+            for(let i=1; i<=15; i++) {
+                const childName = importedData[`p1_r${i}_c1`];
+                if(childName && childName.trim() !== '') {
+                    copyChildNameToAllPages(i, childName);
                 }
             }
             
