@@ -174,7 +174,7 @@
                     // Add dropdown button for ક્રમ column on page 1
                     if(p === 1) {
                         html += `<td>
-                            <select class="styled-select" style="width: 100%; padding: 4px; border: none; background: transparent; outline: none;">
+                            <select id="rowDropdown_${p}_${i}" class="styled-select" style="width: 100%; padding: 4px; border: none; background: transparent; outline: none;">
                                 <option value="">-- પસંદ કરો --</option>
                                 <option value="1">જાન્વ</option>
                                 <option value="2">ફેબ્ર</option>
@@ -214,7 +214,7 @@
     function saveData() {
         const d = {};
         document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; });
-        // Also save dropdown values
+        // Also save dropdown values including row dropdowns
         document.querySelectorAll('select').forEach(s => { if(s.id) d[s.id] = s.value; });
         
         // Save to localStorage
