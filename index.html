@@ -102,6 +102,7 @@
 
 <script>
     let currentKey = "";
+    let appData = {};
 
     function go(n) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -152,11 +153,14 @@
             yearSelect.options[0].selected = true; // Default to first option
         }
         
+        // Initialize currentKey with default values
+        currentKey = `poshan_data_${monthSelect.value}_${yearSelect.value}`;
+        
         const heads = {
             1: "<tr><th>ક્રમ</th><th>બાળકનું નામ</th><th>માતા</th><th>જન્મ તારીખ</th><th>જાતિ</th><th>સ્ક્રિનિંગ તારીખ</th><th>વજન</th><th>ઊંચાઈ</th><th>સોજા</th><th>સ્તર</th></tr>",
             2: "<tr><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th><th>THR</th></tr>",
             3: "<tr><th>ક્રમ</th><th>અઠ ૧</th><th>અઠ ૨</th><th>અઠ ૩</th><th>અઠ ૪</th><th>પખ ૧</th><th>પખ ૨</th></tr>",
-            4: "<tr><th>ક્રમ</th><th>વજન ૧</th><th>વજન ૨</th><th>વજન ૩</th><th>વજન ૪</th><th>સ્તર ી</th><th>સ્તર ૨</th></tr>",
+            4: "<tr><th>ક્રમ</th><th>વજન ૧</th><th>વજન ૨</th><th>વજન ૩</th><th>વજન ૪</th><th>સ્તર ૧</th><th>સ્તર ૨</th></tr>",
             5: "<tr><th>ક્રમ</th><th>શરૂઆત</th><th>અંતિમ</th><th>સુધારો %</th><th>શેરો</th></tr>",
             6: "<tr><th>રિકવર</th><th>નોન-રિકવર</th><th>જટિલતા</th><th>ફેરબદલ</th><th>ગેરહાજર</th><th>મૃત્યુ</th><th>તપાસ</th></tr>",
             7: "<tr><th>ક્રમ</th><th>૧ માસ</th><th>૨ માસ</th><th>ઊંચાઈ</th><th>સ્થિતિ</th></tr>"
@@ -200,7 +204,11 @@
             html += "</table>";
             document.getElementById('tablePlace' + p).innerHTML = html;
         }
-        changeTime();
+        
+        // Load data after all elements are created
+        setTimeout(() => {
+            loadStoredData();
+        }, 100);
     }
 
     function saveData() {
@@ -208,23 +216,47 @@
         document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = i.value; });
         // Also save dropdown values
         document.querySelectorAll('select').forEach(s => { if(s.id) d[s.id] = s.value; });
+        
+        // Save to localStorage
         localStorage.setItem(currentKey, JSON.stringify(d));
+        
+        // Also save to a persistent key to prevent data loss on refresh
+        localStorage.setItem('poshan_app_data', JSON.stringify({
+            currentKey: currentKey,
+            data: d
+        }));
     }
 
     function loadStoredData() {
+        // First try to load from the persistent key
+        const persistentData = localStorage.getItem('poshan_app_data');
+        if(persistentData) {
+            const parsedData = JSON.parse(persistentData);
+            if(parsedData.currentKey && parsedData.data) {
+                currentKey = parsedData.currentKey;
+                appData = parsedData.data;
+            }
+        }
+        
+        // Load the specific data for currentKey
+        const storedData = localStorage.getItem(currentKey);
+        if(storedData) {
+            const d = JSON.parse(storedData);
+            appData = { ...appData, ...d };
+        }
+        
+        // Clear all inputs and selects
         document.querySelectorAll('input').forEach(i => i.value = "");
         document.querySelectorAll('select').forEach(s => s.value = "");
-        const s = localStorage.getItem(currentKey);
-        if(s) {
-            const d = JSON.parse(s);
-            for(const k in d) {
-                const element = document.getElementById(k);
-                if(element) {
-                    if(element.tagName === 'INPUT') {
-                        element.value = d[k];
-                    } else if(element.tagName === 'SELECT') {
-                        element.value = d[k];
-                    }
+        
+        // Populate with loaded data
+        for(const k in appData) {
+            const element = document.getElementById(k);
+            if(element) {
+                if(element.tagName === 'INPUT') {
+                    element.value = appData[k];
+                } else if(element.tagName === 'SELECT') {
+                    element.value = appData[k];
                 }
             }
         }
@@ -240,7 +272,11 @@
 
     function importData(e) {
         const r = new FileReader();
-        r.onload = function(ev) { localStorage.setItem(currentKey, ev.target.result); loadStoredData(); alert("સફળ!"); };
+        r.onload = function(ev) { 
+            localStorage.setItem(currentKey, ev.target.result); 
+            loadStoredData(); 
+            alert("સફળ!"); 
+        };
         r.readAsText(e.target.files[0]);
     }
 </script>
