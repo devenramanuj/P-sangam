@@ -50,7 +50,7 @@
         }
     </style>
 </head>
-<body onload="initApp()">
+<body>
 
 <div class="header">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર</div>
 
@@ -174,7 +174,7 @@
                     // Add dropdown button for ક્રમ column on page 1
                     if(p === 1) {
                         html += `<td>
-                            <select id="rowDropdown_${p}_${i}" class="styled-select" style="width: 100%; padding: 4px; border: none; background: transparent; outline: none;">
+                            <select id="rowDropdown_p1_r${i}" class="styled-select" style="width: 100%; padding: 4px; border: none; background: transparent; outline: none;">
                                 <option value="">-- પસંદ કરો --</option>
                                 <option value="1">જાન્વ</option>
                                 <option value="2">ફેબ્ર</option>
@@ -205,10 +205,8 @@
             document.getElementById('tablePlace' + p).innerHTML = html;
         }
         
-        // Load data after all elements are created
-        setTimeout(() => {
-            loadStoredData();
-        }, 100);
+        // Load data immediately after creating elements
+        loadStoredData();
     }
 
     function saveData() {
@@ -279,6 +277,9 @@
         };
         r.readAsText(e.target.files[0]);
     }
+
+    // Initialize the app
+    window.onload = initApp;
 </script>
 </body>
 </html>
