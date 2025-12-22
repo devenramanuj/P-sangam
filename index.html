@@ -66,7 +66,7 @@
 <div class="header" id="mainHeader">પોષણ સંગમ - આંગણવાડી ડિજિટલ રજિસ્ટર</div>
 
 <div class="selector-bar">
-    <select id="selectedMonth" class="styled-select" onchange="changeTime()">
+    <select id="selectedMonth" class="styled-select" onchange="saveMonthYear(); changeTime();">
         <option value="1">જાન્યુઆરી</option>
         <option value="2">ફેબ્રુઆરી</option>
         <option value="3">માર્ચ</option>
@@ -80,7 +80,7 @@
         <option value="11">નવેમ્બર</option>
         <option value="12">ડિસેમ્બર</option>
     </select>
-    <select id="selectedYear" class="styled-select" onchange="changeTime()">
+    <select id="selectedYear" class="styled-select" onchange="saveMonthYear(); changeTime();">
         <option value="2025">2025</option>
         <option value="2026">2026</option>
         <option value="2027">2027</option>
@@ -115,6 +115,32 @@
     let currentKey = "";
     let appData = {};
 
+    // Function to save month and year to localStorage
+    function saveMonthYear() {
+        const month = document.getElementById('selectedMonth').value;
+        const year = document.getElementById('selectedYear').value;
+        const settings = {
+            month: month,
+            year: year,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('poshan_month_year', JSON.stringify(settings));
+        updateHeader();
+    }
+
+    // Function to load saved month and year from localStorage
+    function loadMonthYear() {
+        const saved = localStorage.getItem('poshan_month_year');
+        if (saved) {
+            const settings = JSON.parse(saved);
+            document.getElementById('selectedMonth').value = settings.month;
+            document.getElementById('selectedYear').value = settings.year;
+            updateHeader();
+            return true;
+        }
+        return false;
+    }
+
     // Function to update header with month and year
     function updateHeader() {
         const monthNames = ["જાન્યુઆરી", "ફેબ્રુઆરી", "માર્ચ", "એપ્રિલ", "મે", "જૂન", 
@@ -140,23 +166,33 @@
         const m = document.getElementById('selectedMonth').value;
         const y = document.getElementById('selectedYear').value;
         currentKey = `poshan_data_${m}_${y}`;
-        updateHeader();
         loadStoredData();
     }
 
     function initApp() {
-        const d = new Date();
-        const currentMonth = d.getMonth() + 1; // 1-12
-        const currentYear = d.getFullYear();
+        // First, try to load saved month/year
+        const monthYearLoaded = loadMonthYear();
         
-        // Set month and year dropdowns
-        document.getElementById('selectedMonth').value = currentMonth;
-        document.getElementById('selectedYear').value = currentYear;
+        // If no saved month/year found, set to current month/year
+        if (!monthYearLoaded) {
+            const d = new Date();
+            const currentMonth = d.getMonth() + 1; // 1-12
+            const currentYear = d.getFullYear();
+            
+            // Set month and year dropdowns
+            document.getElementById('selectedMonth').value = currentMonth;
+            document.getElementById('selectedYear').value = currentYear;
+            
+            // Save the default selection
+            saveMonthYear();
+        }
         
-        // Initialize currentKey
-        currentKey = `poshan_data_${currentMonth}_${currentYear}`;
+        // Initialize currentKey with current selection
+        const m = document.getElementById('selectedMonth').value;
+        const y = document.getElementById('selectedYear').value;
+        currentKey = `poshan_data_${m}_${y}`;
         
-        // Update header with month and year
+        // Update header with current selection
         updateHeader();
         
         // Initialize tables
@@ -232,32 +268,9 @@
         
         // Save to localStorage with current key
         localStorage.setItem(currentKey, JSON.stringify(d));
-        
-        // Also save current month/year selection separately
-        const settings = {
-            currentMonth: document.getElementById('selectedMonth').value,
-            currentYear: document.getElementById('selectedYear').value,
-            lastUpdate: new Date().toISOString()
-        };
-        localStorage.setItem('poshan_settings', JSON.stringify(settings));
     }
 
     function loadStoredData() {
-        // Load month/year settings first
-        const settings = localStorage.getItem('poshan_settings');
-        if(settings) {
-            const parsedSettings = JSON.parse(settings);
-            if(parsedSettings.currentMonth) {
-                document.getElementById('selectedMonth').value = parsedSettings.currentMonth;
-            }
-            if(parsedSettings.currentYear) {
-                document.getElementById('selectedYear').value = parsedSettings.currentYear;
-            }
-        }
-        
-        // Update header with loaded month/year
-        updateHeader();
-        
         // Load data for current key
         const storedData = localStorage.getItem(currentKey);
         if(storedData) {
@@ -270,6 +283,10 @@
                     element.value = d[k];
                 }
             }
+        } else {
+            // Clear all inputs if no data found for this key
+            document.querySelectorAll('input').forEach(i => i.value = "");
+            document.querySelectorAll('select.row-dropdown').forEach(s => s.value = "");
         }
     }
 
@@ -304,17 +321,6 @@
 
     // Initialize the app
     window.onload = initApp;
-    
-    // Save month/year selection when changed
-    document.getElementById('selectedMonth').addEventListener('change', function() {
-        saveData();
-        changeTime();
-    });
-    
-    document.getElementById('selectedYear').addEventListener('change', function() {
-        saveData();
-        changeTime();
-    });
 </script>
 </body>
 </html>
