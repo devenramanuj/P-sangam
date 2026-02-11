@@ -1,8 +1,340 @@
-t = document.getElementById(`p${p}_r${row}_c1`);
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>પોષણ સંગમ (Cloud Connected)</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #fcf3e8; margin: 0; padding: 0; }
+        .header { background: #e67e22; color: white; padding: 10px; text-align: center; font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .cloud-status { font-size: 12px; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px; display: flex; align-items: center; gap: 5px; }
+        
+        .selector-bar { background: #fff; padding: 10px; text-align: center; border-bottom: 2px solid #e67e22; display: flex; justify-content: center; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .styled-select, .styled-input { 
+            padding: 10px 15px; font-weight: bold; border: 2px solid #d35400; border-radius: 8px; outline: none; 
+            min-width: 120px; background-color: white; color: #000; font-size: 14px;
+        }
+        
+        .nav-tabs { display: flex; overflow-x: auto; background: #fff; border-bottom: 2px solid #e67e22; position: sticky; top: 0; z-index: 1000; }
+        .tab-btn { padding: 12px 15px; border: none; background: none; cursor: pointer; font-weight: bold; color: #555; white-space: nowrap; flex: 1; }
+        .tab-btn.active { color: #e67e22; background: #fff5eb; border-bottom: 4px solid #e67e22; }
+        
+        .container { padding: 10px; }
+        .page { display: none; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow-x: auto; margin-bottom: 20px; }
+        .page.active { display: block; }
+        
+        .action-bar { margin: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1200px; table-layout: fixed; }
+        table, th, td { border: 1px solid #000; text-align: center; padding: 6px; }
+        th { background: #ecf0f1; font-weight: bold; }
+        input { width: 95%; border: none; padding: 4px; text-align: center; font-size: 12px; background: transparent; outline: none; }
+        
+        .credit-line { text-align: center; margin-top: 15px; font-size: 12px; font-weight: bold; color: #000; border-top: 1px solid #000; padding-top: 5px; }
+        
+        /* Columns */
+        .col-serial { width: 7% !important; } 
+        .col-child-name { width: 18% !important; }
+        .col-gender { width: 8% !important; }
+        .col-regular { width: 9% !important; }
+        .col-date { width: 11% !important; }
+        
+        .row-dropdown { width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 2px; font-size: 11px; background-color: white; text-align: center; }
+
+        @media print {
+            @page { size: landscape; margin: 5mm; }
+            .nav-tabs, .action-bar, .header, .selector-bar { display: none !important; }
+            .page { display: block !important; page-break-after: always !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 10px 0 !important; }
+            table { width: 100% !important; min-width: 100% !important; }
+        }
+        
+        /* Loader */
+        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid white; width: 12px; height: 12px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div>પોષણ સંગમ - આંગણવાડી રજિસ્ટર</div>
+    <div class="cloud-status">
+        <span id="cloudIcon">☁️</span>
+        <span id="cloudText">Offline</span>
+    </div>
+</div>
+
+<div class="selector-bar">
+    <input type="text" id="centerCode" class="styled-input" placeholder="કેન્દ્ર કોડ (દા.ત. 9276..)" onchange="loadFromCloud()">
+    
+    <select id="selectedMonth" class="styled-select" onchange="changeTime()">
+        <option value="1">જાન્યુઆરી</option>
+        <option value="2">ફેબ્રુઆરી</option>
+        <option value="3">માર્ચ</option>
+        <option value="4">એપ્રિલ</option>
+        <option value="5">મે</option>
+        <option value="6">જૂન</option>
+        <option value="7">જુલાઈ</option>
+        <option value="8">ઑગસ્ટ</option>
+        <option value="9">સપ્ટેમ્બર</option>
+        <option value="10">ઓક્ટોબર</option>
+        <option value="11">નવેમ્બર</option>
+        <option value="12">ડિસેમ્બર</option>
+    </select>
+    
+    <select id="selectedYear" class="styled-select" onchange="changeTime()">
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+    </select>
+    
+    <button class="btn" style="background:#e67e22; border: 2px solid white;" onclick="loadFromCloud(true)">🔄 Cloud Refresh</button>
+</div>
+
+<div class="action-bar">
+    <button class="btn" style="background:#2980b9" onclick="exportData()">📤 Backup Export</button>
+    <button class="btn" style="background:#8e44ad" onclick="document.getElementById('fileIn').click()">📥 Import Data</button>
+    <input type="file" id="fileIn" style="display:none" onchange="importData(event)">
+    <button class="btn" style="background:#d35400" onclick="window.print()">🖨️ પ્રિન્ટ</button>
+    <button class="btn" style="background:#27ae60" onclick="copyDataToOtherMonths()">📋 અન્ય મહિનામાં કોપી કરો</button>
+</div>
+
+<div class="nav-tabs">
+    <button class="tab-btn active" onclick="go(1)">P-1 (Screening)</button>
+    <button class="tab-btn" onclick="go(2)">P-2 (Medical)</button>
+    <button class="tab-btn" onclick="go(3)">P-3 (Meds)</button>
+    <button class="tab-btn" onclick="go(4)">P-4 (Follow Up)</button>
+    <button class="tab-btn" onclick="go(5)">P-5 (Final)</button>
+    <button class="tab-btn" onclick="go(6)">P-6 (Discharge)</button>
+    <button class="tab-btn" onclick="go(7)">P-7 (Post Follow)</button>
+</div>
+
+<div class="container" id="mainPages">
+    <div id="page1" class="page active"><h3 style="text-align:center;">પૃષ્ઠ ૧: Screening data</h3><div id="tablePlace1"></div></div>
+    <div id="page2" class="page"><h3 style="text-align:center;">પૃષ્ઠ ૨: Medical assessment & SNP</h3><div id="tablePlace2"></div></div>
+    <div id="page3" class="page"><h3 style="text-align:center;">પૃષ્ઠ ૩: Medicines during Program</h3><div id="tablePlace3"></div></div>
+    <div id="page4" class="page"><h3 style="text-align:center;">પૃષ્ઠ ૪: Follow up during Program</h3><div id="tablePlace4"></div></div>
+    <div id="page5" class="page"><h3 style="text-align:center;">પૃષ્ઠ ૫: અંતિમ ગ્રેડિંગ</h3><div id="tablePlace5"></div></div>
+    <div id="page6" class="page"><h3 style="text-align:center;">પૃષ્ઠ ૬: ડિસ્ચાર્જના પ્રકાર અને પરિભાષા</h3><div id="tablePlace6"></div></div>
+    <div id="page7" class="page"><h3 style="text-align:center;">પૃષ્ઠ ૭: ડિસ્ચાર્જ પછીનો ફોલોઅપ</h3><div id="tablePlace7"></div></div>
+</div>
+
+<div class="credit-line" style="text-align:center; padding-bottom: 20px;">Developed by: Devendrabhai Ramanuj, 9276505035</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyCU_wqw_7PC0nBaLBgqDSmDgX1f95zaUlA", authDomain: "vidushi-ai-614cb.firebaseapp.com", projectId: "vidushi-ai-614cb", storageBucket: "vidushi-ai-614cb.firebasestorage.app", messagingSenderId: "146312927144", appId: "1:146312927144:web:91bfb8c430a2124d0e6f9d" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let saveTimeout;
+
+    // SAVE TO CLOUD FUNCTION
+    window.saveToCloud = async () => {
+        const centerCode = document.getElementById('centerCode').value.trim();
+        if(!centerCode) {
+            document.getElementById('cloudText').innerText = "⚠️ No Code";
+            return;
+        }
+
+        const month = document.getElementById('selectedMonth').value;
+        const year = document.getElementById('selectedYear').value;
+        const currentKey = `poshan_data_${month}_${year}`;
+        const data = localStorage.getItem(currentKey);
+
+        // Update UI
+        const statusText = document.getElementById('cloudText');
+        statusText.innerHTML = '<span class="spinner"></span> Saving...';
+
+        try {
+            // Document ID format: CenterCode_Month_Year
+            const docId = `${centerCode}_${month}_${year}`;
+            await setDoc(doc(db, "poshan_sangam_data", docId), { 
+                lastUpdated: new Date().toString(), 
+                data: data 
+            });
+            
+            statusText.innerText = "✅ Saved";
+            setTimeout(() => statusText.innerText = "Cloud Active", 2000);
+        } catch(e) {
+            console.error(e);
+            statusText.innerText = "❌ Error";
+        }
+    };
+
+    // LOAD FROM CLOUD FUNCTION
+    window.loadFromCloud = async (manual = false) => {
+        const centerCode = document.getElementById('centerCode').value.trim();
+        const statusText = document.getElementById('cloudText');
+        
+        if(!centerCode) {
+            if(manual) alert("કૃપા કરીને પહેલા કેન્દ્ર કોડ નાખો.");
+            return;
+        }
+
+        const month = document.getElementById('selectedMonth').value;
+        const year = document.getElementById('selectedYear').value;
+        const docId = `${centerCode}_${month}_${year}`;
+        const currentKey = `poshan_data_${month}_${year}`;
+
+        statusText.innerHTML = '<span class="spinner"></span> Loading...';
+
+        try {
+            const snap = await getDoc(doc(db, "poshan_sangam_data", docId));
+            if(snap.exists()) {
+                const cloudData = snap.data().data;
+                localStorage.setItem(currentKey, cloudData);
+                window.loadStoredData(); // Refresh UI
+                statusText.innerText = "✅ Loaded";
+                if(manual) alert("Cloud માંથી ડેટા અપડેટ થયો!");
+            } else {
+                statusText.innerText = "⚠️ No Data";
+                if(manual) alert("આ મહિના માટે Cloud પર કોઈ ડેટા નથી.");
+            }
+        } catch(e) {
+            console.error(e);
+            statusText.innerText = "❌ Err";
+        }
+    };
+    
+    // Auto Save trigger (Debounced)
+    window.triggerAutoSave = () => {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(window.saveToCloud, 2000); // Save 2 seconds after typing stops
+    };
+</script>
+
+<script>
+    let currentKey = "";
+    let monthShortNames = ["જાન્યુ", "ફેબ્રુ", "માર્ચ", "એપ્રિલ", "મે", "જૂન", "જુલાઈ", "ઑગસ્ટ", "સપ્ટેમ્બર", "ઓક્ટોબર", "નવેમ્બર", "ડિસેમ્બર"];
+
+    function go(n) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('page' + n).classList.add('active');
+        document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+    }
+
+    function changeTime() {
+        const m = document.getElementById('selectedMonth').value;
+        const y = document.getElementById('selectedYear').value;
+        currentKey = `poshan_data_${m}_${y}`;
+        
+        // Try to load from local first
+        loadStoredData();
+        
+        // Attempt to load from cloud if center code is present
+        if(document.getElementById('centerCode').value) {
+            if(window.loadFromCloud) window.loadFromCloud();
+        }
+    }
+
+    function copyChildNameToAllPages(row, childName) {
+        for(let p=2; p<=7; p++) {
+            const inputElement = document.getElementById(`p${p}_r${row}_c1`);
             if(inputElement) inputElement.value = childName;
         }
     }
-(i => { if(i.id && i.id.startsWith('p')) d[i.id] = i.value; });
+
+    function copyDataToOtherMonths() {
+        const currentMonth = document.getElementById('selectedMonth').value;
+        const currentYear = document.getElementById('selectedYear').value;
+        const currentData = localStorage.getItem(`poshan_data_${currentMonth}_${currentYear}`);
+        
+        if(!currentData) { alert("હાલના મહિનામાં કોઈ ડેટા નથી!"); return; }
+        
+        const parsedData = JSON.parse(currentData);
+        if(!confirm("શું તમે આ ડેટા બીજા બધા મહિનામાં કોપી કરવા માંગો છો?")) return;
+
+        let copiedCount = 0;
+        for(let m=1; m<=12; m++) {
+            if(m != currentMonth) {
+                const targetKey = `poshan_data_${m}_${currentYear}`;
+                localStorage.setItem(targetKey, JSON.stringify(parsedData));
+                // Note: We are NOT auto-saving to cloud for other months to save bandwidth/reads. 
+                // User has to visit that month to trigger save or we can do it here but it's heavy.
+                copiedCount++;
+            }
+        }
+        alert(`${copiedCount} મહિનામાં ડેટા લોકલ કોપી થયો! Cloud પર સેવ કરવા માટે તે મહિનામાં જઈને 'Refresh' કરો.`);
+    }
+
+    function initApp() {
+        // Set Date
+        const d = new Date();
+        document.getElementById('selectedMonth').value = d.getMonth() + 1;
+        document.getElementById('selectedYear').value = d.getFullYear();
+        
+        // Restore Center Code
+        const savedCode = localStorage.getItem('poshanCenterCode');
+        if(savedCode) document.getElementById('centerCode').value = savedCode;
+
+        // Create Tables
+        createTables();
+        
+        // Initial Load
+        changeTime();
+        
+        // Setup Copy Listeners
+        for(let i=1; i<=15; i++) {
+            const el = document.getElementById(`p1_r${i}_c1`);
+            if(el) el.addEventListener('input', function() { copyChildNameToAllPages(i, this.value); saveData(); });
+        }
+        
+        // Save Center Code on change
+        document.getElementById('centerCode').addEventListener('change', function() {
+            localStorage.setItem('poshanCenterCode', this.value);
+        });
+    }
+
+    function createTables() {
+        // Page 1
+        let h1 = `<table><tr><th class="col-serial">માસ</th><th class="col-child-name">બાળકનું નામ</th><th>માતા</th><th class="col-date">જન્મ તારીખ</th><th class="col-gender">જાતિ</th><th class="col-date">સ્ક્રિનિંગ તા.</th><th>વજન</th><th>ઊંચાઈ</th><th>સોજા</th><th>સ્તર</th></tr>`;
+        for(let i=1; i<=15; i++) {
+            h1 += `<tr><td class="col-serial"><select id="p1_r${i}_c0" class="row-dropdown" onchange="saveData()"><option value="">--</option>${monthShortNames.map((m,idx)=>`<option value="${idx+1}">${m}</option>`).join('')}</select></td>
+            <td class="col-child-name"><input id="p1_r${i}_c1" oninput="saveData()"></td>
+            <td><input id="p1_r${i}_c2" oninput="saveData()"></td><td class="col-date"><input type="date" id="p1_r${i}_c3" oninput="saveData()"></td>
+            <td class="col-gender"><select id="p1_r${i}_c4" class="row-dropdown" onchange="saveData()"><option value="">-</option><option value="કુમાર">કુમાર</option><option value="કન્યા">કન્યા</option></select></td>
+            <td class="col-date"><input type="date" id="p1_r${i}_c5" oninput="saveData()"></td><td><input id="p1_r${i}_c6" oninput="saveData()"></td><td><input id="p1_r${i}_c7" oninput="saveData()"></td><td><input id="p1_r${i}_c8" oninput="saveData()"></td><td><input id="p1_r${i}_c9" oninput="saveData()"></td></tr>`;
+        }
+        document.getElementById('tablePlace1').innerHTML = h1 + "</table>";
+
+        // Page 2
+        let h2 = `<table><tr><th>ક્રમ</th><th class="col-child-name">બાળકનું નામ</th><th>ભૂખ પરીક્ષણ</th><th>તારીખ</th><th>જટિલતા</th><th>રેફરલ</th><th>વજન</th><th>ઊંચાઈ</th><th>THR</th></tr>`;
+        for(let i=1; i<=15; i++) h2 += `<tr><td>${i}</td><td class="col-child-name"><input id="p2_r${i}_c1" oninput="saveData()"></td><td><input id="p2_r${i}_c2" oninput="saveData()"></td><td><input type="date" id="p2_r${i}_c3" oninput="saveData()"></td><td><input id="p2_r${i}_c4" oninput="saveData()"></td><td><input id="p2_r${i}_c5" oninput="saveData()"></td><td><input id="p2_r${i}_c6" oninput="saveData()"></td><td><input id="p2_r${i}_c7" oninput="saveData()"></td><td><input id="p2_r${i}_c8" oninput="saveData()"></td></tr>`;
+        document.getElementById('tablePlace2').innerHTML = h2 + "</table>";
+
+        // Page 3
+        let h3 = `<table><tr><th>ક્રમ</th><th class="col-child-name">બાળકનું નામ</th><th>અઠ ૧</th><th>અઠ ૨</th><th>અઠ ૩</th><th>અઠ ૪</th><th>પખ ૧</th><th>પખ ૨</th></tr>`;
+        for(let i=1; i<=15; i++) h3 += `<tr><td>${i}</td><td class="col-child-name"><input id="p3_r${i}_c1" oninput="saveData()"></td><td><input id="p3_r${i}_c2" oninput="saveData()"></td><td><input id="p3_r${i}_c3" oninput="saveData()"></td><td><input id="p3_r${i}_c4" oninput="saveData()"></td><td><input id="p3_r${i}_c5" oninput="saveData()"></td><td><input id="p3_r${i}_c6" oninput="saveData()"></td><td><input id="p3_r${i}_c7" oninput="saveData()"></td></tr>`;
+        document.getElementById('tablePlace3').innerHTML = h3 + "</table>";
+
+        // Page 4
+        let h4 = `<table><tr><th>ક્રમ</th><th class="col-child-name">બાળકનું નામ</th><th>વજન ૧</th><th>વજન ૨</th><th>વજન ૩</th><th>વજન ૪</th><th>સ્તર ૧</th><th>સ્તર ૨</th></tr>`;
+        for(let i=1; i<=15; i++) h4 += `<tr><td>${i}</td><td class="col-child-name"><input id="p4_r${i}_c1" oninput="saveData()"></td><td><input id="p4_r${i}_c2" oninput="saveData()"></td><td><input id="p4_r${i}_c3" oninput="saveData()"></td><td><input id="p4_r${i}_c4" oninput="saveData()"></td><td><input id="p4_r${i}_c5" oninput="saveData()"></td><td><input id="p4_r${i}_c6" oninput="saveData()"></td><td><input id="p4_r${i}_c7" oninput="saveData()"></td></tr>`;
+        document.getElementById('tablePlace4').innerHTML = h4 + "</table>";
+
+        // Page 5
+        let h5 = `<table><tr><th>ક્રમ</th><th class="col-child-name">બાળકનું નામ</th><th>શરૂઆત</th><th>અંતિમ</th><th>સુધારો %</th><th>શેરો</th></tr>`;
+        for(let i=1; i<=15; i++) h5 += `<tr><td>${i}</td><td class="col-child-name"><input id="p5_r${i}_c1" oninput="saveData()"></td><td><input id="p5_r${i}_c2" oninput="saveData()"></td><td><input id="p5_r${i}_c3" oninput="saveData()"></td><td><input id="p5_r${i}_c4" oninput="saveData()"></td><td><input id="p5_r${i}_c5" oninput="saveData()"></td></tr>`;
+        document.getElementById('tablePlace5').innerHTML = h5 + "</table>";
+
+        // Page 6
+        let h6 = `<table><tr><th>ક્રમ</th><th class="col-child-name">બાળકનું નામ</th><th>રિકવર</th><th>નોન-રિકવર</th><th>જટિલતા</th><th>ફેરબદલ</th><th>ગેરહાજર</th><th>મૃત્યુ</th><th>તપાસ</th></tr>`;
+        for(let i=1; i<=15; i++) h6 += `<tr><td>${i}</td><td class="col-child-name"><input id="p6_r${i}_c1" oninput="saveData()"></td><td><input id="p6_r${i}_c2" oninput="saveData()"></td><td><input id="p6_r${i}_c3" oninput="saveData()"></td><td><input id="p6_r${i}_c4" oninput="saveData()"></td><td><input id="p6_r${i}_c5" oninput="saveData()"></td><td><input id="p6_r${i}_c6" oninput="saveData()"></td><td><input id="p6_r${i}_c7" oninput="saveData()"></td><td><input id="p6_r${i}_c8" oninput="saveData()"></td></tr>`;
+        document.getElementById('tablePlace6').innerHTML = h6 + "</table>";
+
+        // Page 7
+        let h7 = `<table><tr><th>ક્રમ</th><th class="col-child-name">બાળકનું નામ</th><th>૧ માસ</th><th>૨ માસ</th><th>ઊંચાઈ</th><th>સ્થિતિ</th></tr>`;
+        for(let i=1; i<=15; i++) h7 += `<tr><td>${i}</td><td class="col-child-name"><input id="p7_r${i}_c1" oninput="saveData()"></td><td><input id="p7_r${i}_c2" oninput="saveData()"></td><td><input id="p7_r${i}_c3" oninput="saveData()"></td><td><input id="p7_r${i}_c4" oninput="saveData()"></td><td><input id="p7_r${i}_c5" oninput="saveData()"></td></tr>`;
+        document.getElementById('tablePlace7').innerHTML = h7 + "</table>";
+    }
+
+    function saveData() {
+        const d = {};
+        document.querySelectorAll('input').forEach(i => { if(i.id && i.id.startsWith('p')) d[i.id] = i.value; });
         document.querySelectorAll('select').forEach(s => { if(s.id && s.id.startsWith('p')) d[s.id] = s.value; });
         
         localStorage.setItem(currentKey, JSON.stringify(d));
@@ -12,4 +344,45 @@ t = document.getElementById(`p${p}_r${row}_c1`);
     }
 
     window.loadStoredData = function() {
-        const storedData =
+        const storedData = localStorage.getItem(currentKey);
+        // Clear all inputs first
+        document.querySelectorAll('input[id^="p"]').forEach(i => i.value = "");
+        document.querySelectorAll('select[id^="p"]').forEach(s => s.value = "");
+
+        if(storedData) {
+            const d = JSON.parse(storedData);
+            for(const k in d) {
+                const element = document.getElementById(k);
+                if(element) element.value = d[k];
+            }
+            // Auto copy names again to ensure sync
+            for(let i=1; i<=15; i++) {
+                if(d[`p1_r${i}_c1`]) copyChildNameToAllPages(i, d[`p1_r${i}_c1`]);
+            }
+        }
+    }
+
+    function exportData() {
+        const d = localStorage.getItem(currentKey);
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([d], {type: "application/json"}));
+        a.download = `Backup_${currentKey}.json`;
+        a.click();
+    }
+
+    function importData(e) {
+        const r = new FileReader();
+        r.onload = function(ev) { 
+            const importedData = JSON.parse(ev.target.result);
+            localStorage.setItem(currentKey, ev.target.result);
+            window.loadStoredData();
+            if(window.triggerAutoSave) window.triggerAutoSave(); // Sync imported data to cloud
+            alert("ડેટા સફળતાપૂર્વક ઇમ્પોર્ટ થયો!"); 
+        };
+        r.readAsText(e.target.files[0]);
+    }
+
+    window.onload = initApp;
+</script>
+</body>
+</html>
